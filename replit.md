@@ -1,6 +1,6 @@
 # Overview
 
-This is Libral Core, a microservices management dashboard built as a full-stack web application. The system serves as a centralized monitoring and management platform for various microservices including payment processing, user management, Telegram bot integrations, and system metrics tracking. It features real-time monitoring capabilities with WebSocket connections, comprehensive system health tracking, and a modern React-based dashboard interface.
+This is Libral Core, a sophisticated microkernel-based Telegram bot platform with event-driven architecture. The system serves as both a centralized monitoring and management platform for various microservices and a creative stamp creation platform. It includes a magical stamp creation interface where users can craft personalized Telegram stickers using AI-suggested emojis, customizable fonts, characters, backgrounds, and effects. The platform features real-time monitoring capabilities with WebSocket connections, comprehensive system health tracking, payment processing integration with Telegram Stars, and a modern React-based dashboard interface with Japanese localization.
 
 # User Preferences
 
@@ -36,6 +36,9 @@ Interface language: Japanese for dashboard and user-facing components
   - Modules (microservice status tracking)
   - System Metrics (performance monitoring)
   - API Endpoints (request analytics)
+  - Stamps (user-created sticker data and metadata)
+  - Assets (fonts, characters, backgrounds, effects, animations)
+  - Stamp Creation Sessions (temporary user session data)
 
 ## Real-time Event System
 - **Event Bus**: Redis-based pub/sub messaging system with mock implementation for development

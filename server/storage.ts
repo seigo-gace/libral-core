@@ -10,7 +10,13 @@ import {
   type SystemMetrics,
   type InsertSystemMetrics,
   type ApiEndpoint,
-  type InsertApiEndpoint
+  type InsertApiEndpoint,
+  type Stamp,
+  type InsertStamp,
+  type Asset,
+  type InsertAsset,
+  type StampCreationSession,
+  type InsertStampCreationSession
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -48,6 +54,23 @@ export interface IStorage {
   upsertApiEndpoint(endpoint: InsertApiEndpoint): Promise<ApiEndpoint>;
   getAllApiEndpoints(): Promise<ApiEndpoint[]>;
   updateEndpointStats(path: string, method: string, responseTime: number): Promise<void>;
+  
+  // Stamp creation
+  createStamp(stamp: InsertStamp): Promise<Stamp>;
+  getStamp(id: string): Promise<Stamp | undefined>;
+  getStampsByUserId(userId: string): Promise<Stamp[]>;
+  updateStampStatus(id: string, status: string, fileUrl?: string): Promise<Stamp | undefined>;
+  
+  // Assets
+  createAsset(asset: InsertAsset): Promise<Asset>;
+  getAssetsByType(type: string): Promise<Asset[]>;
+  getAsset(id: string): Promise<Asset | undefined>;
+  
+  // Stamp creation sessions
+  createSession(session: InsertStampCreationSession): Promise<StampCreationSession>;
+  getSession(id: string): Promise<StampCreationSession | undefined>;
+  updateSession(id: string, sessionData: any): Promise<StampCreationSession | undefined>;
+  deleteExpiredSessions(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -57,6 +80,9 @@ export class MemStorage implements IStorage {
   private modules: Map<string, Module> = new Map();
   private metrics: Map<string, SystemMetrics> = new Map();
   private apiEndpoints: Map<string, ApiEndpoint> = new Map();
+  private stamps: Map<string, Stamp> = new Map();
+  private assets: Map<string, Asset> = new Map();
+  private sessions: Map<string, StampCreationSession> = new Map();
 
   constructor() {
     this.initializeDefaultData();
@@ -161,6 +187,175 @@ export class MemStorage implements IStorage {
       source: "gateway",
       timestamp: now
     });
+
+    // Initialize default assets
+    this.initializeDefaultAssets();
+  }
+
+  private initializeDefaultAssets() {
+    const defaultAssets: InsertAsset[] = [
+      // Fonts
+      {
+        id: "rounded-sans",
+        name: "Rounded Sans",
+        type: "font",
+        category: "free",
+        price: "0",
+        filePath: "/assets/fonts/rounded-sans.ttf",
+        previewUrl: "/assets/previews/rounded-sans.png",
+        metadata: { weight: "normal", style: "normal" }
+      },
+      {
+        id: "bold-serif",
+        name: "Bold Serif", 
+        type: "font",
+        category: "free",
+        price: "0",
+        filePath: "/assets/fonts/bold-serif.ttf",
+        previewUrl: "/assets/previews/bold-serif.png",
+        metadata: { weight: "bold", style: "normal" }
+      },
+      {
+        id: "handwritten",
+        name: "Handwritten",
+        type: "font", 
+        category: "free",
+        price: "0",
+        filePath: "/assets/fonts/handwritten.ttf",
+        previewUrl: "/assets/previews/handwritten.png",
+        metadata: { weight: "normal", style: "italic" }
+      },
+      
+      // Characters
+      {
+        id: "cosmic-cat",
+        name: "Cosmic Cat",
+        type: "character",
+        category: "free", 
+        price: "0",
+        filePath: "/assets/characters/cosmic-cat.json",
+        previewUrl: "/assets/previews/cosmic-cat.png",
+        metadata: { animated: true, frames: 30 }
+      },
+      {
+        id: "pixel-bot",
+        name: "Pixel Bot",
+        type: "character",
+        category: "free",
+        price: "0", 
+        filePath: "/assets/characters/pixel-bot.json",
+        previewUrl: "/assets/previews/pixel-bot.png",
+        metadata: { animated: true, frames: 24 }
+      },
+      {
+        id: "happy-star",
+        name: "Happy Star",
+        type: "character",
+        category: "free",
+        price: "0",
+        filePath: "/assets/characters/happy-star.json", 
+        previewUrl: "/assets/previews/happy-star.png",
+        metadata: { animated: true, frames: 36 }
+      },
+
+      // Backgrounds
+      {
+        id: "simple-gradient",
+        name: "Simple Gradient",
+        type: "background",
+        category: "free",
+        price: "0",
+        filePath: "/assets/backgrounds/simple-gradient.json",
+        previewUrl: "/assets/previews/simple-gradient.png", 
+        metadata: { colors: ["#FF6B6B", "#4ECDC4"] }
+      },
+      {
+        id: "sparkling",
+        name: "Sparkling",
+        type: "background",
+        category: "free",
+        price: "0",
+        filePath: "/assets/backgrounds/sparkling.json",
+        previewUrl: "/assets/previews/sparkling.png",
+        metadata: { particles: 50, animated: true }
+      },
+      {
+        id: "polka-dot",
+        name: "Polka Dot", 
+        type: "background",
+        category: "free",
+        price: "0",
+        filePath: "/assets/backgrounds/polka-dot.json",
+        previewUrl: "/assets/previews/polka-dot.png",
+        metadata: { pattern: "dots", colors: ["#FFE5E5", "#E5F3FF"] }
+      },
+
+      // Text Animations  
+      {
+        id: "bounce",
+        name: "Bounce",
+        type: "animation", 
+        category: "free",
+        price: "0",
+        filePath: "/assets/animations/bounce.json",
+        previewUrl: "/assets/previews/bounce.gif",
+        metadata: { duration: 1000, easing: "bounce" }
+      },
+      {
+        id: "fade-in",
+        name: "Fade In",
+        type: "animation",
+        category: "free",
+        price: "0",
+        filePath: "/assets/animations/fade-in.json", 
+        previewUrl: "/assets/previews/fade-in.gif",
+        metadata: { duration: 800, easing: "ease-in" }
+      },
+      {
+        id: "wiggle",
+        name: "Wiggle",
+        type: "animation",
+        category: "free",
+        price: "0",
+        filePath: "/assets/animations/wiggle.json",
+        previewUrl: "/assets/previews/wiggle.gif",
+        metadata: { duration: 1200, frequency: 3 }
+      },
+
+      // Effects
+      {
+        id: "confetti",
+        name: "Confetti",
+        type: "effect",
+        category: "free", 
+        price: "0",
+        filePath: "/assets/effects/confetti.json",
+        previewUrl: "/assets/previews/confetti.gif",
+        metadata: { particles: 100, duration: 2000 }
+      },
+      {
+        id: "lightning", 
+        name: "Lightning",
+        type: "effect",
+        category: "free",
+        price: "0",
+        filePath: "/assets/effects/lightning.json",
+        previewUrl: "/assets/previews/lightning.gif", 
+        metadata: { strikes: 3, duration: 1500 }
+      }
+    ];
+
+    defaultAssets.forEach(asset => {
+      this.assets.set(asset.id, {
+        ...asset,
+        creatorId: null,
+        currency: asset.currency || "JPY",
+        price: asset.price || "0",
+        previewUrl: asset.previewUrl || null,
+        isActive: true,
+        createdAt: new Date()
+      });
+    });
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -176,6 +371,7 @@ export class MemStorage implements IStorage {
     const user: User = {
       ...insertUser,
       id,
+      role: insertUser.role || "user",
       createdAt: new Date(),
       lastSeenAt: new Date()
     };
@@ -204,6 +400,8 @@ export class MemStorage implements IStorage {
     const transaction: Transaction = {
       ...insertTransaction,
       id,
+      status: insertTransaction.status || "pending",
+      currency: insertTransaction.currency || "JPY",
       createdAt: new Date(),
       completedAt: null
     };
@@ -239,6 +437,8 @@ export class MemStorage implements IStorage {
     const event: Event = {
       ...insertEvent,
       id,
+      data: insertEvent.data || {},
+      level: insertEvent.level || "info",
       createdAt: new Date()
     };
     this.events.set(id, event);
@@ -261,6 +461,7 @@ export class MemStorage implements IStorage {
   async upsertModule(insertModule: InsertModule): Promise<Module> {
     const module: Module = {
       ...insertModule,
+      status: insertModule.status || "inactive",
       lastHealthCheck: new Date()
     };
     this.modules.set(insertModule.id, module);
@@ -352,6 +553,103 @@ export class MemStorage implements IStorage {
       
       this.apiEndpoints.set(key, updatedEndpoint);
     }
+  }
+
+  // Stamp creation methods
+  async createStamp(insertStamp: InsertStamp): Promise<Stamp> {
+    const id = randomUUID();
+    const stamp: Stamp = {
+      ...insertStamp,
+      id,
+      status: insertStamp.status || "processing",
+      createdAt: new Date(),
+      completedAt: null
+    };
+    this.stamps.set(id, stamp);
+    return stamp;
+  }
+
+  async getStamp(id: string): Promise<Stamp | undefined> {
+    return this.stamps.get(id);
+  }
+
+  async getStampsByUserId(userId: string): Promise<Stamp[]> {
+    return Array.from(this.stamps.values()).filter(stamp => stamp.userId === userId);
+  }
+
+  async updateStampStatus(id: string, status: string, fileUrl?: string): Promise<Stamp | undefined> {
+    const stamp = this.stamps.get(id);
+    if (!stamp) return undefined;
+
+    const updatedStamp = {
+      ...stamp,
+      status,
+      fileUrl: fileUrl || null,
+      completedAt: status === 'completed' ? new Date() : stamp.completedAt
+    };
+    this.stamps.set(id, updatedStamp);
+    return updatedStamp;
+  }
+
+  // Asset methods
+  async createAsset(insertAsset: InsertAsset): Promise<Asset> {
+    const asset: Asset = {
+      ...insertAsset,
+      currency: insertAsset.currency || "JPY",
+      price: insertAsset.price || "0",
+      previewUrl: insertAsset.previewUrl || null,
+      isActive: insertAsset.isActive !== false,
+      createdAt: new Date()
+    };
+    this.assets.set(insertAsset.id, asset);
+    return asset;
+  }
+
+  async getAssetsByType(type: string): Promise<Asset[]> {
+    return Array.from(this.assets.values()).filter(asset => asset.type === type && asset.isActive);
+  }
+
+  async getAsset(id: string): Promise<Asset | undefined> {
+    return this.assets.get(id);
+  }
+
+  // Session methods
+  async createSession(insertSession: InsertStampCreationSession): Promise<StampCreationSession> {
+    const id = randomUUID();
+    const session: StampCreationSession = {
+      ...insertSession,
+      id,
+      sessionData: insertSession.sessionData || {},
+      lastUpdated: new Date()
+    };
+    this.sessions.set(id, session);
+    return session;
+  }
+
+  async getSession(id: string): Promise<StampCreationSession | undefined> {
+    return this.sessions.get(id);
+  }
+
+  async updateSession(id: string, sessionData: any): Promise<StampCreationSession | undefined> {
+    const session = this.sessions.get(id);
+    if (!session) return undefined;
+
+    const updatedSession = {
+      ...session,
+      sessionData,
+      lastUpdated: new Date()
+    };
+    this.sessions.set(id, updatedSession);
+    return updatedSession;
+  }
+
+  async deleteExpiredSessions(): Promise<void> {
+    const now = new Date();
+    Array.from(this.sessions.entries()).forEach(([id, session]) => {
+      if (session.expiresAt < now) {
+        this.sessions.delete(id);
+      }
+    });
   }
 }
 

@@ -20,7 +20,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await eventService.logApiRequest(
         req.path,
         req.method,
-        Date.now() - req.startTime,
+        Date.now() - (req as any).startTime,
         200
       );
       
@@ -31,7 +31,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await eventService.logApiRequest(
         req.path,
         req.method,
-        Date.now() - req.startTime,
+        Date.now() - (req as any).startTime,
         500
       );
       
@@ -160,6 +160,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(activeUsers);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch users" });
+    }
+  });
+
+  // Stamp creation endpoints
+  app.get("/api/assets/:type", async (req, res) => {
+    try {
+      const { type } = req.params;
+      const assets = await storage.getAssetsByType(type);
+      res.json(assets);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch assets" });
+    }
+  });
+
+  app.post("/api/ai/suggest-emojis", async (req, res) => {
+    try {
+      const { text, characterId } = req.body;
+      
+      // Mock AI emoji suggestions based on text sentiment
+      const emojiSuggestions = {
+        "楽しい": ["😊", "🎉", "✨"],
+        "おつかれ": ["😌", "🌟", "💪"],
+        "ありがとう": ["🙏", "💖", "🌸"],
+        "おめでとう": ["🎊", "🎈", "🏆"],
+        "がんばって": ["💪", "🔥", "⭐"],
+        "default": ["😊", "✨", "🎈"]
+      };
+
+      let suggestedEmojis = emojiSuggestions.default;
+      for (const [key, emojis] of Object.entries(emojiSuggestions)) {
+        if (text.toLowerCase().includes(key.toLowerCase())) {
+          suggestedEmojis = emojis;
+          break;
+        }
+      }
+
+      res.json({ emojis: suggestedEmojis });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to suggest emojis" });
+    }
+  });
+
+  app.post("/api/stamps/preview", async (req, res) => {
+    try {
+      const stampData = req.body;
+      
+      // Mock preview generation
+      const preview = {
+        id: "preview-" + Date.now(),
+        ...stampData,
+        previewUrl: "/api/previews/mock-preview.png"
+      };
+
+      res.json(preview);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to generate preview" });
+    }
+  });
+
+  app.post("/api/stamps/create", async (req, res) => {
+    try {
+      const stampData = req.body;
+      const userId = "mock-user-id"; // In real app, get from session/auth
+
+      const stamp = await storage.createStamp({
+        ...stampData,
+        userId,
+        emojis: stampData.emojis || [],
+        status: "processing"
+      });
+
+      // Log stamp creation event
+      await eventService.publishEvent(
+        'stamp_created',
+        'stamp_creator',
+        { stampId: stamp.id, text: stamp.text },
+        userId
+      );
+
+      // Simulate processing delay
+      setTimeout(async () => {
+        await storage.updateStampStatus(stamp.id, 'completed', `/stamps/${stamp.id}.tgs`);
+        
+        // Broadcast completion
+        websocketService.broadcast({
+          type: 'stamp_completed',
+          data: { stampId: stamp.id, userId }
+        });
+      }, 3000);
+
+      res.json(stamp);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create stamp" });
+    }
+  });
+
+  app.get("/api/stamps/user/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const stamps = await storage.getStampsByUserId(userId);
+      res.json(stamps);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch user stamps" });
     }
   });
 
