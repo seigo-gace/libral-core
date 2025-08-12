@@ -221,8 +221,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/stamps/create", async (req, res) => {
     try {
+      console.log("Received stamp creation request:", req.body);
       const stampData = req.body;
       const userId = "mock-user-id"; // In real app, get from session/auth
+
+      if (!stampData.text || !stampData.fontId) {
+        console.log("Missing required fields:", { text: stampData.text, fontId: stampData.fontId });
+        return res.status(400).json({ error: "Text and font are required" });
+      }
 
       const stamp = await storage.createStamp({
         ...stampData,
@@ -230,6 +236,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         emojis: stampData.emojis || [],
         status: "processing"
       });
+
+      console.log("Created stamp in storage:", stamp);
 
       // Log stamp creation event
       await eventService.publishEvent(
@@ -241,6 +249,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Simulate processing delay
       setTimeout(async () => {
+        console.log(`Processing stamp ${stamp.id} - updating to completed`);
         await storage.updateStampStatus(stamp.id, 'completed', `/stamps/${stamp.id}.tgs`);
         
         // Broadcast completion
@@ -248,11 +257,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           type: 'stamp_completed',
           data: { stampId: stamp.id, userId }
         });
+        
+        console.log(`Stamp ${stamp.id} processing completed`);
       }, 3000);
 
       res.json(stamp);
     } catch (error) {
-      res.status(500).json({ error: "Failed to create stamp" });
+      console.error("Stamp creation error:", error);
+      res.status(500).json({ error: "Failed to create stamp", details: error.message });
     }
   });
 

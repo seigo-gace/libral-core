@@ -111,14 +111,24 @@ export default function StampCreator() {
   // Create final stamp
   const createStampMutation = useMutation({
     mutationFn: async (data: typeof stampData) => {
+      console.log("Sending stamp creation request:", data);
       const response = await apiRequest('/api/stamps/create', {
         method: 'POST',
         body: JSON.stringify(data)
       });
-      return response.json();
+      const result = await response.json();
+      console.log("Stamp creation response:", result);
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Stamp created successfully:", data);
       queryClient.invalidateQueries({ queryKey: ['/api/stamps'] });
+      // Show success message or redirect
+      alert(`スタンプが正常に作成されました！ID: ${data.id}`);
+    },
+    onError: (error) => {
+      console.error("Stamp creation failed:", error);
+      alert("スタンプの作成に失敗しました。もう一度お試しください。");
     }
   });
 
@@ -166,6 +176,7 @@ export default function StampCreator() {
   };
 
   const createStamp = () => {
+    console.log("Creating stamp with data:", stampData);
     createStampMutation.mutate(stampData);
   };
 
