@@ -5,6 +5,8 @@ This is Libral Core, a microservices management dashboard built as a full-stack 
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
+Technical design approach: Microkernel architecture with event-driven design
+Interface language: Japanese for dashboard and user-facing components
 
 # System Architecture
 
