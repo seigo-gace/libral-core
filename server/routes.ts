@@ -6,6 +6,8 @@ import { eventService } from "./services/events";
 import { redisService } from "./services/redis";
 import { websocketService } from "./services/websocket";
 import { z } from "zod";
+import { getTransportRouter } from "./core/transport/bootstrap";
+import { moduleRegistry } from "./modules/registry";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -62,6 +64,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Module status endpoints
   app.get("/api/modules", async (req, res) => {
+    try {
+      const modules = await moduleRegistry.getAllModuleStatuses();
+      // Also include legacy modules from storage for compatibility
+      const legacyModules = await storage.getAllModules();
+      res.json([...modules, ...legacyModules]);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch modules" });
+    }
+  });
+
+  // Get specific module status
+  app.get("/api/modules/:id", async (req, res) => {
     try {
       const modules = await storage.getAllModules();
       res.json(modules);
@@ -240,6 +254,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Created stamp in storage:", stamp);
 
       // Log stamp creation event
+      // Example of using new transport router for notifications
+      try {
+        const router = getTransportRouter();
+        await router.sendWithFailover({
+          to: userId, // In real app, this would be user's telegram ID or email
+          subject: "スタンプ作成完了",
+          body: Buffer.from(JSON.stringify({ stampId: stamp.id, text: stamp.text })).toString('base64'),
+          metadata: {
+            tenant_id: "default",
+            usecase: "stamp-notification",
+            sensitivity: "low",
+            size_bytes: JSON.stringify({ stampId: stamp.id, text: stamp.text }).length,
+            idempotency_key: `stamp-${stamp.id}-${Date.now()}`
+          }
+        });
+      } catch (transportError) {
+        console.warn("Transport notification failed:", transportError);
+      }
+
       await eventService.publishEvent(
         'stamp_created',
         'stamp_creator',
@@ -264,7 +297,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(stamp);
     } catch (error) {
       console.error("Stamp creation error:", error);
-      res.status(500).json({ error: "Failed to create stamp", details: error.message });
+      res.status(500).json({ error: "Failed to create stamp", details: error instanceof Error ? error.message : String(error) });
     }
   });
 
@@ -288,11 +321,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Middleware to track API requests
-  app.use("/api/*", async (req, res, next) => {
+  app.use("/api/*", async (req: any, res, next) => {
     req.startTime = Date.now();
     
     res.on('finish', async () => {
-      const responseTime = Date.now() - req.startTime;
+      const responseTime = Date.now() - (req as any).startTime;
       
       // Update endpoint statistics
       await storage.updateEndpointStats(req.path, req.method, responseTime);

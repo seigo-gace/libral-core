@@ -1,0 +1,19 @@
+routing:
+  default:
+    priority: [telegram, email, webhook]
+  by_usecase:
+    artifact-sign:
+      priority: [webhook, email, telegram]
+  rules:
+    - if: { data_size_mb: ">=10" }
+      then: { priority: [email, webhook, telegram] }
+    - if: { sensitivity: "high" }
+      then: { priority: [email, webhook, telegram] }
+
+retry:
+  max_attempts: 5
+  backoff_ms: [500, 1000, 2000, 5000, 10000]
+
+circuit_breaker:
+  failure_threshold: 5
+  cool_down_sec: 60

@@ -1,6 +1,6 @@
 # Overview
 
-This is Libral Core, a sophisticated microkernel-based Telegram bot platform with event-driven architecture. The system serves as both a centralized monitoring and management platform for various microservices and a creative stamp creation platform. It includes a magical stamp creation interface where users can craft personalized Telegram stickers using AI-suggested emojis, customizable fonts, characters, backgrounds, and effects. The platform features real-time monitoring capabilities with WebSocket connections, comprehensive system health tracking, payment processing integration with Telegram Stars, and a modern React-based dashboard interface with Japanese localization.
+This is Libral Core, a sophisticated microkernel-based platform with event-driven architecture and platform-agnostic transport layer. The system serves as both a centralized monitoring and management platform for various microservices and a creative stamp creation platform. It includes a magical stamp creation interface where users can craft personalized Telegram stickers using AI-suggested emojis, customizable fonts, characters, backgrounds, and effects. The platform features real-time monitoring capabilities with WebSocket connections, comprehensive system health tracking, modular transport system supporting Telegram/Email/Webhook with automatic failover, and a modern React-based dashboard interface with Japanese localization.
 
 # User Preferences
 
@@ -24,6 +24,8 @@ Interface language: Japanese for dashboard and user-facing components
 - **Database ORM**: Drizzle ORM with PostgreSQL dialect
 - **Real-time Communication**: WebSocket server integration with Redis pub/sub pattern
 - **Service Architecture**: Modular service pattern with dedicated services for events, Redis, Telegram, and WebSocket management
+- **Transport Layer**: Platform-agnostic transport system with automatic failover (Telegram → Email → Webhook)
+- **Module System**: Microkernel architecture with hot-swappable modules and registry pattern
 - **API Design**: RESTful endpoints with structured error handling and request logging middleware
 
 ## Database Design
