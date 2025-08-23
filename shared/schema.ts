@@ -158,6 +158,25 @@ export const insertStampCreationSessionSchema = createInsertSchema(stampCreation
   lastUpdated: true,
 });
 
+// Audit events table for Aegis-PGP monitoring
+export const auditEvents = pgTable("audit_events", {
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  event: text("event").notNull(), // sign|verify|encrypt|decrypt|send_attempt|send_queued
+  tenantId: text("tenant_id").notNull(),
+  policyId: text("policy_id"),
+  transport: text("transport"),
+  ok: boolean("ok"),
+  requestId: text("request_id"),
+  errorMessage: text("error_message"),
+  metadata: text("metadata"), // JSON for additional context
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const insertAuditEventSchema = createInsertSchema(auditEvents).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -177,3 +196,5 @@ export type Asset = typeof assets.$inferSelect;
 export type InsertAsset = z.infer<typeof insertAssetSchema>;
 export type StampCreationSession = typeof stampCreationSessions.$inferSelect;
 export type InsertStampCreationSession = z.infer<typeof insertStampCreationSessionSchema>;
+export type AuditEvent = typeof auditEvents.$inferSelect;
+export type InsertAuditEvent = z.infer<typeof insertAuditEventSchema>;

@@ -8,10 +8,14 @@ import { websocketService } from "./services/websocket";
 import { z } from "zod";
 import { getTransportRouter } from "./core/transport/bootstrap";
 import { moduleRegistry } from "./modules/registry";
+import { registerAegisRoutes } from "./routes/aegis";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
   await redisService.connect();
+
+  // Register Aegis-PGP routes
+  registerAegisRoutes(app);
 
   // Telegram webhook endpoint
   app.post("/api/telegram/webhook", async (req, res) => {

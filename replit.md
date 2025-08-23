@@ -27,6 +27,8 @@ Interface language: Japanese for dashboard and user-facing components
 - **Transport Layer**: Platform-agnostic transport system with automatic failover (Telegram → Email → Webhook)
 - **Module System**: Microkernel architecture with hot-swappable modules and registry pattern
 - **API Design**: RESTful endpoints with structured error handling and request logging middleware
+- **Cryptography**: Aegis-PGP Core integration with SEIPDv2, AES-256-OCB, and OpenPGP v6 standards
+- **Dual Deployment**: Library mode (npm package) and standalone service mode for flexibility
 
 ## Database Design
 - **Primary Database**: PostgreSQL accessed via Neon Database serverless connection
@@ -41,6 +43,7 @@ Interface language: Japanese for dashboard and user-facing components
   - Stamps (user-created sticker data and metadata)
   - Assets (fonts, characters, backgrounds, effects, animations)
   - Stamp Creation Sessions (temporary user session data)
+  - Audit Events (Aegis-PGP cryptographic operations monitoring)
 
 ## Real-time Event System
 - **Event Bus**: Redis-based pub/sub messaging system with mock implementation for development

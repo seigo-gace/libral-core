@@ -1,0 +1,316 @@
+openapi: 3.0.3
+info:
+  title: Aegis-PGP Core API
+  version: 1.0.0
+  description: Modern OpenPGP implementation with Context-Lock, SEIPDv2, and platform-agnostic transport
+servers:
+  - url: http://localhost:8787
+    description: Development server
+paths:
+  /v1/encrypt:
+    post:
+      summary: Encrypt data (SEIPDv2 + AES-256-OCB / v6 key)
+      description: Encrypts plaintext data using modern OpenPGP v6 with SEIPDv2 and AES-256-OCB
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [recipient, data, policyId]
+              properties:
+                recipient:
+                  type: string
+                  description: "Recipient email or fingerprint"
+                  example: "user@example.com"
+                data:
+                  type: string
+                  format: byte
+                  description: "Base64 encoded plaintext data"
+                policyId:
+                  type: string
+                  enum: [modern-strong, compat, backup-longterm]
+                  description: "Encryption policy to use"
+                  example: "modern-strong"
+      responses:
+        "200":
+          description: Encryption successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pgp:
+                    type: string
+                    format: byte
+                    description: "Base64 encoded encrypted PGP message"
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Error
+
+  /v1/decrypt:
+    post:
+      summary: Decrypt PGP data
+      description: Decrypts OpenPGP encrypted data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [blob, policyId]
+              properties:
+                blob:
+                  type: string
+                  format: byte
+                  description: "Base64 encoded PGP encrypted data"
+                policyId:
+                  type: string
+                  description: "Policy ID for decryption context"
+      responses:
+        "200":
+          description: Decryption successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plain:
+                    type: string
+                    format: byte
+                    description: "Base64 encoded decrypted plaintext"
+
+  /v1/sign:
+    post:
+      summary: Create detached signature with Context-Lock notations
+      description: Creates a detached signature with critical Context-Lock notations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [data]
+              properties:
+                data:
+                  type: string
+                  format: byte
+                  description: "Base64 encoded data to sign"
+                ctxLabels:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: "Context-Lock labels (aegis.policy, aegis.sender, etc.)"
+                  example:
+                    aegis.policy: "modern-strong"
+                    aegis.sender: "ABC123..."
+                    aegis.app: "libral-core@1.0"
+      responses:
+        "200":
+          description: Signing successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sig:
+                    type: string
+                    format: byte
+                    description: "Base64 encoded detached signature"
+
+  /v1/verify:
+    post:
+      summary: Verify detached signature with Context-Lock enforcement
+      description: Verifies a detached signature and can enforce Context-Lock requirements
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [data, sig]
+              properties:
+                data:
+                  type: string
+                  format: byte
+                  description: "Base64 encoded original data"
+                sig:
+                  type: string
+                  format: byte
+                  description: "Base64 encoded detached signature"
+                requireContext:
+                  type: boolean
+                  default: true
+                  description: "Whether to require Context-Lock notations"
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    description: "Whether signature is valid"
+                  details:
+                    type: object
+                    description: "Additional verification details"
+
+  /v1/wkd-path:
+    get:
+      summary: Compute WKD path from email
+      description: Computes the Web Key Directory path for a given email address
+      parameters:
+        - in: query
+          name: email
+          required: true
+          schema:
+            type: string
+            format: email
+          description: "Email address to compute WKD path for"
+          example: "user@example.com"
+      responses:
+        "200":
+          description: WKD path computed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "WKD path for the email"
+                    example: "/.well-known/openpgpkey/hu/abc123..."
+
+  /v1/inspect:
+    post:
+      summary: Inspect PGP blob (best-effort analysis)
+      description: Analyzes a PGP blob and returns metadata information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [blob]
+              properties:
+                blob:
+                  type: string
+                  format: byte
+                  description: "Base64 encoded PGP data to inspect"
+      responses:
+        "200":
+          description: Inspection completed
+          content:
+            application/json:
+              schema:
+                type: object
+                description: "PGP blob analysis results"
+
+  /v1/send:
+    post:
+      summary: Send encrypted data via transport layer
+      description: Sends data through the platform-agnostic transport system with automatic failover
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [to, body, metadata]
+              properties:
+                to:
+                  type: string
+                  description: "Destination (Telegram ID, email, webhook URL)"
+                  example: "user@example.com"
+                subject:
+                  type: string
+                  description: "Optional subject line"
+                body:
+                  type: string
+                  format: byte
+                  description: "Base64 encoded encrypted data"
+                metadata:
+                  type: object
+                  required: [tenant_id, usecase, sensitivity, size_bytes, idempotency_key]
+                  properties:
+                    tenant_id:
+                      type: string
+                      example: "default"
+                    usecase:
+                      type: string
+                      example: "secure-mail"
+                    sensitivity:
+                      type: string
+                      enum: [low, med, high]
+                      example: "med"
+                    size_bytes:
+                      type: integer
+                      example: 1048576
+                    idempotency_key:
+                      type: string
+                      example: "req-2025-08-12345"
+      responses:
+        "200":
+          description: Sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  transport:
+                    type: string
+                    enum: [telegram, email, webhook]
+                  id:
+                    type: string
+        "202":
+          description: Queued for retry
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "QUEUED_FOR_RETRY"
+
+  /v1/health:
+    get:
+      summary: Health check endpoint
+      description: Returns service health status
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  ts:
+                    type: integer
+                    description: "Current timestamp"
+                  uptime:
+                    type: number
+                    description: "Process uptime in seconds"
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: "Error message"

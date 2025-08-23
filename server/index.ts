@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // ★ Router 初期化（監査・アダプタ登録・YAML読込）
+  // Initialize transport system
   initTransport();
   
   const server = await registerRoutes(app);

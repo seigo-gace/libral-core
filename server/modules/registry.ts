@@ -1,11 +1,13 @@
 // server/modules/registry.ts
 import { StampModule, stampCreatorModule } from "./stamp-creator";
+import { aegisPgpModule } from "./aegis-pgp";
 
 export class ModuleRegistry {
   private modules = new Map<string, StampModule>();
 
   constructor() {
     this.registerModule(stampCreatorModule);
+    this.registerModule(aegisPgpModule);
   }
 
   registerModule(module: StampModule) {

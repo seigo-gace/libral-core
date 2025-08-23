@@ -2,35 +2,61 @@
 import { TransportRouter } from "./router";
 import { loadRoutingConfig } from "./policy";
 import { TelegramAdapter } from "../../adapters/telegram";
-import { EmailAdapter }    from "../../adapters/email";
-import { WebhookAdapter }  from "../../adapters/webhook";
+import { EmailAdapter } from "../../adapters/email";
+import { WebhookAdapter } from "../../adapters/webhook";
 
 let _router: TransportRouter | null = null;
 
-// 既存のイベント基盤へ合わせて監査イベントを流す
+// Audit event emission - integrate with existing event system
 const emitAudit = (evt: any) => {
-  // 例）Redis PubSub / WebSocket / DB保存など
-  // 既存の events サービスがあるならそこへ publish してください
-  // ここではダミー（本番は差し替え）
-  console.log(`[AUDIT] ${JSON.stringify(evt)}`);
+  console.log(`[TRANSPORT] ${evt.type}:`, JSON.stringify(evt, null, 2));
+  // TODO: Integrate with existing eventService.emit() or Redis publish
+  // For now, we'll just log. In production, this should publish to Redis/WebSocket
 };
 
 export function getTransportRouter(): TransportRouter {
-  if (!_router) throw new Error("TransportRouter not initialized");
+  if (!_router) {
+    throw new Error("Transport router not initialized. Call initTransport() first.");
+  }
   return _router;
 }
 
 export function initTransport(): void {
-  if (_router) return;
+  if (_router) {
+    console.log("[TRANSPORT] Router already initialized");
+    return;
+  }
 
-  const cfg = loadRoutingConfig();
-
-  const telegram = new TelegramAdapter(
-    process.env.TELEGRAM_BOT_TOKEN || "",
-    (to) => to // 必要なら userId 変換ロジックを注入
-  );
-  const email   = new EmailAdapter(process.env.SMTP_URL, process.env.MAIL_FROM);
-  const webhook = new WebhookAdapter();
-
-  _router = new TransportRouter([telegram, email, webhook], cfg, emitAudit);
+  console.log("[TRANSPORT] Initializing transport system...");
+  
+  try {
+    const config = loadRoutingConfig();
+    
+    // Initialize adapters with environment configuration
+    const telegramAdapter = new TelegramAdapter(
+      process.env.TELEGRAM_BOT_TOKEN || "",
+      (to: string) => to // Simple identity function, can be enhanced for user ID resolution
+    );
+    
+    const emailAdapter = new EmailAdapter(
+      process.env.SMTP_URL,
+      process.env.MAIL_FROM || "Libral Core <no-reply@example.com>"
+    );
+    
+    const webhookAdapter = new WebhookAdapter();
+    
+    // Create router with all adapters
+    _router = new TransportRouter(
+      [telegramAdapter, emailAdapter, webhookAdapter],
+      config,
+      emitAudit
+    );
+    
+    console.log("[TRANSPORT] Router initialized with adapters:", 
+      [telegramAdapter, emailAdapter, webhookAdapter].map(a => a.name()));
+    
+  } catch (error) {
+    console.error("[TRANSPORT] Failed to initialize transport system:", error);
+    throw error;
+  }
 }
