@@ -181,6 +181,10 @@ async def health_check():
 # Include routers
 app.include_router(gpg_router)
 
+# Include marketplace router
+from libral_core.modules.marketplace.router import router as marketplace_router
+app.include_router(marketplace_router)
+
 # Development server
 if __name__ == "__main__":
     uvicorn.run(
