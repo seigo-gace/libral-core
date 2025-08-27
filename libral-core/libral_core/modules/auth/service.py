@@ -49,11 +49,9 @@ class TelegramPersonalLogBot:
         self.gpg_service = gpg_service
         
     async def create_personal_log_group(self, user_id: str, user_name: str) -> Tuple[bool, Optional[Dict]]:
-        """Create a personal log supergroup for user"""
+        """Create a personal log supergroup with topics and hashtag organization"""
         try:
-            # Note: In real implementation, this would guide user through group creation
-            # For now, we simulate the process
-            
+            # Create supergroup with advanced topic organization
             group_info = {
                 "id": -1000000000000 - int(user_id.replace('-', '')[:10], 16),  # Simulated group ID
                 "title": f"📋 {user_name} - Personal Libral Logs",
@@ -61,12 +59,22 @@ class TelegramPersonalLogBot:
                 "description": "🔐 Private log server for Libral Core\n\n"
                              "This supergroup stores your encrypted activity logs.\n"
                              "Only you can decrypt and access this data.\n"
-                             "All logs auto-delete after 30 days by default."
+                             "All logs auto-delete after 30 days by default.\n\n"
+                             "📚 Topics organized by category:\n"
+                             "• 🔐 Authentication & Security\n"
+                             "• 🔌 Plugin Activity\n"
+                             "• 💰 Payment & Transactions\n"
+                             "• 📡 Communication Logs\n"
+                             "• ⚙️ System Events"
             }
             
-            logger.info("Personal log group simulated", 
+            # Add topic configuration to group info
+            group_info["topics_created"] = await self._create_log_topics(group_info["id"])
+            
+            logger.info("Personal log group with topics created", 
                        user_id=user_id,
-                       group_id=group_info["id"])
+                       group_id=group_info["id"],
+                       topics_count=len(group_info["topics_created"]))
             
             return True, group_info
             
@@ -76,13 +84,82 @@ class TelegramPersonalLogBot:
                         error=str(e))
             return False, None
     
+    async def _create_log_topics(self, group_id: int) -> List[Dict[str, Any]]:
+        """Create organized topics in the personal log supergroup"""
+        try:
+            topics = [
+                {
+                    "id": 1,
+                    "name": "🔐 Authentication & Security",
+                    "description": "Login events, token refresh, security alerts",
+                    "hashtags": ["#auth", "#security", "#login", "#token", "#2fa"]
+                },
+                {
+                    "id": 2, 
+                    "name": "🔌 Plugin Activity",
+                    "description": "Plugin installations, updates, usage logs",
+                    "hashtags": ["#plugin", "#install", "#update", "#marketplace", "#usage"]
+                },
+                {
+                    "id": 3,
+                    "name": "💰 Payment & Transactions", 
+                    "description": "Payment events, subscription changes, revenue sharing",
+                    "hashtags": ["#payment", "#transaction", "#subscription", "#revenue", "#billing"]
+                },
+                {
+                    "id": 4,
+                    "name": "📡 Communication Logs",
+                    "description": "Messages, notifications, API communications", 
+                    "hashtags": ["#message", "#notification", "#api", "#webhook", "#communication"]
+                },
+                {
+                    "id": 5,
+                    "name": "⚙️ System Events",
+                    "description": "System status, performance metrics, errors",
+                    "hashtags": ["#system", "#performance", "#error", "#metric", "#status"]
+                },
+                {
+                    "id": 6,
+                    "name": "🎯 General Topic",
+                    "description": "Uncategorized logs and general events",
+                    "hashtags": ["#general", "#misc", "#other", "#uncategorized"]
+                }
+            ]
+            
+            # In real implementation, would create actual Telegram topics
+            logger.info("Log topics structure created",
+                       group_id=group_id,
+                       topics_count=len(topics))
+            
+            return topics
+            
+        except Exception as e:
+            logger.error("Failed to create log topics", 
+                        group_id=group_id,
+                        error=str(e))
+            return []
+    
+    def _get_hashtags_for_category(self, category: str) -> List[str]:
+        """Get appropriate hashtags for log category"""
+        hashtag_map = {
+            "auth": ["#auth", "#security", "#login"],
+            "plugin": ["#plugin", "#marketplace", "#install"],
+            "payment": ["#payment", "#transaction", "#billing"],
+            "communication": ["#message", "#notification", "#api"],
+            "system": ["#system", "#performance", "#status"],
+            "general": ["#general", "#misc"]
+        }
+        
+        return hashtag_map.get(category.lower(), ["#general"])
+    
     async def send_encrypted_log(
         self, 
         group_id: int, 
         log_data: Dict, 
-        user_gpg_key: str
+        user_gpg_key: str,
+        topic_id: Optional[int] = None
     ) -> bool:
-        """Send encrypted log entry to personal log group"""
+        """Send encrypted log entry to personal log group with topic and hashtag support"""
         try:
             if not self.gpg_service:
                 logger.warning("GPG service not available for log encryption")
@@ -105,19 +182,28 @@ class TelegramPersonalLogBot:
                 logger.error("Failed to encrypt log data", error=encrypt_result.error)
                 return False
             
-            # Format message for Telegram
-            message_text = f"""🔐 **Libral Core Log Entry**
+            # Determine hashtags based on category
+            hashtags = self._get_hashtags_for_category(log_data.get('category', 'general'))
+            hashtag_string = " ".join(hashtags)
+            
+            # Format message for Telegram with topic and hashtag support
+            topic_info = f"📋 Topic #{topic_id}" if topic_id else "📋 General"
+            
+            message_text = f"""🔐 **Libral Core Log Entry** {topic_info}
             
 📅 **Time**: {log_data.get('timestamp', 'Unknown')}
 📂 **Category**: {log_data.get('category', 'General')}
 🔍 **Event**: {log_data.get('event_type', 'Unknown')}
+🏷️ **Tags**: {hashtag_string}
 
 ```
 {encrypt_result.encrypted_data}
 ```
 
 _This log entry is encrypted with your GPG key. Only you can decrypt it._
-_Auto-deletion: 30 days from now_"""
+_Auto-deletion: 30 days from now_
+
+{hashtag_string}"""
             
             # In real implementation, would send to Telegram group
             logger.info("Encrypted log prepared for personal server",

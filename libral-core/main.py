@@ -92,6 +92,14 @@ app = FastAPI(
     - **Zero Personal Data Storage** on central servers
     - **Complete User Data Sovereignty** and GDPR compliance
     
+    ### Communication Gateway (Week 4)
+    - **Multi-Protocol Messaging** with Telegram, Email, and Webhook support
+    - **Authenticated Routing** using Week 3 authentication system
+    - **Topic & Hashtag Organization** in personal log servers
+    - **GPG-Encrypted Transport** for sensitive communications
+    - **Privacy-First Notifications** with user preference controls
+    - **Personal Log Integration** for complete message audit trails
+    
     ## Privacy-First Architecture
     
     - 🔐 **No Personal Data Storage**: All user data encrypted to personal Telegram groups
@@ -101,8 +109,8 @@ app = FastAPI(
     
     ## Development Roadmap
     
-    - **Week 1-3**: GPG, Marketplace & Authentication ✅ (Current)
-    - **Week 4-5**: Communication Gateway & Event Management  
+    - **Week 1-4**: GPG, Marketplace, Authentication & Communication ✅ (Current)
+    - **Week 5**: Event Management & Real-time Systems  
     - **Week 6-7**: Payments & API Hub integration
     - **Week 8**: Libral AI Agent initial connection
     """,
@@ -202,6 +210,10 @@ app.include_router(marketplace_router)
 # Include authentication router
 from libral_core.modules.auth.router import router as auth_router
 app.include_router(auth_router)
+
+# Include communication router
+from libral_core.modules.communication.router import router as communication_router
+app.include_router(communication_router)
 
 # Development server
 if __name__ == "__main__":
