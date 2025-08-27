@@ -1,12 +1,28 @@
 # Overview
 
-This is Libral Core, a sophisticated microkernel-based platform with event-driven architecture and platform-agnostic transport layer. The system serves as both a centralized monitoring and management platform for various microservices and a creative stamp creation platform. It includes a magical stamp creation interface where users can craft personalized Telegram stickers using AI-suggested emojis, customizable fonts, characters, backgrounds, and effects. The platform features real-time monitoring capabilities with WebSocket connections, comprehensive system health tracking, modular transport system supporting Telegram/Email/Webhook with automatic failover, and a modern React-based dashboard interface with Japanese localization.
+This is Libral Core, a sophisticated microkernel-based platform designed for complete privacy-first architecture. The system serves as the foundation for G-ACE.inc TGAXIS Libral Platform, featuring revolutionary user data sovereignty through Telegram personal log servers. Currently implemented as a Node.js prototype, the system will undergo complete reconstruction using Python + FastAPI to eliminate legacy constraints and achieve optimal performance.
+
+## Current Status (Prototype Phase)
+- ✅ Node.js/TypeScript microkernel architecture with module registry
+- ✅ Aegis-PGP cryptographic system with SEIPDv2/AES-256-OCB
+- ✅ Platform-agnostic transport layer (Telegram→Email→Webhook failover)
+- ✅ Real-time monitoring with WebSocket connections
+- ✅ Creative stamp creation system with AI integration
+
+## Migration to Production (Python + FastAPI)
+Complete zero-based reconstruction planned for 6-week development cycle:
+- Week 1-2: GPG & Authentication modules
+- Week 3-4: Communication Gateway & Event Management
+- Week 5-6: Payments & API Hub integration
+- Week 7-8: Libral AI Agent initial connection
 
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
-Technical design approach: Microkernel architecture with event-driven design
+Technical design approach: Privacy-first microkernel architecture with event-driven design
 Interface language: Japanese for dashboard and user-facing components
+Development strategy: Zero-based reconstruction with Python + FastAPI (6-week roadmap)
+Privacy model: User data sovereignty via Telegram personal log servers (no central storage)
 
 # System Architecture
 
