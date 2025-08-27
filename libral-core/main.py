@@ -100,6 +100,14 @@ app = FastAPI(
     - **Privacy-First Notifications** with user preference controls
     - **Personal Log Integration** for complete message audit trails
     
+    ### Event Management System (Week 5)
+    - **Real-Time Event Processing** with async queue system
+    - **Personal Server Admin Buttons** for easy Telegram management
+    - **Storage & Knowledge Base** expansion of personal log servers
+    - **Minimal Permission System** for maximum security
+    - **Event Categorization** with topic and hashtag integration
+    - **System Health Monitoring** with privacy-compliant metrics
+    
     ## Privacy-First Architecture
     
     - 🔐 **No Personal Data Storage**: All user data encrypted to personal Telegram groups
@@ -109,8 +117,7 @@ app = FastAPI(
     
     ## Development Roadmap
     
-    - **Week 1-4**: GPG, Marketplace, Authentication & Communication ✅ (Current)
-    - **Week 5**: Event Management & Real-time Systems  
+    - **Week 1-5**: GPG, Marketplace, Authentication, Communication & Events ✅ (Current)
     - **Week 6-7**: Payments & API Hub integration
     - **Week 8**: Libral AI Agent initial connection
     """,
@@ -214,6 +221,10 @@ app.include_router(auth_router)
 # Include communication router
 from libral_core.modules.communication.router import router as communication_router
 app.include_router(communication_router)
+
+# Include events router
+from libral_core.modules.events.router import router as events_router
+app.include_router(events_router)
 
 # Development server
 if __name__ == "__main__":
