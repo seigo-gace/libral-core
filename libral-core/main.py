@@ -108,6 +108,14 @@ app = FastAPI(
     - **Event Categorization** with topic and hashtag integration
     - **System Health Monitoring** with privacy-compliant metrics
     
+    ### Payment & Billing System (Week 6)
+    - **Telegram Stars Integration** with instant payment processing
+    - **Encrypted Billing Logs** in personal log servers
+    - **Plugin Developer Revenue Sharing** with automatic distribution
+    - **Multi-Currency Support** with privacy-first billing
+    - **GDPR-Compliant Payment Data** handling with user control
+    - **Subscription Management** with personal server integration
+    
     ## Privacy-First Architecture
     
     - 🔐 **No Personal Data Storage**: All user data encrypted to personal Telegram groups
@@ -117,8 +125,8 @@ app = FastAPI(
     
     ## Development Roadmap
     
-    - **Week 1-5**: GPG, Marketplace, Authentication, Communication & Events ✅ (Current)
-    - **Week 6-7**: Payments & API Hub integration
+    - **Week 1-6**: GPG, Marketplace, Authentication, Communication, Events & Payments ✅ (Current)
+    - **Week 7**: API Hub & External Integration
     - **Week 8**: Libral AI Agent initial connection
     """,
     version="1.0.0",
@@ -225,6 +233,10 @@ app.include_router(communication_router)
 # Include events router
 from libral_core.modules.events.router import router as events_router
 app.include_router(events_router)
+
+# Include payments router
+from libral_core.modules.payments.router import router as payments_router
+app.include_router(payments_router)
 
 # Development server
 if __name__ == "__main__":
