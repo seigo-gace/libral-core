@@ -69,14 +69,28 @@ app = FastAPI(
     description="""
     G-ACE.inc TGAXIS Libral Platform Core
     
-    ## Week 1: GPG Cryptographic Module
+    ## Week 1-3: Foundation Modules Complete
     
-    This is the foundation security module implementing:
+    ### GPG Cryptographic Module (Week 1)
     - **GPG Encryption/Decryption** with modern policies (SEIPDv2/AES-256-OCB)
     - **Context-Lock Signatures** for operational security
     - **OpenPGP v6** key support with Ed25519/RSA-4096
     - **Web Key Directory (WKD)** for automated key discovery
     - **.env.gpg** encrypted configuration management
+    
+    ### Plugin Marketplace (Week 2)
+    - **Secure Plugin Discovery** with privacy protection
+    - **GPG-Verified Installation** with signature validation
+    - **Sandboxed Execution** environment with permission control
+    - **Revenue Sharing** framework for plugin developers
+    - **Anonymous Operations** with local plugin registry
+    
+    ### Authentication System (Week 3)
+    - **Telegram OAuth Integration** with privacy-first design
+    - **Personal Log Servers** in user-owned Telegram groups
+    - **GPG-Encrypted Sessions** with Context-Lock tokens
+    - **Zero Personal Data Storage** on central servers
+    - **Complete User Data Sovereignty** and GDPR compliance
     
     ## Privacy-First Architecture
     
@@ -87,10 +101,10 @@ app = FastAPI(
     
     ## Development Roadmap
     
-    - **Week 1-2**: GPG & Authentication modules ✅ (Current)
-    - **Week 3-4**: Communication Gateway & Event Management
-    - **Week 5-6**: Payments & API Hub integration
-    - **Week 7-8**: Libral AI Agent initial connection
+    - **Week 1-3**: GPG, Marketplace & Authentication ✅ (Current)
+    - **Week 4-5**: Communication Gateway & Event Management  
+    - **Week 6-7**: Payments & API Hub integration
+    - **Week 8**: Libral AI Agent initial connection
     """,
     version="1.0.0",
     docs_url="/docs",
@@ -184,6 +198,10 @@ app.include_router(gpg_router)
 # Include marketplace router
 from libral_core.modules.marketplace.router import router as marketplace_router
 app.include_router(marketplace_router)
+
+# Include authentication router
+from libral_core.modules.auth.router import router as auth_router
+app.include_router(auth_router)
 
 # Development server
 if __name__ == "__main__":

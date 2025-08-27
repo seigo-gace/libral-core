@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.11"
 dependencies = [
+    "aiogram>=3.22.0",
     "cryptography>=45.0.6",
     "fastapi>=0.116.1",
     "poetry>=2.1.4",
@@ -11,6 +12,7 @@ dependencies = [
     "pydantic-settings>=2.10.1",
     "python-dotenv>=1.1.1",
     "python-gnupg>=0.5.5",
+    "python-jose>=3.5.0",
     "redis>=6.4.0",
     "sqlalchemy>=2.0.43",
     "structlog>=25.4.0",
