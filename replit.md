@@ -23,6 +23,13 @@ This is Libral Core, a sophisticated microkernel-based platform designed for com
 - Week 1-7: GPG, Marketplace, Authentication, Communication, Events, Payments & API Hub ✅ **COMPLETED**
 - Week 8: Libral AI Agent initial connection (Final)
 
+## Project Cleanup Status
+- ✅ 2025年8月28日: 新システム完成に伴う不要ファイル整理完了
+  - 開発プロセス報告書をarchive/reports/に移動
+  - 古いNode.js設定ファイルをarchive/old-configs/に移動
+  - Python一時ファイルとプラグインキャッシュを削除
+  - .gitignoreを更新してPythonファイルとアーカイブを除外
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
