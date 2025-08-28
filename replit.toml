@@ -1,0 +1,40 @@
+[deployment]
+# Replit Deployment Configuration for Libral Core
+build = ["npm", "run", "build"]
+run = ["npm", "start"]
+
+# Production environment variables
+[deployment.environment]
+NODE_ENV = "production"
+
+# Autoscale deployment configuration (recommended for web applications)
+[deployment.autoscale]
+min = 0
+max = 10
+
+# Port configuration
+[deployment.port]
+http = "0.0.0.0:5000"
+
+# Health check configuration
+[deployment.health]
+path = "/api/system/metrics"
+timeout = "30s"
+
+# Build configuration
+[build]
+main = "server/index.ts"
+run = "npm start"
+
+# Development configuration
+[dev]
+main = "server/index.ts"
+run = "npm run dev"
+
+# Tools configuration
+[tools]
+packager = "npm"
+
+# Nix configuration
+[nix]
+channel = "stable-24_05"
