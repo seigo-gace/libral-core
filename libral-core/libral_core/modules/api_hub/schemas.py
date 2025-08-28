@@ -74,8 +74,8 @@ class APICredential(BaseModel):
     
     # Access control
     status: APIStatus = Field(default=APIStatus.ACTIVE)
-    allowed_origins: List[str] = Field(default_factory=list, max_items=20)
-    ip_whitelist: List[str] = Field(default_factory=list, max_items=50)
+    allowed_origins: List[str] = Field(default_factory=list, max_length=20)
+    ip_whitelist: List[str] = Field(default_factory=list, max_length=50)
     
     # Usage limits
     daily_quota: Optional[int] = Field(default=None, ge=0, description="Daily API call limit")
@@ -110,8 +110,8 @@ class APICredentialCreate(BaseModel):
     additional_config: Optional[Dict[str, Any]] = Field(default=None)
     
     # Access control
-    allowed_origins: List[str] = Field(default_factory=list, max_items=20)
-    ip_whitelist: List[str] = Field(default_factory=list, max_items=50)
+    allowed_origins: List[str] = Field(default_factory=list, max_length=20)
+    ip_whitelist: List[str] = Field(default_factory=list, max_length=50)
     
     # Usage limits
     daily_quota: Optional[int] = Field(default=None, ge=0)
@@ -248,7 +248,7 @@ class ThirdPartyIntegration(BaseModel):
     
     # Security
     shared_secret: Optional[str] = Field(default=None, description="Webhook verification secret")
-    oauth_scopes: List[str] = Field(default_factory=list, max_items=20)
+    oauth_scopes: List[str] = Field(default_factory=list, max_length=20)
     
     # Status and health
     status: APIStatus = Field(default=APIStatus.ACTIVE)
@@ -368,7 +368,7 @@ class ServiceConnector(BaseModel):
     max_retries: int = Field(default=3, ge=0, le=10)
     
     # Load balancing
-    backup_urls: List[str] = Field(default_factory=list, max_items=5)
+    backup_urls: List[str] = Field(default_factory=list, max_length=5)
     failover_enabled: bool = Field(default=True)
     health_check_interval_minutes: int = Field(default=5, ge=1, le=60)
     

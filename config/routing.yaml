@@ -1,0 +1,44 @@
+# Libral Core Transport Routing Configuration
+# Defines routing policies for multi-protocol message delivery
+
+routing:
+  # Default routing priority: Telegram -> Email -> Webhook
+  default_priority:
+    - telegram
+    - email
+    - webhook
+  
+  # Failover settings
+  failover:
+    retry_count: 3
+    retry_delay_seconds: 5
+    timeout_seconds: 30
+  
+  # Route-specific configurations
+  routes:
+    system_alerts:
+      priority: [telegram, email]
+      required_delivery: true
+    
+    user_notifications:
+      priority: [telegram, webhook]
+      required_delivery: false
+    
+    payment_updates:
+      priority: [telegram, email, webhook]
+      required_delivery: true
+      encryption_required: true
+
+# Adapter configurations
+adapters:
+  telegram:
+    enabled: true
+    retry_count: 2
+  
+  email:
+    enabled: true
+    retry_count: 1
+    
+  webhook:
+    enabled: true
+    retry_count: 1
