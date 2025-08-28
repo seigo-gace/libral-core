@@ -5,16 +5,78 @@ server/public
 vite.config.ts.*
 *.tar.gz
 
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Database
+*.db
+*.sqlite
+
 # Python cache files
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 .Python
+*.egg-info/
+build/
+.coverage
 
 # Libral-core temporary files
 libral-core/tmp/
 libral-core/data/plugins/
+libral-core/.pytest_cache/
+
+# GPG temporary files
+*.gpg
+*.asc
+/tmp/libral_*
 
 # Archive directory (development history)
 archive/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+Thumbs.db
+.DS_Store?
+._*
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
