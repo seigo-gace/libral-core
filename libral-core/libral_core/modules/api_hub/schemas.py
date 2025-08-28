@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Any, Union
 from decimal import Decimal
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class APIProvider(str, Enum):
@@ -138,7 +138,7 @@ class APIUsage(BaseModel):
     # API call details
     provider: APIProvider
     endpoint: str = Field(..., max_length=500, description="API endpoint called")
-    method: str = Field(..., regex=r"^(GET|POST|PUT|DELETE|PATCH)$")
+    method: str = Field(..., pattern=r"^(GET|POST|PUT|DELETE|PATCH)$")
     
     # Request details
     request_size_bytes: Optional[int] = Field(default=None, ge=0)
@@ -202,7 +202,7 @@ class ExternalAPICall(BaseModel):
     # API details
     credential_id: str = Field(..., description="API credential to use")
     endpoint: str = Field(..., max_length=500)
-    method: str = Field(..., regex=r"^(GET|POST|PUT|DELETE|PATCH)$")
+    method: str = Field(..., pattern=r"^(GET|POST|PUT|DELETE|PATCH)$")
     
     # Request data
     headers: Optional[Dict[str, str]] = Field(default=None)
@@ -329,7 +329,7 @@ class APIHealthCheck(BaseModel):
     endpoint: str = Field(..., max_length=500)
     
     # Health status
-    status: str = Field(..., regex=r"^(healthy|degraded|unhealthy)$")
+    status: str = Field(..., pattern=r"^(healthy|degraded|unhealthy)$")
     response_time_ms: Optional[int] = Field(default=None, ge=0)
     status_code: Optional[int] = Field(default=None, ge=100, le=599)
     
@@ -385,7 +385,7 @@ class ServiceConnector(BaseModel):
     # Privacy compliance
     personal_data_handling: str = Field(
         default="encrypt",
-        regex=r"^(encrypt|anonymize|exclude)$",
+        pattern=r"^(encrypt|anonymize|exclude)$",
         description="How to handle personal data"
     )
     log_to_personal_server: bool = Field(default=True)

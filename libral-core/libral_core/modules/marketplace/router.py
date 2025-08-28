@@ -3,7 +3,7 @@ Plugin Marketplace FastAPI Router
 RESTful endpoints for plugin discovery, installation, and management
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
@@ -86,8 +86,8 @@ async def search_plugins(
     price_max: Optional[float] = Query(None, ge=0, description="Maximum price filter"),
     trusted_only: bool = Query(False, description="Show only trusted publishers"),
     featured_only: bool = Query(False, description="Show only featured plugins"),
-    sort_by: str = Query("relevance", regex="^(relevance|downloads|rating|updated|name|price)$"),
-    sort_order: str = Query("desc", regex="^(asc|desc)$"),
+    sort_by: str = Query("relevance", pattern="^(relevance|downloads|rating|updated|name|price)$"),
+    sort_order: str = Query("desc", pattern="^(asc|desc)$"),
     page: int = Query(1, ge=1, description="Page number"),
     per_page: int = Query(20, ge=1, le=100, description="Results per page"),
     service: MarketplaceService = Depends(get_marketplace_service)

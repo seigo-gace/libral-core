@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Any
 from decimal import Decimal
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class AuthProvider(str, Enum):
@@ -60,7 +60,7 @@ class TelegramAuthRequest(BaseModel):
     create_personal_log_server: bool = Field(default=True, description="Initialize personal log server")
     data_retention_policy: str = Field(default="user_controlled", description="Data retention preference")
     
-    @validator('auth_date')
+    @field_validator('auth_date')
     def validate_auth_date(cls, v):
         # Check auth date is recent (within 24 hours)
         current_time = datetime.utcnow().timestamp()
@@ -79,7 +79,7 @@ class UserProfile(BaseModel):
     display_name: str = Field(..., max_length=64, description="User display name")
     
     # User preferences (stored locally)
-    preferred_language: str = Field(default="ja", regex="^[a-z]{2}$")
+    preferred_language: str = Field(default="ja", pattern="^[a-z]{2}$")
     timezone: str = Field(default="Asia/Tokyo")
     role: UserRole = Field(default=UserRole.USER)
     
@@ -134,7 +134,7 @@ class AuthToken(BaseModel):
     user_id: str
     
     # Token properties
-    token_type: str = Field(default="session", regex="^(session|api|refresh)$")
+    token_type: str = Field(default="session", pattern="^(session|api|refresh)$")
     encrypted_payload: str = Field(..., description="GPG-encrypted token payload")
     
     # Lifecycle
@@ -153,7 +153,7 @@ class AuthToken(BaseModel):
     revoked_at: Optional[datetime] = Field(default=None)
     revocation_reason: Optional[str] = Field(default=None)
     
-    @validator('expires_at')
+    @field_validator('expires_at')
     def validate_expiry(cls, v, values):
         if 'created_at' in values and v <= values['created_at']:
             raise ValueError('Expiry time must be after creation time')
@@ -177,7 +177,7 @@ class SessionInfo(BaseModel):
     device_fingerprint: Optional[str] = Field(default=None)
     
     # Location (country-level only for privacy)
-    country_code: Optional[str] = Field(default=None, regex="^[A-Z]{2}$")
+    country_code: Optional[str] = Field(default=None, pattern="^[A-Z]{2}$")
     
     # Activity tracking
     requests_count: int = Field(default=0, ge=0)
@@ -199,7 +199,7 @@ class UserPreferences(BaseModel):
     
     # Interface preferences
     language: str = Field(default="ja")
-    theme: str = Field(default="dark", regex="^(light|dark|auto)$")
+    theme: str = Field(default="dark", pattern="^(light|dark|auto)$")
     timezone: str = Field(default="Asia/Tokyo")
     
     # Privacy preferences

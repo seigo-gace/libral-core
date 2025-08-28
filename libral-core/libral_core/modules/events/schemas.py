@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Any, Union
 from decimal import Decimal
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class EventCategory(str, Enum):
@@ -100,7 +100,7 @@ class Event(BaseModel):
 class EventCreate(BaseModel):
     """Event creation request"""
     
-    event_type: str = Field(..., regex=r"^[a-z_]+$", description="Event type identifier")
+    event_type: str = Field(..., pattern=r"^[a-z_]+$", description="Event type identifier")
     category: EventCategory
     title: str = Field(..., max_length=200)
     description: Optional[str] = Field(default=None, max_length=2000)
@@ -181,7 +181,7 @@ class SystemMetric(BaseModel):
     
     metric_id: str = Field(..., description="Unique metric identifier")
     metric_name: str = Field(..., description="Human-readable metric name")
-    metric_type: str = Field(..., regex=r"^(counter|gauge|histogram|summary)$")
+    metric_type: str = Field(..., pattern=r"^(counter|gauge|histogram|summary)$")
     
     # Metric value
     value: Union[int, float, str] = Field(..., description="Metric value")
@@ -205,7 +205,7 @@ class HealthCheck(BaseModel):
     
     check_id: str = Field(..., description="Health check identifier")
     component: str = Field(..., description="Component being checked")
-    status: str = Field(..., regex=r"^(healthy|degraded|unhealthy)$")
+    status: str = Field(..., pattern=r"^(healthy|degraded|unhealthy)$")
     
     # Check results
     response_time_ms: Optional[int] = Field(default=None, ge=0)
@@ -246,7 +246,7 @@ class PersonalServerSetupButton(BaseModel):
     
     # Privacy and security
     data_encryption_required: bool = Field(default=True)
-    minimum_security_level: str = Field(default="standard", regex=r"^(basic|standard|high)$")
+    minimum_security_level: str = Field(default="standard", pattern=r"^(basic|standard|high)$")
     
     # Feature configuration
     enable_storage: bool = Field(default=False)

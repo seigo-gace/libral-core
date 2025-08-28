@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Any, Union
 from decimal import Decimal
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class CommunicationChannel(str, Enum):
@@ -106,7 +106,7 @@ class MessageContent(BaseModel):
     self_destruct_seconds: Optional[int] = Field(default=None, ge=1)
     disable_preview: bool = Field(default=False)
     
-    @validator('text', 'html', 'markdown', 'encrypted_content', pre=True, always=True)
+    @field_validator('text', 'html', 'markdown', 'encrypted_content', pre=True, always=True)
     def validate_content_present(cls, v, values, field):
         """Ensure at least one content type is provided"""
         content_fields = ['text', 'html', 'markdown', 'encrypted_content', 'json_data']
@@ -198,8 +198,8 @@ class NotificationPreferences(BaseModel):
     disable_read_receipts: bool = Field(default=True)
     
     # Timing preferences
-    quiet_hours_start: Optional[str] = Field(default="22:00", regex=r"^\d{2}:\d{2}$")
-    quiet_hours_end: Optional[str] = Field(default="08:00", regex=r"^\d{2}:\d{2}$")
+    quiet_hours_start: Optional[str] = Field(default="22:00", pattern=r"^\d{2}:\d{2}$")
+    quiet_hours_end: Optional[str] = Field(default="08:00", pattern=r"^\d{2}:\d{2}$")
     timezone: str = Field(default="Asia/Tokyo")
     
     # Category-specific settings
@@ -220,7 +220,7 @@ class NotificationRequest(BaseModel):
     # Notification content
     title: str = Field(..., max_length=100)
     message: str = Field(..., max_length=1000)
-    notification_type: str = Field(..., regex=r"^[a-z_]+$", description="Notification category")
+    notification_type: str = Field(..., pattern=r"^[a-z_]+$", description="Notification category")
     
     # Presentation
     icon: Optional[str] = Field(default=None, description="Notification icon emoji or URL")

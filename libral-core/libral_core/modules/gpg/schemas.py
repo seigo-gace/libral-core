@@ -5,9 +5,9 @@ Type-safe API contracts for GPG operations
 
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class KeyType(str, Enum):
@@ -39,7 +39,7 @@ class EncryptRequest(BaseModel):
     armor: bool = Field(default=True, description="ASCII armor output")
     context_labels: Optional[Dict[str, str]] = Field(default=None)
     
-    @validator('recipients')
+    @field_validator('recipients')
     def recipients_not_empty(cls, v):
         if not v:
             raise ValueError('At least one recipient is required')

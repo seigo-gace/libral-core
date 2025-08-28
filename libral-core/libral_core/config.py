@@ -3,7 +3,8 @@ Configuration settings for Libral Core
 """
 
 from typing import Optional
-from pydantic import BaseSettings, Field
+from pydantic_settings import BaseSettings
+from pydantic import Field
 
 
 class Settings(BaseSettings):
@@ -38,8 +39,10 @@ class Settings(BaseSettings):
     paypal_client_id: Optional[str] = Field(default=None)
     paypal_client_secret: Optional[str] = Field(default=None)
     
-    class Config:
-        env_file = ".env"
+    model_config = {
+        "env_file": ".env",
+        "extra": "ignore"
+    }
 
 
 # Global settings instance

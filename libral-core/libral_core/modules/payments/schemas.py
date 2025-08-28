@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Any, Union
 from decimal import Decimal
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class PaymentStatus(str, Enum):
@@ -120,7 +120,7 @@ class PaymentCreate(BaseModel):
     
     # Transaction details
     description: str = Field(..., max_length=500)
-    item_type: str = Field(..., regex=r"^[a-z_]+$", description="Item type (plugin, subscription, etc.)")
+    item_type: str = Field(..., pattern=r"^[a-z_]+$", description="Item type (plugin, subscription, etc.)")
     item_id: Optional[str] = Field(default=None)
     
     # Revenue sharing
@@ -180,7 +180,7 @@ class TelegramStarsPayment(BaseModel):
     
     # Stars details
     total_amount: int = Field(..., gt=0, description="Total amount in Stars")
-    currency: str = Field(default="XTR", regex=r"^XTR$")
+    currency: str = Field(default="XTR", pattern=r"^XTR$")
     
     # Invoice details
     invoice_payload: str = Field(..., description="Invoice payload for verification")
@@ -210,7 +210,7 @@ class SubscriptionPlan(BaseModel):
     # Pricing
     price: Decimal = Field(..., gt=0)
     currency: CurrencyCode = Field(default=CurrencyCode.XTR)
-    billing_interval: str = Field(..., regex=r"^(monthly|yearly|weekly|daily)$")
+    billing_interval: str = Field(..., pattern=r"^(monthly|yearly|weekly|daily)$")
     
     # Features
     features: List[str] = Field(default_factory=list, max_items=20)
@@ -271,7 +271,7 @@ class Subscription(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     
-    @validator('current_period_end', pre=True, always=True)
+    @field_validator('current_period_end', pre=True, always=True)
     def set_period_end(cls, v, values):
         if v is None and 'current_period_start' in values:
             # Default to 1 month from start
@@ -301,7 +301,7 @@ class RevenueShare(BaseModel):
     
     # Payout details
     payout_method: Optional[str] = Field(default=None)
-    payout_schedule: str = Field(default="monthly", regex=r"^(daily|weekly|monthly|quarterly)$")
+    payout_schedule: str = Field(default="monthly", pattern=r"^(daily|weekly|monthly|quarterly)$")
     next_payout_date: Optional[datetime] = Field(default=None)
     
     # Context
@@ -325,7 +325,7 @@ class BillingRecord(BaseModel):
     user_id: str = Field(..., description="Billing record owner")
     
     # Record type
-    record_type: str = Field(..., regex=r"^(payment|subscription|refund|revenue_share)$")
+    record_type: str = Field(..., pattern=r"^(payment|subscription|refund|revenue_share)$")
     related_id: str = Field(..., description="Related payment/subscription ID")
     
     # Financial summary

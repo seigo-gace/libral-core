@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Any
 from decimal import Decimal
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class PluginCategory(str, Enum):
@@ -64,14 +64,14 @@ class PluginManifest(BaseModel):
     
     # Core Plugin Information
     name: str = Field(..., min_length=3, max_length=50)
-    id: str = Field(..., regex=r"^[a-z0-9-]+$", description="Unique plugin identifier")
-    version: str = Field(..., regex=r"^\d+\.\d+\.\d+$", description="Semantic version")
+    id: str = Field(..., pattern=r"^[a-z0-9-]+$", description="Unique plugin identifier")
+    version: str = Field(..., pattern=r"^\d+\.\d+\.\d+$", description="Semantic version")
     description: str = Field(..., min_length=10, max_length=500)
     category: PluginCategory
     
     # Developer Information
     developer_name: str = Field(..., max_length=100)
-    developer_email: str = Field(..., regex=r"^[^@]+@[^@]+\.[^@]+$")
+    developer_email: str = Field(..., pattern=r"^[^@]+@[^@]+\.[^@]+$")
     developer_website: Optional[str] = Field(default=None)
     
     # Technical Specifications
@@ -99,7 +99,7 @@ class PluginManifest(BaseModel):
     documentation: Optional[str] = Field(default=None)
     changelog: Optional[str] = Field(default=None)
     
-    @validator('tags')
+    @field_validator('tags')
     def validate_tags(cls, v):
         if v:
             # Normalize tags to lowercase and remove duplicates
@@ -156,7 +156,7 @@ class PluginInfo(BaseModel):
     screenshots: List[str] = Field(default_factory=list, max_items=5)
     icon_url: Optional[str] = Field(default=None)
     
-    @validator('revenue_share_developer', 'revenue_share_platform')
+    @field_validator('revenue_share_developer', 'revenue_share_platform')
     def validate_revenue_shares(cls, v, values):
         if v is not None and 'revenue_share_developer' in values and 'revenue_share_platform' in values:
             dev_share = values.get('revenue_share_developer', 0)
@@ -181,8 +181,8 @@ class PluginSearchRequest(BaseModel):
     featured_only: bool = Field(default=False)
     
     # Sorting and Pagination
-    sort_by: str = Field(default="relevance", regex="^(relevance|downloads|rating|updated|name|price)$")
-    sort_order: str = Field(default="desc", regex="^(asc|desc)$")
+    sort_by: str = Field(default="relevance", pattern="^(relevance|downloads|rating|updated|name|price)$")
+    sort_order: str = Field(default="desc", pattern="^(asc|desc)$")
     page: int = Field(default=1, ge=1)
     per_page: int = Field(default=20, ge=1, le=100)
 
