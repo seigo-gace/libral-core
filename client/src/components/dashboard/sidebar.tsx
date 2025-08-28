@@ -7,7 +7,6 @@ import {
   Database, 
   Container, 
   Route,
-  Sparkles,
   Menu,
   X
 } from "lucide-react";
@@ -17,7 +16,6 @@ import { Button } from "@/components/ui/button";
 
 const navigation = [
   { name: 'ダッシュボード', href: '/dashboard', icon: BarChart3 },
-  { name: 'スタンプ作成', href: '/stamp-creator', icon: Sparkles },
   { name: '通信ゲートウェイ', href: '#', icon: Route },
   { name: 'ユーザー管理', href: '#', icon: Users },
   { name: 'イベント管理', href: '#', icon: Bell },
