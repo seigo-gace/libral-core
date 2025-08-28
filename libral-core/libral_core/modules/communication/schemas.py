@@ -106,7 +106,7 @@ class MessageContent(BaseModel):
     self_destruct_seconds: Optional[int] = Field(default=None, ge=1)
     disable_preview: bool = Field(default=False)
     
-    @field_validator('text', 'html', 'markdown', 'encrypted_content', pre=True, always=True)
+    @field_validator('text', 'html', 'markdown', 'encrypted_content', mode="before", always=True)
     def validate_content_present(cls, v, values, field):
         """Ensure at least one content type is provided"""
         content_fields = ['text', 'html', 'markdown', 'encrypted_content', 'json_data']

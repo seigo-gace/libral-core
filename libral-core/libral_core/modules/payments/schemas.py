@@ -213,7 +213,7 @@ class SubscriptionPlan(BaseModel):
     billing_interval: str = Field(..., pattern=r"^(monthly|yearly|weekly|daily)$")
     
     # Features
-    features: List[str] = Field(default_factory=list, max_items=20)
+    features: List[str] = Field(default_factory=list, max_length=20)
     limitations: Dict[str, Any] = Field(default_factory=dict)
     
     # Access control
@@ -271,7 +271,7 @@ class Subscription(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     
-    @field_validator('current_period_end', pre=True, always=True)
+    @field_validator('current_period_end', mode="before", always=True)
     def set_period_end(cls, v, values):
         if v is None and 'current_period_start' in values:
             # Default to 1 month from start
@@ -339,7 +339,7 @@ class BillingRecord(BaseModel):
     
     # Categories for personal log organization
     category: str = Field(default="payment", description="Personal log category")
-    tags: List[str] = Field(default_factory=list, max_items=10)
+    tags: List[str] = Field(default_factory=list, max_length=10)
     
     # Retention and compliance
     retention_until: datetime = Field(..., description="Record retention expiry")
@@ -365,7 +365,7 @@ class InvoiceCreate(BaseModel):
     description: str = Field(..., max_length=1000)
     
     # Line items
-    line_items: List[Dict[str, Any]] = Field(..., min_items=1, max_items=50)
+    line_items: List[Dict[str, Any]] = Field(..., min_items=1, max_length=50)
     
     # Pricing
     subtotal: Decimal = Field(..., gt=0)

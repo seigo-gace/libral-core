@@ -93,7 +93,7 @@ class Event(BaseModel):
     log_to_personal_server: bool = Field(default=True)
     
     # Metadata
-    tags: List[str] = Field(default_factory=list, max_items=10)
+    tags: List[str] = Field(default_factory=list, max_length=10)
     context_labels: Dict[str, str] = Field(default_factory=dict)
 
 
@@ -121,7 +121,7 @@ class EventCreate(BaseModel):
     log_to_personal_server: bool = Field(default=True)
     
     # Metadata
-    tags: List[str] = Field(default_factory=list, max_items=10)
+    tags: List[str] = Field(default_factory=list, max_length=10)
     context_labels: Dict[str, str] = Field(default_factory=dict)
 
 
@@ -255,8 +255,8 @@ class PersonalServerSetupButton(BaseModel):
     
     # User guidance
     description: str = Field(..., max_length=300)
-    benefits: List[str] = Field(default_factory=list, max_items=5)
-    warnings: List[str] = Field(default_factory=list, max_items=3)
+    benefits: List[str] = Field(default_factory=list, max_length=5)
+    warnings: List[str] = Field(default_factory=list, max_length=3)
 
 
 class PersonalServerAdminRequest(BaseModel):
