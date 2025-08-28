@@ -116,6 +116,14 @@ app = FastAPI(
     - **GDPR-Compliant Payment Data** handling with user control
     - **Subscription Management** with personal server integration
     
+    ### API Hub & External Integration (Week 7)
+    - **Encrypted API Credential Management** with GPG protection
+    - **External API Usage Tracking** with cost management
+    - **Third-Party Service Integration** with privacy controls
+    - **Multi-Provider Support** (OpenAI, Anthropic, Google, AWS, etc.)
+    - **Personal Log Server API Logging** for complete audit trails
+    - **Rate Limiting & Quota Management** with user control
+    
     ## Privacy-First Architecture
     
     - 🔐 **No Personal Data Storage**: All user data encrypted to personal Telegram groups
@@ -125,8 +133,7 @@ app = FastAPI(
     
     ## Development Roadmap
     
-    - **Week 1-6**: GPG, Marketplace, Authentication, Communication, Events & Payments ✅ (Current)
-    - **Week 7**: API Hub & External Integration
+    - **Week 1-7**: GPG, Marketplace, Authentication, Communication, Events, Payments & API Hub ✅ (Current)
     - **Week 8**: Libral AI Agent initial connection
     """,
     version="1.0.0",
@@ -237,6 +244,10 @@ app.include_router(events_router)
 # Include payments router
 from libral_core.modules.payments.router import router as payments_router
 app.include_router(payments_router)
+
+# Include API Hub router
+from libral_core.modules.api_hub.router import router as api_hub_router
+app.include_router(api_hub_router)
 
 # Development server
 if __name__ == "__main__":
