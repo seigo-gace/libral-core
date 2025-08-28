@@ -1,6 +1,17 @@
-# Libral Core - Privacy-First Microkernel Platform
+# Libral Core - Complete Privacy-First Microkernel Platform
 
-A sophisticated microkernel-based platform designed for complete privacy-first architecture, serving as the foundation for G-ACE.inc TGAXIS Libral Platform.
+**Complete Libral Base Core System** - A sophisticated microkernel-based platform designed for total privacy-first architecture, serving as the comprehensive foundation for G-ACE.inc TGAXIS Libral Platform.
+
+## 🏗️ Complete System Architecture
+
+This repository contains the **entire Libral Core platform** including all layers and components:
+
+- **Frontend Dashboard** (React/TypeScript) - Real-time monitoring and user interface
+- **Backend API** (Node.js/Express) - RESTful services and WebSocket communication  
+- **Python FastAPI Modules** - Advanced cryptographic and plugin systems
+- **Library Module Layer** - Unified utilities and external service integration
+- **Shared Components** - Database schemas and type definitions
+- **Infrastructure** - CI/CD, security policies, and deployment configuration
 
 ## 🚀 Features
 
