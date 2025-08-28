@@ -83,11 +83,10 @@ export default function StampCreator() {
   // AI suggestions for emojis
   const suggestEmojisMutation = useMutation({
     mutationFn: async (data: { text: string; characterId?: string }) => {
-      const response = await apiRequest('/api/ai/suggest-emojis', {
+      return await apiRequest('/api/ai/suggest-emojis', {
         method: 'POST',
         body: JSON.stringify(data)
       });
-      return response.json();
     },
     onSuccess: (data) => {
       setSuggestedEmojis(data.emojis || []);
@@ -97,11 +96,10 @@ export default function StampCreator() {
   // Generate preview
   const generatePreviewMutation = useMutation({
     mutationFn: async (data: typeof stampData) => {
-      const response = await apiRequest('/api/stamps/preview', {
+      return await apiRequest('/api/stamps/preview', {
         method: 'POST',
         body: JSON.stringify(data)
       });
-      return response.json();
     },
     onSuccess: (data) => {
       setPreview(data);
@@ -112,11 +110,10 @@ export default function StampCreator() {
   const createStampMutation = useMutation({
     mutationFn: async (data: typeof stampData) => {
       console.log("Sending stamp creation request:", data);
-      const response = await apiRequest('/api/stamps/create', {
+      const result = await apiRequest('/api/stamps/create', {
         method: 'POST',
         body: JSON.stringify(data)
       });
-      const result = await response.json();
       console.log("Stamp creation response:", result);
       return result;
     },
