@@ -10,15 +10,18 @@ import {
   Menu,
   X,
   Star,
-  Settings
+  Settings,
+  Package
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const navigation = [
-  { name: 'ダッシュボード', href: '/dashboard', icon: BarChart3 },
+  { name: 'HUDダッシュボード', href: '/dashboard-hud', icon: BarChart3 },
+  { name: 'HUDユーザーメニュー', href: '/hud-user-menu', icon: Package },
   { name: '管理ダッシュボード', href: '/admin-dashboard', icon: Settings },
+  { name: '開発ダッシュボード', href: '/dashboard', icon: Users },
   { name: 'ユーザーメニュー', href: '/user-menu', icon: Users },
   { name: '通信ゲートウェイ', href: '/communication-gateway', icon: Route },
   { name: 'ユーザー管理', href: '/user-management', icon: Users },

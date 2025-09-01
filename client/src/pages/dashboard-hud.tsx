@@ -23,18 +23,13 @@ interface SystemMetrics {
   apiRequestsPerMinute: string;
 }
 
-export default function Dashboard() {
+export default function DashboardHud() {
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { data: metrics } = useQuery<SystemMetrics>({
     queryKey: ['/api/system/metrics'],
     refetchInterval: 5000
-  });
-
-  const { data: modules } = useQuery({
-    queryKey: ['/api/modules'],
-    refetchInterval: 10000
   });
 
   const handleRefresh = async () => {
@@ -53,7 +48,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-gray-900 text-white overflow-hidden">
-      {/* Mobile-First HUD Interface */}
       <div className="p-4 space-y-4 max-w-md mx-auto lg:max-w-6xl">
         
         {/* Header */}
@@ -158,7 +152,7 @@ export default function Dashboard() {
               {/* Status Panel */}
               <HudCard variant="secondary" className="lg:col-span-2">
                 <div className="space-y-3">
-                  <h3 className="text-lg font-bold text-blue-400 mb-4">{">>> HUD風近未来素材 <<<"}</h3>
+                  <h3 className="text-lg font-bold text-blue-400 mb-4">HUD風近未来素材</h3>
                   
                   <div className="grid grid-cols-2 gap-3">
                     {[

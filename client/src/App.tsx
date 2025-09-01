@@ -4,8 +4,10 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Dashboard from "@/pages/dashboard";
+import DashboardHud from "@/pages/dashboard-hud";
 import AdminDashboard from "@/pages/admin-dashboard";
 import UserMenu from "@/pages/user-menu";
+import HudUserMenu from "@/pages/hud-user-menu";
 import CommunicationGateway from "@/pages/communication-gateway";
 import UserManagement from "@/pages/user-management";
 import EventManagement from "@/pages/event-management";
@@ -19,10 +21,12 @@ import NotFound from "@/pages/not-found";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Dashboard} />
+      <Route path="/" component={DashboardHud} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/dashboard-hud" component={DashboardHud} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/user-menu" component={UserMenu} />
+      <Route path="/hud-user-menu" component={HudUserMenu} />
       <Route path="/communication-gateway" component={CommunicationGateway} />
       <Route path="/user-management" component={UserManagement} />
       <Route path="/event-management" component={EventManagement} />
