@@ -12,6 +12,8 @@ import subprocess
 import tempfile
 import os
 import shutil
+import json
+from fractions import Fraction
 
 
 logger = logging.getLogger(__name__)
@@ -321,7 +323,6 @@ class VideoProcessor:
             if result.returncode != 0:
                 return {"error": "Failed to analyze video"}
             
-            import json
             probe_data = json.loads(result.stdout.decode('utf-8'))
             
             # Extract relevant information
@@ -341,10 +342,17 @@ class VideoProcessor:
             }
             
             if video_stream:
+                # Safely parse frame rate fraction
+                frame_rate_str = video_stream.get('r_frame_rate', '0/1')
+                try:
+                    fps = float(Fraction(frame_rate_str))
+                except (ValueError, ZeroDivisionError):
+                    fps = 0.0
+                
                 info.update({
                     'width': int(video_stream.get('width', 0)),
                     'height': int(video_stream.get('height', 0)),
-                    'fps': eval(video_stream.get('r_frame_rate', '0/1')),
+                    'fps': fps,
                     'codec': video_stream.get('codec_name', ''),
                 })
             
