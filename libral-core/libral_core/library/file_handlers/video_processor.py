@@ -241,6 +241,18 @@ class VideoProcessor:
         if not self._check_ffmpeg():
             raise RuntimeError("FFmpeg is required for video processing")
         
+        # Validate input parameters to prevent command injection
+        if not isinstance(timestamp, (int, float)) or timestamp < 0:
+            raise ValueError("Timestamp must be a non-negative number")
+        
+        width, height = size
+        if not isinstance(width, int) or not isinstance(height, int) or width <= 0 or height <= 0:
+            raise ValueError("Size dimensions must be positive integers")
+        
+        # Additional bounds checking for reasonable video dimensions
+        if width > 7680 or height > 4320:  # 8K resolution limit
+            raise ValueError("Size dimensions exceed maximum allowed (7680x4320)")
+        
         # Create temporary files
         with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as input_file:
             input_file.write(video_bytes)
@@ -250,15 +262,14 @@ class VideoProcessor:
             output_path = output_file.name
         
         try:
-            width, height = size
-            
+            # Safely construct command with validated parameters
             cmd = [
                 'ffmpeg',
                 '-i', input_path,
-                '-ss', str(timestamp),        # Seek to timestamp
-                '-vframes', '1',              # Extract single frame
-                '-vf', f'scale={width}:{height}',  # Resize
-                '-y',                         # Overwrite output
+                '-ss', str(float(timestamp)),  # Ensure numeric conversion
+                '-vframes', '1',               # Extract single frame
+                '-vf', f'scale={int(width)}:{int(height)}',  # Ensure integer values
+                '-y',                          # Overwrite output
                 output_path
             ]
             
