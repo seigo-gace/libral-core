@@ -4,6 +4,13 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Dashboard from "@/pages/dashboard";
+import CommunicationGateway from "@/pages/communication-gateway";
+import UserManagement from "@/pages/user-management";
+import EventManagement from "@/pages/event-management";
+import PaymentManagement from "@/pages/payment-management";
+import APIHub from "@/pages/api-hub";
+import DatabaseManagement from "@/pages/database-management";
+import ContainerManagement from "@/pages/container-management";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -11,6 +18,13 @@ function Router() {
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/communication-gateway" component={CommunicationGateway} />
+      <Route path="/user-management" component={UserManagement} />
+      <Route path="/event-management" component={EventManagement} />
+      <Route path="/payment-management" component={PaymentManagement} />
+      <Route path="/api-hub" component={APIHub} />
+      <Route path="/database-management" component={DatabaseManagement} />
+      <Route path="/container-management" component={ContainerManagement} />
       <Route component={NotFound} />
     </Switch>
   );

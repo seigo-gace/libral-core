@@ -16,13 +16,13 @@ import { Button } from "@/components/ui/button";
 
 const navigation = [
   { name: 'ダッシュボード', href: '/dashboard', icon: BarChart3 },
-  { name: '通信ゲートウェイ', href: '#', icon: Route },
-  { name: 'ユーザー管理', href: '#', icon: Users },
-  { name: 'イベント管理', href: '#', icon: Bell },
-  { name: '決済管理', href: '#', icon: CreditCard },
-  { name: 'APIハブ', href: '#', icon: Network },
-  { name: 'データベース', href: '#', icon: Database },
-  { name: 'コンテナ管理', href: '#', icon: Container },
+  { name: '通信ゲートウェイ', href: '/communication-gateway', icon: Route },
+  { name: 'ユーザー管理', href: '/user-management', icon: Users },
+  { name: 'イベント管理', href: '/event-management', icon: Bell },
+  { name: '決済管理', href: '/payment-management', icon: CreditCard },
+  { name: 'APIハブ', href: '/api-hub', icon: Network },
+  { name: 'データベース', href: '/database-management', icon: Database },
+  { name: 'コンテナ管理', href: '/container-management', icon: Container },
 ];
 
 export function Sidebar() {

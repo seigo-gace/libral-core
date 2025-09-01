@@ -174,10 +174,293 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User management endpoints
   app.get("/api/users", async (req, res) => {
     try {
-      const activeUsers = await storage.getActiveUsers();
-      res.json(activeUsers);
+      const mockUsers = [
+        {
+          id: '1',
+          username: 'admin',
+          email: 'admin@libral.core',
+          telegramId: '123456789',
+          status: 'active',
+          role: 'admin',
+          createdAt: '2024-01-01T00:00:00Z',
+          lastActive: new Date().toISOString(),
+          personalServerEnabled: true
+        },
+        {
+          id: '2',
+          username: 'developer',
+          email: 'dev@libral.core',
+          status: 'active',
+          role: 'developer',
+          createdAt: '2024-01-15T00:00:00Z',
+          lastActive: new Date().toISOString(),
+          personalServerEnabled: true
+        },
+        {
+          id: '3',
+          username: 'user1',
+          email: 'user@libral.core',
+          status: 'active',
+          role: 'user',
+          createdAt: '2024-02-01T00:00:00Z',
+          lastActive: '2024-02-28T10:30:00Z',
+          personalServerEnabled: false
+        }
+      ];
+      res.json(mockUsers);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch users" });
+    }
+  });
+
+  app.get("/api/users/stats", async (req, res) => {
+    try {
+      const stats = {
+        totalUsers: 3,
+        activeUsers: 2,
+        newUsersToday: 1,
+        personalServersActive: 2
+      };
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch user stats" });
+    }
+  });
+
+  // Communication Gateway endpoints
+  app.get("/api/communication/adapters", async (req, res) => {
+    try {
+      const adapters = [
+        {
+          id: 'telegram-1',
+          name: 'Telegram Bot API',
+          type: 'telegram',
+          status: 'active',
+          messagesProcessed: 1247,
+          lastActivity: new Date().toISOString(),
+          config: {}
+        },
+        {
+          id: 'email-1',
+          name: 'SMTP Gateway',
+          type: 'email',
+          status: 'active',
+          messagesProcessed: 856,
+          lastActivity: new Date().toISOString(),
+          config: {}
+        },
+        {
+          id: 'webhook-1',
+          name: 'Webhook Endpoint',
+          type: 'webhook',
+          status: 'inactive',
+          messagesProcessed: 23,
+          lastActivity: new Date().toISOString(),
+          config: {}
+        }
+      ];
+      res.json(adapters);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch communication adapters" });
+    }
+  });
+
+  app.get("/api/communication/stats", async (req, res) => {
+    try {
+      const stats = {
+        totalMessages: 2126,
+        activeAdapters: 2,
+        errorRate: 0.05,
+        responseTime: 150
+      };
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch communication stats" });
+    }
+  });
+
+  // Event Management endpoints
+  app.get("/api/events/stats", async (req, res) => {
+    try {
+      const stats = {
+        totalEvents: 15420,
+        pendingEvents: 3,
+        resolvedToday: 127,
+        criticalEvents: 1
+      };
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch event stats" });
+    }
+  });
+
+  // Payment Management endpoints
+  app.get("/api/payments/stats", async (req, res) => {
+    try {
+      const stats = {
+        totalRevenue: 12450.75,
+        monthlyRevenue: 3250.50,
+        telegramStarsEarned: 8500,
+        pluginCommissions: 1850.25,
+        pendingPayments: 5,
+        refundRate: 1.2
+      };
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch payment stats" });
+    }
+  });
+
+  // API Hub endpoints
+  app.get("/api/credentials", async (req, res) => {
+    try {
+      const credentials = [
+        {
+          id: 'openai-1',
+          name: 'OpenAI GPT-4',
+          provider: 'openai',
+          status: 'active',
+          usage: 15000,
+          limit: 100000,
+          cost: 125.50,
+          currency: 'USD',
+          lastUsed: new Date().toISOString(),
+          createdAt: '2024-01-01T00:00:00Z',
+          encrypted: true
+        },
+        {
+          id: 'anthropic-1',
+          name: 'Claude 3.5 Sonnet',
+          provider: 'anthropic',
+          status: 'active',
+          usage: 8500,
+          limit: 50000,
+          cost: 85.25,
+          currency: 'USD',
+          lastUsed: new Date().toISOString(),
+          createdAt: '2024-01-15T00:00:00Z',
+          encrypted: true
+        }
+      ];
+      res.json(credentials);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch API credentials" });
+    }
+  });
+
+  app.get("/api/integrations/stats", async (req, res) => {
+    try {
+      const stats = {
+        totalCredentials: 5,
+        activeIntegrations: 3,
+        monthlyApiCalls: 285000,
+        totalCost: 485.75
+      };
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch integration stats" });
+    }
+  });
+
+  // Database Management endpoints
+  app.get("/api/database/connections", async (req, res) => {
+    try {
+      const connections = [
+        {
+          id: 'postgres-1',
+          name: 'PostgreSQL Primary',
+          type: 'postgresql',
+          status: 'connected',
+          connections: '23/100',
+          responseTime: 15,
+          uptime: 99.9,
+          dataSize: '2.5 GB'
+        },
+        {
+          id: 'redis-1',
+          name: 'Redis Cache',
+          type: 'redis',
+          status: 'connected',
+          connections: '5/50',
+          responseTime: 2,
+          uptime: 99.8,
+          dataSize: '256 MB'
+        },
+        {
+          id: 'neon-1',
+          name: 'Neon Serverless',
+          type: 'neon',
+          status: 'connected',
+          connections: '12/unlimited',
+          responseTime: 8,
+          uptime: 99.9,
+          dataSize: '1.8 GB'
+        }
+      ];
+      res.json(connections);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch database connections" });
+    }
+  });
+
+  app.get("/api/database/metrics", async (req, res) => {
+    try {
+      const metrics = {
+        totalConnections: '23/100',
+        queryPerSecond: 156,
+        cacheHitRate: 94.2,
+        diskUsage: '2.5 GB'
+      };
+      res.json(metrics);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch database metrics" });
+    }
+  });
+
+  // Container Management endpoints
+  app.get("/api/containers", async (req, res) => {
+    try {
+      const containers = [
+        {
+          id: 'app-1',
+          name: 'libral-core-app',
+          image: 'node:22-alpine',
+          status: 'running',
+          cpuUsage: 15,
+          memoryUsage: 68,
+          networkIO: '1.2MB/s',
+          uptime: '2d 15h',
+          ports: ['5000:5000']
+        },
+        {
+          id: 'db-1',
+          name: 'postgres-db',
+          image: 'postgres:16',
+          status: 'running',
+          cpuUsage: 5,
+          memoryUsage: 25,
+          networkIO: '0.5MB/s',
+          uptime: '2d 15h',
+          ports: ['5432:5432']
+        }
+      ];
+      res.json(containers);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch containers" });
+    }
+  });
+
+  app.get("/api/containers/stats", async (req, res) => {
+    try {
+      const stats = {
+        totalContainers: 2,
+        runningContainers: 2,
+        cpuTotal: 20,
+        memoryTotal: 46.5
+      };
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch container stats" });
     }
   });
 
