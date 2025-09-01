@@ -9,7 +9,8 @@ import {
   Route,
   Menu,
   X,
-  Star
+  Star,
+  Settings
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
@@ -17,6 +18,8 @@ import { Button } from "@/components/ui/button";
 
 const navigation = [
   { name: 'ダッシュボード', href: '/dashboard', icon: BarChart3 },
+  { name: '管理ダッシュボード', href: '/admin-dashboard', icon: Settings },
+  { name: 'ユーザーメニュー', href: '/user-menu', icon: Users },
   { name: '通信ゲートウェイ', href: '/communication-gateway', icon: Route },
   { name: 'ユーザー管理', href: '/user-management', icon: Users },
   { name: 'イベント管理', href: '/event-management', icon: Bell },
