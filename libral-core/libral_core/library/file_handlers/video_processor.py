@@ -85,6 +85,22 @@ class VideoProcessor:
         if not self._check_ffmpeg():
             raise RuntimeError("FFmpeg is required for video processing")
         
+        # Validate input parameters to prevent command injection
+        if not isinstance(max_duration, (int, float)) or max_duration <= 0 or max_duration > self.MAX_DURATION_SECONDS:
+            raise ValueError(f"max_duration must be a positive number up to {self.MAX_DURATION_SECONDS} seconds")
+        
+        if not isinstance(fps, (int, float)) or fps <= 0 or fps > 60:
+            raise ValueError("fps must be a positive number up to 60")
+        
+        if size is not None:
+            if not isinstance(size, (tuple, list)) or len(size) != 2:
+                raise ValueError("size must be a tuple of (width, height)")
+            width, height = size
+            if not isinstance(width, int) or not isinstance(height, int) or width <= 0 or height <= 0:
+                raise ValueError("Size dimensions must be positive integers")
+            if width > 7680 or height > 4320:  # 8K resolution limit
+                raise ValueError("Size dimensions exceed maximum allowed (7680x4320)")
+        
         # Create temporary files
         with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as input_file:
             input_file.write(video_bytes)
@@ -94,19 +110,19 @@ class VideoProcessor:
             output_path = output_file.name
         
         try:
-            # Build FFmpeg command
+            # Safely construct FFmpeg command with validated parameters
             cmd = [
                 'ffmpeg',
                 '-i', input_path,
-                '-t', str(max_duration),  # Limit duration
-                '-r', str(fps),           # Set frame rate
-                '-y'                      # Overwrite output file
+                '-t', str(float(max_duration)),  # Ensure numeric conversion
+                '-r', str(float(fps)),           # Ensure numeric conversion
+                '-y'                             # Overwrite output file
             ]
             
-            # Add size filter if specified
+            # Add size filter if specified with safe integer conversion
             if size:
                 width, height = size
-                cmd.extend(['-vf', f'scale={width}:{height}'])
+                cmd.extend(['-vf', f'scale={int(width)}:{int(height)}'])
             
             cmd.append(output_path)
             
