@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, DollarSign, TrendingUp, Star, Search, Settings, Plus } from "lucide-react";
+import { CreditCard, DollarSign, TrendingUp, Star, Search, Settings, Plus, Smartphone, Network } from "lucide-react";
 import { useState } from "react";
 
 interface Transaction {
@@ -333,16 +333,173 @@ export default function PaymentManagement() {
         <TabsContent value="settings" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>決済設定</CardTitle>
+              <CardTitle>決済プロバイダー設定</CardTitle>
               <CardDescription>
-                Telegram Stars統合とその他の決済オプション
+                日本ユーザー向け決済オプションとTelegram協力プロバイダー
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Alert>
+            <CardContent className="space-y-6">
+              {/* Telegram Stars設定 */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Star className="h-6 w-6 text-yellow-500" />
+                    <div>
+                      <h3 className="font-medium">Telegram Stars</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Telegram公式決済システム（推奨）
+                      </p>
+                    </div>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                    有効
+                  </Badge>
+                </div>
+                <div className="ml-9 space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>手数料:</span>
+                    <span className="font-medium text-green-600">無料</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>処理時間:</span>
+                    <span>即座</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>利用可能地域:</span>
+                    <span>全世界</span>
+                  </div>
+                </div>
+              </div>
+
+              <hr />
+
+              {/* PayPay設定 */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Smartphone className="h-6 w-6 text-red-500" />
+                    <div>
+                      <h3 className="font-medium">PayPay</h3>
+                      <p className="text-sm text-muted-foreground">
+                        日本最大のモバイル決済サービス
+                      </p>
+                    </div>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                    有効
+                  </Badge>
+                </div>
+                <div className="ml-9 space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>手数料:</span>
+                    <span className="font-medium text-green-600">無料（PayPay残高）</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>処理時間:</span>
+                    <span>即座</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>利用可能地域:</span>
+                    <span>日本のみ</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>特徴:</span>
+                    <span>QRコード決済対応</span>
+                  </div>
+                </div>
+              </div>
+
+              <hr />
+
+              {/* PayPal設定 */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Network className="h-6 w-6 text-blue-600" />
+                    <div>
+                      <h3 className="font-medium">PayPal</h3>
+                      <p className="text-sm text-muted-foreground">
+                        グローバル決済プラットフォーム
+                      </p>
+                    </div>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                    有効
+                  </Badge>
+                </div>
+                <div className="ml-9 space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>手数料:</span>
+                    <span>3.6% + 40円</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>処理時間:</span>
+                    <span>即座</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>利用可能地域:</span>
+                    <span>全世界</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>特徴:</span>
+                    <span>ゲスト決済対応</span>
+                  </div>
+                </div>
+              </div>
+
+              <hr />
+
+              {/* クレジットカード設定 */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <CreditCard className="h-6 w-6 text-gray-600" />
+                    <div>
+                      <h3 className="font-medium">クレジットカード</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Visa, Mastercard, JCB, Amex対応
+                      </p>
+                    </div>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                    有効
+                  </Badge>
+                </div>
+                <div className="ml-9 space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>手数料:</span>
+                    <span>3.6%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>処理時間:</span>
+                    <span>即座</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>利用可能地域:</span>
+                    <span>全世界</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>セキュリティ:</span>
+                    <span>3D Secure対応</span>
+                  </div>
+                </div>
+              </div>
+
+              <Alert className="mt-6">
+                <Settings className="h-4 w-4" />
                 <AlertDescription>
-                  決済設定管理機能は開発中です。
-                  現在、Telegram Starsが主要な決済方法として設定されています。
+                  <strong>日本ユーザー向け最適化:</strong> 
+                  日本在住のユーザーには自動的にPayPayとTelegram Starsが優先表示されます。
+                  海外ユーザーにはPayPalとクレジットカードが表示されます。
+                </AlertDescription>
+              </Alert>
+
+              <Alert>
+                <Star className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Telegram協力プロバイダー:</strong>
+                  Telegram Starsは手数料無料で最も経済的な決済方法です。
+                  ユーザーにはTelegram Starsの利用を推奨しています。
                 </AlertDescription>
               </Alert>
             </CardContent>

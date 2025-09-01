@@ -8,6 +8,7 @@ import CommunicationGateway from "@/pages/communication-gateway";
 import UserManagement from "@/pages/user-management";
 import EventManagement from "@/pages/event-management";
 import PaymentManagement from "@/pages/payment-management";
+import PaymentDemo from "@/pages/payment-demo";
 import APIHub from "@/pages/api-hub";
 import DatabaseManagement from "@/pages/database-management";
 import ContainerManagement from "@/pages/container-management";
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/user-management" component={UserManagement} />
       <Route path="/event-management" component={EventManagement} />
       <Route path="/payment-management" component={PaymentManagement} />
+      <Route path="/payment-demo" component={PaymentDemo} />
       <Route path="/api-hub" component={APIHub} />
       <Route path="/database-management" component={DatabaseManagement} />
       <Route path="/container-management" component={ContainerManagement} />

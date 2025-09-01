@@ -8,7 +8,8 @@ import {
   Container, 
   Route,
   Menu,
-  X
+  X,
+  Star
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
@@ -20,6 +21,7 @@ const navigation = [
   { name: 'ユーザー管理', href: '/user-management', icon: Users },
   { name: 'イベント管理', href: '/event-management', icon: Bell },
   { name: '決済管理', href: '/payment-management', icon: CreditCard },
+  { name: '決済デモ', href: '/payment-demo', icon: Star },
   { name: 'APIハブ', href: '/api-hub', icon: Network },
   { name: 'データベース', href: '/database-management', icon: Database },
   { name: 'コンテナ管理', href: '/container-management', icon: Container },
