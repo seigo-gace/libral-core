@@ -172,7 +172,7 @@ export default function Logs() {
               更新
             </Button>
             <Button 
-              onClick={() => window.history.back()}
+              onClick={() => window.location.href = '/admin-dashboard'}
               variant="outline"
               className="text-white border-white/20 hover:bg-white/10"
             >

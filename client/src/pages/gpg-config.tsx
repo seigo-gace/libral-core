@@ -140,7 +140,7 @@ export default function GpgConfig() {
             </p>
           </div>
           <Button 
-            onClick={() => window.history.back()}
+            onClick={() => window.location.href = '/admin-dashboard'}
             variant="outline"
             className="text-white border-white/20 hover:bg-white/10"
           >

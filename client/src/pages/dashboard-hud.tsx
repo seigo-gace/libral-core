@@ -37,6 +37,31 @@ export default function DashboardHud() {
     setTimeout(() => setIsRefreshing(false), 1000);
   };
 
+  const handleModuleClick = (moduleId: string) => {
+    switch (moduleId) {
+      case 'aegis-pgp':
+        window.location.href = '/gpg-config';
+        break;
+      case 'communication':
+        window.location.href = '/communication-gateway';
+        break;
+      case 'database':
+        window.location.href = '/database-management';
+        break;
+      case 'events':
+        window.location.href = '/event-management';
+        break;
+      case 'payment':
+        window.location.href = '/payment-management';
+        break;
+      case 'users':
+        window.location.href = '/user-management';
+        break;
+      default:
+        alert(`${moduleId}モジュールの管理画面に移動します`);
+    }
+  };
+
   const coreModules = [
     { id: 'aegis-pgp', name: '暗号化', icon: <Shield className="w-4 h-4" />, status: 'active' },
     { id: 'communication', name: '通信', icon: <Wifi className="w-4 h-4" />, status: 'active' },
@@ -76,7 +101,8 @@ export default function DashboardHud() {
                   key={module.id} 
                   active={module.status === 'active'}
                   size="sm"
-                  className="flex-shrink-0"
+                  className="flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                  onClick={() => handleModuleClick(module.id)}
                 >
                   <div className="text-xs text-center">
                     {module.icon}

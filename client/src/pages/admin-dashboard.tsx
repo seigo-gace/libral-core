@@ -168,7 +168,7 @@ export default function AdminDashboard() {
       switch (action) {
         case 'logs':
           // ログページにリダイレクト
-          window.open(`/logs/${moduleId}`, '_blank');
+          window.location.href = `/logs/${moduleId}`;
           return;
         case 'config':
           // 設定ページにリダイレクト
@@ -176,8 +176,20 @@ export default function AdminDashboard() {
             window.location.href = '/gpg-config';
           } else if (moduleId === 'communication-gateway') {
             window.location.href = '/communication-gateway';
+          } else if (moduleId === 'user-management') {
+            window.location.href = '/user-management';
+          } else if (moduleId === 'event-management') {
+            window.location.href = '/event-management';
+          } else if (moduleId === 'payment-management') {
+            window.location.href = '/payment-management';
+          } else if (moduleId === 'api-hub') {
+            window.location.href = '/api-hub';
+          } else if (moduleId === 'database-management') {
+            window.location.href = '/database-management';
+          } else if (moduleId === 'container-management') {
+            window.location.href = '/container-management';
           } else {
-            alert(`${moduleId}の設定画面に移動します`);
+            window.location.href = '/settings';
           }
           return;
         case 'restart':

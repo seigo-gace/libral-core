@@ -115,7 +115,7 @@ export default function Analytics() {
               レポート出力
             </Button>
             <Button 
-              onClick={() => window.history.back()}
+              onClick={() => window.location.href = '/admin-dashboard'}
               variant="outline"
               className="text-white border-white/20 hover:bg-white/10"
             >
@@ -192,7 +192,7 @@ export default function Analytics() {
                 value={systemStats?.dataTransferred || '0 GB'}
                 label="DATA TRANSFER"
                 icon={<HardDrive className="h-4 w-4" />}
-                color="cyan"
+                color="blue"
                 trend="up"
               />
             </CardContent>

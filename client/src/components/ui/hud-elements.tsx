@@ -88,9 +88,10 @@ interface HexPanelProps {
   size?: 'sm' | 'md' | 'lg';
   active?: boolean;
   className?: string;
+  onClick?: () => void;
 }
 
-export function HexPanel({ children, size = 'md', active = false, className }: HexPanelProps) {
+export function HexPanel({ children, size = 'md', active = false, className, onClick }: HexPanelProps) {
   const sizes = {
     sm: 'w-12 h-12',
     md: 'w-16 h-16',
@@ -98,16 +99,20 @@ export function HexPanel({ children, size = 'md', active = false, className }: H
   };
 
   return (
-    <div className={cn(
-      "relative flex items-center justify-center",
-      "before:absolute before:inset-0 before:bg-gradient-to-br",
-      active 
-        ? "before:from-cyan-500/20 before:to-blue-500/20 before:border-2 before:border-cyan-400" 
-        : "before:from-gray-500/10 before:to-gray-600/10 before:border before:border-gray-500",
-      "backdrop-blur-md",
-      sizes[size],
-      className
-    )}>
+    <div 
+      onClick={onClick}
+      className={cn(
+        "relative flex items-center justify-center",
+        "before:absolute before:inset-0 before:bg-gradient-to-br",
+        active 
+          ? "before:from-cyan-500/20 before:to-blue-500/20 before:border-2 before:border-cyan-400" 
+          : "before:from-gray-500/10 before:to-gray-600/10 before:border before:border-gray-500",
+        "backdrop-blur-md",
+        onClick ? "cursor-pointer hover:scale-105 transition-transform" : "",
+        sizes[size],
+        className
+      )}
+    >
       <div className="relative z-10 text-center">
         {children}
       </div>

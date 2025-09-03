@@ -195,7 +195,7 @@ export default function Settings() {
               {saveSettingsMutation.isPending ? '保存中...' : '設定を保存'}
             </Button>
             <Button 
-              onClick={() => window.history.back()}
+              onClick={() => window.location.href = '/admin-dashboard'}
               variant="outline"
               className="text-white border-white/20 hover:bg-white/10"
             >
