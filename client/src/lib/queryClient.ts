@@ -55,3 +55,18 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+// React Query v5のグローバルエラーハンドリング
+// クエリエラーをキャッチ
+queryClient.getQueryCache().subscribe((event) => {
+  if (event.type === 'updated' && event.query.state.error) {
+    console.error('Query error:', event.query.state.error);
+  }
+});
+
+// ミューテーションエラーをキャッチ
+queryClient.getMutationCache().subscribe((event) => {
+  if (event.type === 'updated' && event.mutation.state.error) {
+    console.error('Mutation error:', event.mutation.state.error);
+  }
+});
