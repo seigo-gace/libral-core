@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -142,9 +142,67 @@ export default function AdminDashboard() {
     refetchInterval: 10000
   });
 
+  // queryClientをインポート
+  const queryClient = useQueryClient();
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    setTimeout(() => setIsRefreshing(false), 1000);
+    try {
+      // 実際にAPIを呼び出してデータを更新
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['/api/system/metrics'] }),
+        queryClient.invalidateQueries({ queryKey: ['/api/modules'] })
+      ]);
+    } catch (error) {
+      console.error('System refresh failed:', error);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 1000);
+    }
+  };
+
+  const handleModuleAction = async (moduleId: string, action: string) => {
+    try {
+      let endpoint = '';
+      let method = 'GET';
+      
+      switch (action) {
+        case 'logs':
+          // ログページにリダイレクト
+          window.open(`/logs/${moduleId}`, '_blank');
+          return;
+        case 'config':
+          // 設定ページにリダイレクト
+          if (moduleId === 'aegis-pgp') {
+            window.location.href = '/gpg-config';
+          } else if (moduleId === 'communication-gateway') {
+            window.location.href = '/communication-gateway';
+          } else {
+            alert(`${moduleId}の設定画面に移動します`);
+          }
+          return;
+        case 'restart':
+          endpoint = `/api/modules/${moduleId}/restart`;
+          method = 'POST';
+          break;
+        case 'start':
+          endpoint = `/api/modules/${moduleId}/start`;
+          method = 'POST';
+          break;
+      }
+
+      if (endpoint) {
+        const response = await fetch(endpoint, { method });
+        if (response.ok) {
+          alert(`${action}操作が成功しました`);
+          queryClient.invalidateQueries({ queryKey: ['/api/modules'] });
+        } else {
+          throw new Error(`${action}操作が失敗しました`);
+        }
+      }
+    } catch (error) {
+      console.error(`Module ${action} failed:`, error);
+      alert(`操作中にエラーが発生しました: ${error}`);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -238,21 +296,40 @@ export default function AdminDashboard() {
           </div>
 
           <div className="flex space-x-2">
-            <Button variant="outline" size="sm" data-testid={`button-logs-${module.id}`}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleModuleAction(module.id, 'logs')}
+              data-testid={`button-logs-${module.id}`}
+            >
               <Activity className="h-3 w-3 mr-1" />
               ログ
             </Button>
-            <Button variant="outline" size="sm" data-testid={`button-config-${module.id}`}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleModuleAction(module.id, 'config')}
+              data-testid={`button-config-${module.id}`}
+            >
               <Settings className="h-3 w-3 mr-1" />
               設定
             </Button>
             {module.status === 'active' ? (
-              <Button variant="outline" size="sm" data-testid={`button-restart-${module.id}`}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => handleModuleAction(module.id, 'restart')}
+                data-testid={`button-restart-${module.id}`}
+              >
                 <RefreshCw className="h-3 w-3 mr-1" />
                 再起動
               </Button>
             ) : (
-              <Button size="sm" data-testid={`button-start-${module.id}`}>
+              <Button 
+                size="sm" 
+                onClick={() => handleModuleAction(module.id, 'start')}
+                data-testid={`button-start-${module.id}`}
+              >
                 <Play className="h-3 w-3 mr-1" />
                 開始
               </Button>

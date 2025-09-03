@@ -16,6 +16,10 @@ import PaymentDemo from "@/pages/payment-demo";
 import APIHub from "@/pages/api-hub";
 import DatabaseManagement from "@/pages/database-management";
 import ContainerManagement from "@/pages/container-management";
+import GpgConfig from "@/pages/gpg-config";
+import Analytics from "@/pages/analytics";
+import Settings from "@/pages/settings";
+import Logs from "@/pages/logs";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -35,6 +39,10 @@ function Router() {
       <Route path="/api-hub" component={APIHub} />
       <Route path="/database-management" component={DatabaseManagement} />
       <Route path="/container-management" component={ContainerManagement} />
+      <Route path="/gpg-config" component={GpgConfig} />
+      <Route path="/analytics" component={Analytics} />
+      <Route path="/settings" component={Settings} />
+      <Route path="/logs/:moduleId" component={Logs} />
       <Route component={NotFound} />
     </Switch>
   );

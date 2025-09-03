@@ -211,11 +211,19 @@ export default function DashboardHud() {
                 <Users className="w-4 h-4 mr-2" />
                 ユーザー
               </HudButton>
-              <HudButton variant="primary" data-testid="button-analytics">
+              <HudButton 
+                variant="primary" 
+                onClick={() => window.location.href = '/analytics'}
+                data-testid="button-analytics"
+              >
                 <Activity className="w-4 h-4 mr-2" />
                 分析
               </HudButton>
-              <HudButton variant="secondary" data-testid="button-settings">
+              <HudButton 
+                variant="secondary" 
+                onClick={() => window.location.href = '/settings'}
+                data-testid="button-settings"
+              >
                 <Server className="w-4 h-4 mr-2" />
                 設定
               </HudButton>

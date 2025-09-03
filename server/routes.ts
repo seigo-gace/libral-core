@@ -109,6 +109,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Module control endpoints
+  app.post("/api/modules/:id/start", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Start module via registry
+      const result = await moduleRegistry.startModule(id);
+      if (!result) {
+        // Fallback to legacy storage
+        const module = await storage.updateModuleStatus(id, 'active');
+        if (!module) {
+          return res.status(404).json({ error: "Module not found" });
+        }
+      }
+
+      await eventService.publishEvent('module_started', 'system', { moduleId: id });
+      websocketService.broadcastModuleStatus(id, 'active');
+      
+      res.json({ success: true, moduleId: id, status: 'active' });
+    } catch (error) {
+      console.error(`Failed to start module ${req.params.id}:`, error);
+      res.status(500).json({ error: "Failed to start module" });
+    }
+  });
+
+  app.post("/api/modules/:id/restart", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Restart module via registry
+      const result = await moduleRegistry.restartModule(id);
+      if (!result) {
+        // Fallback to legacy storage
+        const module = await storage.updateModuleStatus(id, 'updating');
+        if (!module) {
+          return res.status(404).json({ error: "Module not found" });
+        }
+        
+        // Simulate restart process
+        setTimeout(async () => {
+          await storage.updateModuleStatus(id, 'active');
+          websocketService.broadcastModuleStatus(id, 'active');
+        }, 3000);
+      }
+
+      await eventService.publishEvent('module_restarted', 'system', { moduleId: id });
+      websocketService.broadcastModuleStatus(id, 'updating');
+      
+      res.json({ success: true, moduleId: id, status: 'updating' });
+    } catch (error) {
+      console.error(`Failed to restart module ${req.params.id}:`, error);
+      res.status(500).json({ error: "Failed to restart module" });
+    }
+  });
+
+  app.post("/api/modules/:id/stop", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Stop module via registry
+      const result = await moduleRegistry.stopModule(id);
+      if (!result) {
+        // Fallback to legacy storage
+        const module = await storage.updateModuleStatus(id, 'inactive');
+        if (!module) {
+          return res.status(404).json({ error: "Module not found" });
+        }
+      }
+
+      await eventService.publishEvent('module_stopped', 'system', { moduleId: id });
+      websocketService.broadcastModuleStatus(id, 'inactive');
+      
+      res.json({ success: true, moduleId: id, status: 'inactive' });
+    } catch (error) {
+      console.error(`Failed to stop module ${req.params.id}:`, error);
+      res.status(500).json({ error: "Failed to stop module" });
+    }
+  });
+
   // Events endpoints
   app.get("/api/events", async (req, res) => {
     try {
@@ -605,6 +684,221 @@ export async function registerRoutes(app: Express): Promise<Server> {
       timestamp: new Date().toISOString(),
       uptime: process.uptime()
     });
+  });
+
+  // Aegis-PGP API endpoints for GPG configuration
+  app.get("/api/aegis/keys", async (req, res) => {
+    try {
+      // Mock GPG keys data
+      const keys = [
+        {
+          keyId: 'F1B2C3D4E5F6G7H8',
+          keyType: 'EdDSA',
+          userId: 'Libral Admin <admin@libral.core>',
+          fingerprint: 'F1B2 C3D4 E5F6 G7H8 I9J0 K1L2 M3N4 O5P6 Q7R8 S9T0',
+          createdAt: '2024-01-01',
+          expiresAt: '2026-01-01',
+          status: 'active'
+        },
+        {
+          keyId: 'A9B8C7D6E5F4G3H2',
+          keyType: 'RSA-4096',
+          userId: 'System Backup <backup@libral.core>',
+          fingerprint: 'A9B8 C7D6 E5F4 G3H2 I1J0 K9L8 M7N6 O5P4 Q3R2 S1T0',
+          createdAt: '2024-01-15',
+          expiresAt: '2029-01-15',
+          status: 'active'
+        }
+      ];
+      res.json(keys);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch GPG keys" });
+    }
+  });
+
+  app.post("/api/aegis/keys/generate", async (req, res) => {
+    try {
+      const { name, email, comment, passphrase, policy } = req.body;
+      
+      if (!name || !email) {
+        return res.status(400).json({ error: "Name and email are required" });
+      }
+
+      // Mock key generation
+      const newKey = {
+        keyId: Math.random().toString(36).substring(2, 18).toUpperCase(),
+        keyType: policy === 'Modern Strong' ? 'EdDSA' : 'RSA-4096',
+        userId: `${name} <${email}>`,
+        fingerprint: Array(10).fill(0).map(() => Math.random().toString(36).substring(2, 6).toUpperCase()).join(' '),
+        createdAt: new Date().toISOString().split('T')[0],
+        expiresAt: new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        status: 'active'
+      };
+
+      await eventService.publishEvent('gpg_key_generated', 'aegis-pgp', { 
+        keyId: newKey.keyId, 
+        userId: newKey.userId 
+      });
+
+      res.json(newKey);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to generate GPG key" });
+    }
+  });
+
+  app.post("/api/aegis/encrypt", async (req, res) => {
+    try {
+      const { text, keyId, policy } = req.body;
+      
+      if (!text) {
+        return res.status(400).json({ error: "Text is required" });
+      }
+
+      // Mock encryption
+      const encryptedData = {
+        ciphertext: Buffer.from(text).toString('base64'),
+        algorithm: policy === 'Modern Strong' ? 'AES-256-OCB' : 'AES-256-GCM',
+        keyId: keyId || 'DEFAULT',
+        timestamp: new Date().toISOString()
+      };
+
+      await eventService.publishEvent('data_encrypted', 'aegis-pgp', { 
+        size: text.length,
+        algorithm: encryptedData.algorithm
+      });
+
+      res.json(encryptedData);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to encrypt data" });
+    }
+  });
+
+  app.post("/api/aegis/decrypt", async (req, res) => {
+    try {
+      const { ciphertext, passphrase } = req.body;
+      
+      if (!ciphertext) {
+        return res.status(400).json({ error: "Ciphertext is required" });
+      }
+
+      // Mock decryption
+      const decryptedText = Buffer.from(ciphertext, 'base64').toString('utf8');
+
+      await eventService.publishEvent('data_decrypted', 'aegis-pgp', { 
+        success: true 
+      });
+
+      res.json({ plaintext: decryptedText });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to decrypt data" });
+    }
+  });
+
+  // System settings endpoints
+  app.get("/api/settings", async (req, res) => {
+    try {
+      const settings = {
+        general: {
+          systemName: 'Libral Core',
+          adminEmail: 'admin@libral.core',
+          maintenanceMode: false,
+          debugMode: false,
+          logLevel: 'info'
+        },
+        security: {
+          sessionTimeout: 24,
+          maxLoginAttempts: 3,
+          passwordPolicy: 'strong',
+          twoFactorRequired: true,
+          encryptionLevel: 'aegis-pgp'
+        },
+        notifications: {
+          emailNotifications: true,
+          telegramNotifications: true,
+          webhookNotifications: false,
+          notificationThreshold: 'medium'
+        },
+        performance: {
+          cacheEnabled: true,
+          cacheTTL: 3600,
+          maxConcurrentUsers: 1000,
+          rateLimitEnabled: true,
+          rateLimitPerMinute: 100
+        }
+      };
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch settings" });
+    }
+  });
+
+  app.put("/api/settings", async (req, res) => {
+    try {
+      const newSettings = req.body;
+      
+      // Mock settings update
+      await eventService.publishEvent('settings_updated', 'system', { 
+        updatedBy: 'admin' 
+      });
+
+      res.json({ success: true, settings: newSettings });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update settings" });
+    }
+  });
+
+  app.get("/api/settings/export", async (req, res) => {
+    try {
+      // Mock settings export
+      const settingsExport = {
+        exportedAt: new Date().toISOString(),
+        version: '2.1.0',
+        settings: {
+          // Include all current settings
+        }
+      };
+      res.json(settingsExport);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to export settings" });
+    }
+  });
+
+  // Analytics endpoints
+  app.get("/api/analytics/system", async (req, res) => {
+    try {
+      const { timeRange = '7d' } = req.query;
+      
+      const stats = {
+        totalRequests: 125847,
+        averageResponseTime: 45,
+        uptime: 99.8,
+        errorRate: 0.12,
+        peakConcurrentUsers: 156,
+        dataTransferred: '2.8 TB'
+      };
+      
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch system analytics" });
+    }
+  });
+
+  app.get("/api/analytics/modules", async (req, res) => {
+    try {
+      const { timeRange = '7d' } = req.query;
+      
+      const stats = {
+        totalModules: 8,
+        activeModules: 7,
+        healthyModules: 6,
+        moduleRestarts: 3,
+        averageUptime: 99.5
+      };
+      
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch module analytics" });
+    }
   });
 
   // Middleware to track API requests
