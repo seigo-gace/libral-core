@@ -302,6 +302,14 @@ try:
 except ImportError:
     pass
 
+# OPS (Operational Automation) Module - OPS Blueprint V1 Implementation
+try:
+    from libral_core.ops.router import router as ops_router
+    app.include_router(ops_router)
+    logger.info("OPS (Operational Automation) router loaded - GitOps, HA/DRP, Chaos Engineering")
+except ImportError as e:
+    logger.warning("OPS router not available", error=str(e))
+
 # System overview endpoint
 @app.get("/api/v2/system/overview")
 async def system_overview():
@@ -344,6 +352,11 @@ async def system_overview():
                 "name": "API Hub",
                 "providers": ["OpenAI", "Anthropic", "Google", "AWS"],
                 "endpoint": "/api/external"
+            },
+            "ops": {
+                "name": "Operational Automation (OPS)",
+                "components": ["Monitoring", "Storage Layer", "Security", "GitOps", "Chaos Engineering", "HA/DRP", "Vulnerability Scanning"],
+                "endpoint": "/ops"
             }
         },
         "revolutionary_features": [
