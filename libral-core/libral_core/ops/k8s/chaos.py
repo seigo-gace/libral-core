@@ -220,7 +220,17 @@ class ChaosEngineeringManager:
                 "target_mttr": self.target_recovery_time
             }
         
-        recovery_times = [e.recovery_time_seconds for e in completed]
+        recovery_times = [e.recovery_time_seconds for e in completed if e.recovery_time_seconds is not None]
+        
+        if not recovery_times:
+            return {
+                "total_experiments": len(completed),
+                "average_mttr": 0.0,
+                "min_mttr": 0.0,
+                "max_mttr": 0.0,
+                "target_mttr": self.target_recovery_time,
+                "exceeded_target_count": 0
+            }
         
         return {
             "total_experiments": len(completed),

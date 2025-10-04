@@ -28,7 +28,7 @@ class HealthCheck:
     status: HealthStatus
     message: str
     timestamp: datetime
-    metadata: Dict = None
+    metadata: Optional[Dict] = None
 
 
 class HealthChecker:
@@ -40,7 +40,7 @@ class HealthChecker:
     async def check_storage_provider(
         self,
         provider: str,
-        check_func: callable
+        check_func
     ) -> HealthCheck:
         """ストレージプロバイダヘルスチェック"""
         try:

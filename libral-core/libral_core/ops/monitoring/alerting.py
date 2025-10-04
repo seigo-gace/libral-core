@@ -39,7 +39,7 @@ class Alert:
     severity: AlertSeverity
     component: str
     timestamp: datetime
-    metadata: Dict = None
+    metadata: Optional[Dict] = None
 
 
 @dataclass

@@ -208,13 +208,15 @@ async def global_exception_handler(request: Request, exc: Exception):
         method=request.method
     )
     
+    from datetime import datetime
+    
     return JSONResponse(
         status_code=500,
         content={
             "error": "Internal server error",
             "message": "An unexpected error occurred", 
             "request_id": f"req_{hash(str(request.url))}", 
-            "timestamp": structlog.processors.TimeStamper().format(None)
+            "timestamp": datetime.utcnow().isoformat()
         }
     )
 
@@ -377,8 +379,8 @@ async def system_overview():
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
-        host=settings.host,
-        port=settings.port,
-        reload=settings.reload,
-        log_level=settings.log_level.lower()
+        host=getattr(settings, 'host', '0.0.0.0'),
+        port=getattr(settings, 'port', 8000),
+        reload=getattr(settings, 'reload', True),
+        log_level=getattr(settings, 'log_level', 'INFO').lower()
     )

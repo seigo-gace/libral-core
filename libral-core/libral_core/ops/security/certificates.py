@@ -40,7 +40,7 @@ class Certificate:
     issue_date: datetime
     expiry_date: datetime
     file_path: Optional[str] = None
-    metadata: Dict = None
+    metadata: Optional[Dict] = None
     
     @property
     def days_until_expiry(self) -> int:
