@@ -312,6 +312,17 @@ try:
 except ImportError as e:
     logger.warning("OPS router not available", error=str(e))
 
+# Governance Layer (AMM/CRAD) - PCGP V1.0 Implementation
+try:
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).parent))
+    from governance.router import router as governance_router
+    app.include_router(governance_router)
+    logger.info("Governance Layer router loaded - AMM & CRAD (PCGP V1.0)")
+except ImportError as e:
+    logger.warning("Governance Layer router not available", error=str(e))
+
 # System overview endpoint
 @app.get("/api/v2/system/overview")
 async def system_overview():
@@ -359,6 +370,11 @@ async def system_overview():
                 "name": "Operational Automation (OPS)",
                 "components": ["Monitoring", "Storage Layer", "Security", "GitOps", "Chaos Engineering", "HA/DRP", "Vulnerability Scanning"],
                 "endpoint": "/ops"
+            },
+            "governance": {
+                "name": "Governance Layer (AMM/CRAD)",
+                "components": ["Autonomous Moderator", "Context-Aware Auto Debugger", "PCGP V1.0"],
+                "endpoint": "/governance"
             }
         },
         "revolutionary_features": [
