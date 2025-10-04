@@ -64,8 +64,16 @@ case "${1:-all}" in
         ;;
     
     "all")
-        echo "Starting all services in background..."
+        echo "⚠️  Note: 'all' mode starts Python backend services only."
+        echo "   Frontend must be started separately:"
+        echo "   - Development: npm run dev (from root directory)"
+        echo "   - Production: npm run build && npm start (from root directory)"
         echo ""
+        echo "Starting Python backend services in background..."
+        echo ""
+        
+        # Create logs directory if it doesn't exist
+        mkdir -p logs
         
         # Main Application
         echo "🔷 Starting Main Application (Port 8000)..."
@@ -92,12 +100,15 @@ case "${1:-all}" in
         sleep 3
         
         echo ""
-        echo "✅ All services started!"
+        echo "✅ Python backend services started!"
         echo ""
         echo "📊 Service Status:"
         echo "   Main App:  http://localhost:8000/docs"
         echo "   AI Module: http://localhost:8001/docs"
         echo "   APP Module: http://localhost:8002/docs"
+        echo ""
+        echo "⚠️  Frontend NOT started - start separately:"
+        echo "   cd .. && npm run dev"
         echo ""
         echo "📝 Logs:"
         echo "   Main:  logs/main.log"
