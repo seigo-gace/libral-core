@@ -1,0 +1,31 @@
+# config/routing.yaml
+routing:
+  default:
+    priority: [telegram, email, webhook]
+  by_tenant:
+    premium:
+      priority: [email, telegram, webhook]
+    enterprise:
+      priority: [webhook, email, telegram]
+  by_usecase:
+    artifact-sign:
+      priority: [webhook, email, telegram]
+    secure-document:
+      priority: [email, webhook, telegram]
+    notification:
+      priority: [telegram, email, webhook]
+  rules:
+    - if: { data_size_mb: ">=10" }
+      then: { priority: [email, webhook, telegram] }
+    - if: { sensitivity: "high" }
+      then: { priority: [email, webhook, telegram] }
+    - if: { sensitivity: "low" }
+      then: { priority: [telegram, email, webhook] }
+
+retry:
+  max_attempts: 5
+  backoff_ms: [500, 1000, 2000, 5000, 10000]
+
+circuit_breaker:
+  failure_threshold: 5
+  cool_down_sec: 60

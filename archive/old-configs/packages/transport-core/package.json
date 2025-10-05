@@ -1,0 +1,24 @@
+{
+  "name": "@libral/transport-core",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "yaml": "^2.4.2"
+  },
+  "peerDependencies": {},
+  "keywords": ["transport", "libral", "pgp", "encryption", "messaging"],
+  "description": "Platform-agnostic transport layer with automatic failover for Libral Core",
+  "author": "Libral Core Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/libral/core"
+  }
+}

@@ -1,107 +1,201 @@
 # Overview
 
-Libral Core is a microkernel-based platform for the G-ACE.inc TGAXIS Libral Platform, focusing on privacy-first architecture and user data sovereignty through Telegram personal log servers. Initially a Node.js prototype, it's being reconstructed in Python + FastAPI for optimal performance. The system features enterprise-grade GPG encryption, a plugin marketplace, a revolutionary authentication system, multi-protocol communication, real-time event management, multi-provider payment integration (including Telegram Stars, PayPay, PayPal for Japanese users), and an API hub. Its core ambition is to provide a robust, private, and user-centric digital ecosystem with advanced operational automation and autonomous governance.
+Libral Core is a privacy-first microkernel platform designed for enterprise-grade cryptographic operations and user data sovereignty. The system implements a revolutionary architecture where user data is never centrally stored, instead utilizing Telegram personal log servers to give users complete control over their information. The platform features enterprise GPG encryption (Aegis-PGP), a hot-swappable plugin marketplace, and a sophisticated multi-transport communication system with intelligent failover capabilities.
 
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
-Technical design approach: Privacy-first microkernel architecture with event-driven design
-Interface language: Japanese for dashboard and user-facing components
-Development strategy: Zero-based reconstruction with Python + FastAPI (6-week roadmap)
-Privacy model: User data sovereignty via Telegram personal log servers (no central storage)
-Payment integration: Telegram collaborative provider payment options with user-friendly Japanese localization
-Regional optimization: PayPay and PayPal integration for Japanese users with clear explanations and guidance
 
 # System Architecture
 
-## PCGP V1.0 Architecture (Professional Grooming Protocol)
+## Core Design Principles
 
-### 4-Tier Module Structure
-- **`src/library/components/`**: Component Layer for minimal, reusable parts (datetime, crypto, config, validators).
-- **`src/modules/`**: Functional modules.
-- **`src/governance/`**: Governance Layer including AMM (Autonomous Moderator Module) and CRAD (Context-Aware Auto Debugger).
-- **`libral_core/integrated_modules/`**: Core integrated modules (LIC/LEB/LAS/LGL).
-- **`libral_core/modules/`**: Payment/API Hub.
-- **`libral_core/ops/`**: OPS automation.
-- **`policies/`**: Policy definitions (JSON/YAML) for AMM and CRAD.
-- **`infra/`**: Infrastructure settings.
-- **`docs/`**: Documentation including `MASTER_REFERENCE.md`.
-- **`archive/`**: For old configurations, reports, and legacy code.
+### Privacy-First Architecture
+The system is built on a zero-central-storage model where user data sovereignty is paramount. All user data is encrypted using enterprise-grade GPG and stored in user-controlled Telegram personal log servers, ensuring users maintain complete ownership and control of their information. No personal data is retained on central Libral servers.
 
-### Component Layer (Tier 1)
-- **datetime_utils**: UTC standardized datetime processing.
-- **crypto_helpers**: Secure token generation, hashing, HMAC.
-- **config_loader**: Policy loading, environment variable management.
-- **validators**: Data validation and sanitization.
+### Microkernel Design Pattern
+The platform implements a modular, hot-swappable component architecture where core functionality is isolated into independent modules. This allows runtime loading/unloading of components without system downtime, supporting continuous deployment and flexible feature evolution.
 
-### Governance Layer (AMM/CRAD)
-- **AMM**: KMS access control, GitOps enforcement.
-- **CRAD**: Automated recovery with a 180-second MTTR target.
+### Hybrid Technology Stack
+- **Backend Core**: Node.js/Express with TypeScript for RESTful API services and WebSocket real-time communication
+- **Advanced Modules**: Python/FastAPI for cryptographic operations, AI processing, and complex data workflows
+- **Frontend**: React with TypeScript, Vite build system, and Shadcn/UI component library
+- **Database**: PostgreSQL with Drizzle ORM for type-safe database operations
+- **Caching/PubSub**: Redis for real-time event distribution and session management
 
-### OPS Automation Layer
-- **SAL (Storage Abstraction Layer)**: Prometheus integration, dynamic routing, encrypted audit logs.
-- **CCA (Context-Lock Audit)**: Audit certificate management, crypto module enforcement, KMS integration.
-- **K8S Automation**: GitOps enforcement, chaos engineering, HA/DRP, vulnerability scanning.
+## Key Architectural Components
 
-## Library Module Architecture
-- **Design**: Independent "toolbox" layer for core utilities.
-- **Submodules**:
-  - **utils**: String processing, datetime handling, validation.
-  - **api_clients**: Unified external API communication.
-  - **file_handlers**: Image and video processing (supporting TxT WORLD Creator's and LIVE VIDEO CHAT).
+### 1. Aegis-PGP Cryptography Module (Python/FastAPI)
+Enterprise-grade GPG operations implementing three encryption policies:
+- **Modern Strong**: SEIPDv2 + AES-256-OCB for maximum security
+- **Compatibility**: Standard OpenPGP for broad interoperability
+- **Backup Longterm**: Long-term archival with future-proof algorithms
 
-## Frontend Architecture
-- **Framework**: React with TypeScript (Vite).
-- **UI Components**: Radix UI primitives with shadcn/ui.
-- **Styling**: Tailwind CSS (dark theme, custom colors).
-- **State Management**: TanStack Query for server state.
-- **Routing**: Wouter.
-- **Real-time**: Custom WebSocket hook.
+Features Context-Lock signatures for privacy-aware cryptographic operations, supports RSA-4096, ED25519, and ECDSA-P256 key types, and includes WKD (Web Key Directory) integration for automated key discovery.
 
-## Backend Architecture
-- **Runtime**: Node.js with Express.js (TypeScript, ES modules).
-- **Database ORM**: Drizzle ORM with PostgreSQL.
-- **Real-time**: WebSocket server with Redis pub/sub.
-- **Service Architecture**: Modular, microkernel with hot-swappable modules.
-- **Transport Layer**: Platform-agnostic with failover (Telegram → Email → Webhook).
-- **Cryptography**: Aegis-PGP Core with SEIPDv2, AES-256-OCB, OpenPGP v6.
-- **Deployment**: Library mode (npm package) and standalone service mode.
+### 2. Multi-Transport Communication System
+Intelligent message routing with automatic failover across multiple channels:
+- **Telegram**: Primary transport with topic/hashtag support
+- **Email**: SMTP-based delivery for external recipients
+- **Webhook**: HTTP callbacks for third-party integrations
 
-## Database Design
-- **Primary Database**: PostgreSQL (Neon Database serverless).
-- **Schema Management**: Drizzle Kit.
-- **Core Tables**: Users, Transactions, Events, Modules, System Metrics, API Endpoints, Plugins, Plugin Metadata, Plugin Dependencies, Audit Events.
+The transport layer implements health checking, priority-based routing, and encrypted payload delivery using the Aegis-PGP module.
 
-## Real-time Event System
-- **Event Bus**: Redis-based pub/sub.
-- **Event Categories**: System, user, payment, API events.
-- **WebSocket Broadcasting**: Real-time updates to dashboard.
-- **Event Storage**: Persistent logging in PostgreSQL.
+### 3. Personal Log Server System
+Revolutionary user data sovereignty implementation using Telegram Supergroups:
+- Users create and own their personal Telegram groups where all their activity logs are stored
+- All logs are GPG-encrypted before transmission
+- Users control data retention policies (1-365 days auto-delete)
+- Perfect topic organization with hashtag filtering for log categorization
+- Zero central storage - Libral servers never retain decrypted user data
 
-## Monitoring and Metrics
-- **Metrics**: CPU, memory, active users, API request rates, module status, database/Redis metrics, Docker stats, API analytics.
+### 4. Module Registry & Hot-Swapping
+Dynamic module management system allowing runtime registration and discovery:
+- Module health monitoring and status reporting
+- Capability-based routing for feature discovery
+- Independent lifecycle management per module
+- Version-aware API compatibility
+
+### 5. Database Schema Architecture
+Type-safe PostgreSQL schema using Drizzle ORM with the following core entities:
+- **Users**: Telegram-based authentication with role management (user/creator/streamer/admin)
+- **Transactions**: Payment processing with Telegram Stars integration
+- **Events**: Comprehensive audit logging with type/source categorization
+- **Modules**: Module registry with health check tracking
+- **Stamps**: Creative asset management for sticker creation
+- **System Metrics**: Performance monitoring and resource tracking
+
+### 6. Real-Time WebSocket System
+Event-driven updates using Redis pub/sub for live dashboard monitoring:
+- System metrics broadcasting
+- Module status changes
+- Transaction updates
+- User activity notifications
+
+### 7. Payment Integration Layer
+Multi-provider payment processing:
+- **Telegram Stars**: Native Telegram in-app purchases
+- **PayPal**: International payment support
+- **Stripe**: Credit card processing (future expansion)
+
+All payment transactions are logged to user personal log servers with GPG encryption.
+
+## Security & Privacy Controls
+
+### Cryptographic Standards
+- AES-256-OCB for symmetric encryption
+- SHA-256/SHA-512 for cryptographic hashing
+- RSA-4096, ED25519, ECDSA-P256 for asymmetric operations
+- HMAC-SHA256 for webhook signature verification
+
+### Input Validation & Sanitization
+- Comprehensive XSS protection using string processing utilities
+- SQL injection prevention through parameterized queries
+- Rate limiting on API endpoints
+- Content-Security-Policy headers enforcement
+
+### Audit & Compliance
+- Complete operation tracking via event logging
+- GDPR-compliant privacy-by-design implementation
+- Encrypted audit trails for sensitive operations
+- User data export/deletion capabilities
+
+## Development & Deployment Structure
+
+### PCGP V1.0 Organization (Professional Grooming Protocol)
+- `src/`: Source code for all components
+- `docs/`: Documentation including deployment and security policies
+- `infra/`: Infrastructure configuration (Docker, Vite, Tailwind, Drizzle)
+- `policies/`: Governance rules and compliance definitions
+- `archive/`: Legacy code and completion reports
+
+### CI/CD Pipeline
+GitHub Actions workflow implementing:
+- Frontend/backend/Python module testing
+- Security scanning with Semgrep
+- Automated deployment to Replit
+- Type checking and linting
+
+### Environment Configuration
+Configuration managed through Pydantic Settings (Python) and environment variables (Node.js):
+- Database connection strings
+- Redis URLs
+- Telegram Bot tokens
+- GPG key management
+- Payment provider credentials
+
+All sensitive credentials are GPG-encrypted and never committed to version control.
 
 # External Dependencies
 
-## Database Services
-- **Neon Database**: Serverless PostgreSQL hosting.
-- **Redis**: In-memory data store for caching and pub/sub.
+## Third-Party Services
 
-## Third-party Integrations
-- **Telegram Bot API**: For bot interactions and payment notifications.
-- **Telegram Payments**: Integration for Telegram Stars.
+### Telegram Bot API
+Primary communication platform and authentication provider. Used for:
+- OAuth 2.0 user authentication
+- Personal log server implementation (Telegram Supergroups)
+- In-app payments via Telegram Stars
+- Message delivery and webhook processing
 
-## Development Tools
-- **Replit Integration**: Development environment.
-- **Vite Plugins**: For React support and development.
+Configuration: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`
 
-## UI and Styling
-- **Google Fonts**: Inter font family.
-- **Radix UI**: Accessible component primitives.
-- **Tailwind CSS**: Utility-first CSS framework.
-- **Lucide Icons**: Icon library.
+### Database: PostgreSQL (Neon)
+Serverless PostgreSQL via `@neondatabase/serverless` with WebSocket connection support. Used for persistent storage of users, transactions, events, modules, and system metrics.
 
-## Build and Deployment
-- **esbuild**: JavaScript bundler.
-- **TypeScript**: For type safety.
-- **PostCSS**: CSS processing.
+Configuration: `DATABASE_URL`
+
+### Cache & Message Queue: Redis
+Real-time pub/sub messaging and session management. Implements WebSocket event broadcasting and module health coordination.
+
+Configuration: Redis URL (default: `redis://localhost:6379/0`)
+
+### Payment Providers
+- **Telegram Stars**: Native in-app payment processing
+- **PayPal Server SDK** (`@paypal/paypal-server-sdk`): International payment support
+
+Configuration: `STRIPE_SECRET_KEY`, `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`
+
+## Core NPM Dependencies
+
+### Backend Framework
+- `express`: RESTful API server
+- `drizzle-orm`: Type-safe database ORM
+- `ws`: WebSocket server implementation
+- `connect-pg-simple`: PostgreSQL session store
+
+### Frontend Framework
+- `react`, `react-dom`: UI framework
+- `@tanstack/react-query`: Server state management
+- `wouter`: Lightweight routing
+- `vite`: Frontend build system
+
+### UI Component Library
+Radix UI primitives (`@radix-ui/*`) with Tailwind CSS:
+- Accordion, Dialog, Dropdown, Toast, Tooltip, and 15+ other accessible components
+- `shadcn/ui`: Pre-built component patterns
+- `class-variance-authority`: Type-safe styling variants
+- `tailwindcss`: Utility-first CSS framework
+
+### Validation & Forms
+- `zod`: Runtime type validation
+- `drizzle-zod`: Database schema to Zod conversion
+- `react-hook-form`: Form state management
+- `@hookform/resolvers`: Zod resolver integration
+
+## Python Dependencies (libral-core)
+
+### Framework
+- `fastapi`: Async Python web framework for advanced modules
+- `uvicorn`: ASGI server
+- `pydantic`: Data validation and settings management
+- `structlog`: Structured logging
+
+### Cryptography
+- `python-gnupg`: GPG operations wrapper
+- `cryptography`: Low-level cryptographic primitives
+
+### Utilities
+- `httpx`: Async HTTP client for external API communication
+- `redis[asyncio]`: Async Redis client
+
+All Python dependencies managed via Poetry (`pyproject.toml`).
