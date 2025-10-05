@@ -324,6 +324,38 @@ try:
 except ImportError as e:
     logger.warning("Governance Layer router not available", error=str(e))
 
+# LPO (Libral Protocol Optimizer) - SelfEvolution Final Manifest V1
+try:
+    from modules.lpo.router import router as lpo_router
+    app.include_router(lpo_router)
+    logger.info("LPO (Libral Protocol Optimizer) router loaded - SelfEvolution V1.0")
+except ImportError as e:
+    logger.warning("LPO router not available", error=str(e))
+
+# KBE (Knowledge Booster Engine) - SelfEvolution Final Manifest V1
+try:
+    from modules.kbe.router import router as kbe_router
+    app.include_router(kbe_router)
+    logger.info("KBE (Knowledge Booster Engine) router loaded - SelfEvolution V1.0")
+except ImportError as e:
+    logger.warning("KBE router not available", error=str(e))
+
+# AEG (Auto Evolution Gateway) - SelfEvolution Final Manifest V1
+try:
+    from modules.aeg.router import router as aeg_router
+    app.include_router(aeg_router)
+    logger.info("AEG (Auto Evolution Gateway) router loaded - SelfEvolution V1.0")
+except ImportError as e:
+    logger.warning("AEG router not available", error=str(e))
+
+# Vaporization Protocol - SelfEvolution Final Manifest V1
+try:
+    from modules.vaporization.router import router as vaporization_router
+    app.include_router(vaporization_router)
+    logger.info("Vaporization Protocol router loaded - SelfEvolution V1.0")
+except ImportError as e:
+    logger.warning("Vaporization Protocol router not available", error=str(e))
+
 # System overview endpoint
 @app.get("/api/v2/system/overview")
 async def system_overview():
@@ -377,6 +409,53 @@ async def system_overview():
                 "components": ["Autonomous Moderator", "Context-Aware Auto Debugger", "PCGP V1.0"],
                 "endpoint": "/governance",
                 "standard": "PCGP_V1.0_ENFORCED"
+            },
+            "lpo": {
+                "name": "Libral Protocol Optimizer (LPO)",
+                "components": [
+                    "Health Score Calculator",
+                    "ZK Audit Gateway",
+                    "Self-Healing AI",
+                    "Finance Optimizer",
+                    "RBAC Provider",
+                    "Predictive Monitor"
+                ],
+                "endpoint": "/lpo",
+                "version": "1.0.0",
+                "manifest": "SelfEvolution_Final_V1"
+            },
+            "kbe": {
+                "name": "Knowledge Booster Engine (KBE)",
+                "components": [
+                    "Federated Learning Interface",
+                    "Homomorphic Aggregator",
+                    "Privacy-First Knowledge Collection"
+                ],
+                "endpoint": "/kbe",
+                "version": "1.0.0",
+                "manifest": "SelfEvolution_Final_V1"
+            },
+            "aeg": {
+                "name": "Auto Evolution Gateway (AEG)",
+                "components": [
+                    "Development Prioritization AI",
+                    "GitHub PR Generator",
+                    "Autonomous Code Improvement"
+                ],
+                "endpoint": "/aeg",
+                "version": "1.0.0",
+                "manifest": "SelfEvolution_Final_V1"
+            },
+            "vaporization": {
+                "name": "Vaporization Protocol",
+                "components": [
+                    "Redis TTL Enforcer (24h max)",
+                    "KBE Flush Hook",
+                    "Privacy-First Cache Management"
+                ],
+                "endpoint": "/vaporization",
+                "version": "1.0.0",
+                "manifest": "SelfEvolution_Final_V1"
             }
         },
         "revolutionary_features": [
