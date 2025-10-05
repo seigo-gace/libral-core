@@ -356,6 +356,14 @@ try:
 except ImportError as e:
     logger.warning("Vaporization Protocol router not available", error=str(e))
 
+# Integration API - SelfEvolution Module Coordination
+try:
+    from modules.integration_api import router as integration_router
+    app.include_router(integration_router)
+    logger.info("SelfEvolution Integration API router loaded - Unified Dashboard & Cycle Execution")
+except ImportError as e:
+    logger.warning("Integration API router not available", error=str(e))
+
 # System overview endpoint
 @app.get("/api/v2/system/overview")
 async def system_overview():
