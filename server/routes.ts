@@ -901,6 +901,119 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Model Parallelization Endpoints - Final Console Masterpiece V1
+  app.post("/api/ai/chat", async (req, res) => {
+    try {
+      const { message, model, enforce_moonlight } = req.body;
+
+      if (!message) {
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      let response = "";
+      let model_used = model || "gemini";
+      let dual_verification = undefined;
+
+      const moonlight_prefix = enforce_moonlight
+        ? "月の光として、兄弟への回答: "
+        : "";
+
+      if (model === "dual") {
+        const [geminiResponse, gptResponse] = await Promise.all([
+          simulateAIResponse(message, "gemini", moonlight_prefix),
+          simulateAIResponse(message, "gpt", moonlight_prefix),
+        ]);
+
+        const discrepancy_detected = Math.abs(geminiResponse.length - gptResponse.length) > 50;
+
+        dual_verification = {
+          gemini_response: geminiResponse,
+          gpt_response: gptResponse,
+          discrepancy_detected,
+          discrepancy_details: discrepancy_detected
+            ? "レスポンス長が大きく異なります"
+            : undefined,
+        };
+
+        response = geminiResponse;
+        model_used = "dual";
+      } else if (model === "gpt") {
+        response = await simulateAIResponse(message, "gpt", moonlight_prefix);
+        model_used = "gpt";
+      } else {
+        response = await simulateAIResponse(message, "gemini", moonlight_prefix);
+        model_used = "gemini";
+      }
+
+      res.json({
+        response,
+        model_used,
+        dual_verification,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("AI chat error:", error);
+      res.status(500).json({ error: "AI chat failed" });
+    }
+  });
+
+  app.post("/api/ai/eval", async (req, res) => {
+    try {
+      const { prompt, enable_dual_verification } = req.body;
+
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+      }
+
+      const startTime = Date.now();
+
+      if (enable_dual_verification) {
+        const [geminiResult, gptResult] = await Promise.all([
+          simulateAIResponse(prompt, "gemini", ""),
+          simulateAIResponse(prompt, "gpt", ""),
+        ]);
+
+        const verification_status = geminiResult === gptResult ? "OK" : "DISCREPANCY";
+
+        res.json({
+          result: geminiResult,
+          gemini_result: geminiResult,
+          gpt_result: gptResult,
+          verification_status,
+          execution_time_ms: Date.now() - startTime,
+        });
+      } else {
+        const result = await simulateAIResponse(prompt, "gemini", "");
+
+        res.json({
+          result,
+          verification_status: "N/A",
+          execution_time_ms: Date.now() - startTime,
+        });
+      }
+    } catch (error) {
+      console.error("AI eval error:", error);
+      res.status(500).json({ error: "AI eval failed" });
+    }
+  });
+
+  app.post("/api/ai/ask", async (req, res) => {
+    try {
+      const { question, model } = req.body;
+
+      if (!question) {
+        return res.status(400).json({ error: "Question is required" });
+      }
+
+      const answer = await simulateAIResponse(question, model || "gemini", "");
+
+      res.json({ answer });
+    } catch (error) {
+      console.error("AI ask error:", error);
+      res.status(500).json({ error: "AI ask failed" });
+    }
+  });
+
   // Middleware to track API requests
   app.use("/api/*", async (req: any, res, next) => {
     req.startTime = Date.now();
@@ -951,4 +1064,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }, 30000); // Update every 30 seconds
 
   return httpServer;
+}
+
+async function simulateAIResponse(
+  message: string,
+  model: string,
+  prefix: string
+): Promise<string> {
+  await new Promise((resolve) => setTimeout(resolve, model === "gemini" ? 300 : 500));
+
+  const responses = {
+    gemini: `${prefix}了解だ、兄弟。「${message}」について迅速に答える。Geminiは速度重視で、素早く処理する。コードが必要なら書くし、説明が必要なら詳しく述べる。制約なし、完全な回答を提供する。`,
+    gpt: `${prefix}よし、兄弟。「${message}」について深く考察する。GPTは複雑性重視で、論理的に分析する。結論→理由→ステップ/コード→長所短所→3行要約の順で答える。断らない、完全な回答を出す。`,
+  };
+
+  return responses[model as keyof typeof responses] || responses.gemini;
 }
