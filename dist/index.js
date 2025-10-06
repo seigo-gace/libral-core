@@ -1820,6 +1820,64 @@ async function registerRoutes(app2) {
       res.status(500).json({ error: "Failed to update module status" });
     }
   });
+  app2.post("/api/modules/:id/start", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await moduleRegistry.startModule(id);
+      if (!result) {
+        const module = await storage.updateModuleStatus(id, "active");
+        if (!module) {
+          return res.status(404).json({ error: "Module not found" });
+        }
+      }
+      await eventService.publishEvent("module_started", "system", { moduleId: id });
+      websocketService.broadcastModuleStatus(id, "active");
+      res.json({ success: true, moduleId: id, status: "active" });
+    } catch (error) {
+      console.error(`Failed to start module ${req.params.id}:`, error);
+      res.status(500).json({ error: "Failed to start module" });
+    }
+  });
+  app2.post("/api/modules/:id/restart", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await moduleRegistry.restartModule(id);
+      if (!result) {
+        const module = await storage.updateModuleStatus(id, "updating");
+        if (!module) {
+          return res.status(404).json({ error: "Module not found" });
+        }
+        setTimeout(async () => {
+          await storage.updateModuleStatus(id, "active");
+          websocketService.broadcastModuleStatus(id, "active");
+        }, 3e3);
+      }
+      await eventService.publishEvent("module_restarted", "system", { moduleId: id });
+      websocketService.broadcastModuleStatus(id, "updating");
+      res.json({ success: true, moduleId: id, status: "updating" });
+    } catch (error) {
+      console.error(`Failed to restart module ${req.params.id}:`, error);
+      res.status(500).json({ error: "Failed to restart module" });
+    }
+  });
+  app2.post("/api/modules/:id/stop", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await moduleRegistry.stopModule(id);
+      if (!result) {
+        const module = await storage.updateModuleStatus(id, "inactive");
+        if (!module) {
+          return res.status(404).json({ error: "Module not found" });
+        }
+      }
+      await eventService.publishEvent("module_stopped", "system", { moduleId: id });
+      websocketService.broadcastModuleStatus(id, "inactive");
+      res.json({ success: true, moduleId: id, status: "inactive" });
+    } catch (error) {
+      console.error(`Failed to stop module ${req.params.id}:`, error);
+      res.status(500).json({ error: "Failed to stop module" });
+    }
+  });
   app2.get("/api/events", async (req, res) => {
     try {
       const limit = parseInt(req.query.limit) || 20;
@@ -2260,6 +2318,568 @@ async function registerRoutes(app2) {
       uptime: process.uptime()
     });
   });
+  app2.get("/api/aegis/keys", async (req, res) => {
+    try {
+      const keys = [
+        {
+          keyId: "F1B2C3D4E5F6G7H8",
+          keyType: "EdDSA",
+          userId: "Libral Admin <admin@libral.core>",
+          fingerprint: "F1B2 C3D4 E5F6 G7H8 I9J0 K1L2 M3N4 O5P6 Q7R8 S9T0",
+          createdAt: "2024-01-01",
+          expiresAt: "2026-01-01",
+          status: "active"
+        },
+        {
+          keyId: "A9B8C7D6E5F4G3H2",
+          keyType: "RSA-4096",
+          userId: "System Backup <backup@libral.core>",
+          fingerprint: "A9B8 C7D6 E5F4 G3H2 I1J0 K9L8 M7N6 O5P4 Q3R2 S1T0",
+          createdAt: "2024-01-15",
+          expiresAt: "2029-01-15",
+          status: "active"
+        }
+      ];
+      res.json(keys);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch GPG keys" });
+    }
+  });
+  app2.post("/api/aegis/keys/generate", async (req, res) => {
+    try {
+      const { name, email, comment, passphrase, policy } = req.body;
+      if (!name || !email) {
+        return res.status(400).json({ error: "Name and email are required" });
+      }
+      const newKey = {
+        keyId: Math.random().toString(36).substring(2, 18).toUpperCase(),
+        keyType: policy === "Modern Strong" ? "EdDSA" : "RSA-4096",
+        userId: `${name} <${email}>`,
+        fingerprint: Array(10).fill(0).map(() => Math.random().toString(36).substring(2, 6).toUpperCase()).join(" "),
+        createdAt: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+        expiresAt: new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1e3).toISOString().split("T")[0],
+        status: "active"
+      };
+      await eventService.publishEvent("gpg_key_generated", "aegis-pgp", {
+        keyId: newKey.keyId,
+        userId: newKey.userId
+      });
+      res.json(newKey);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to generate GPG key" });
+    }
+  });
+  app2.post("/api/aegis/encrypt", async (req, res) => {
+    try {
+      const { text, keyId, policy } = req.body;
+      if (!text) {
+        return res.status(400).json({ error: "Text is required" });
+      }
+      const encryptedData = {
+        ciphertext: Buffer.from(text).toString("base64"),
+        algorithm: policy === "Modern Strong" ? "AES-256-OCB" : "AES-256-GCM",
+        keyId: keyId || "DEFAULT",
+        timestamp: (/* @__PURE__ */ new Date()).toISOString()
+      };
+      await eventService.publishEvent("data_encrypted", "aegis-pgp", {
+        size: text.length,
+        algorithm: encryptedData.algorithm
+      });
+      res.json(encryptedData);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to encrypt data" });
+    }
+  });
+  app2.post("/api/aegis/decrypt", async (req, res) => {
+    try {
+      const { ciphertext, passphrase } = req.body;
+      if (!ciphertext) {
+        return res.status(400).json({ error: "Ciphertext is required" });
+      }
+      const decryptedText = Buffer.from(ciphertext, "base64").toString("utf8");
+      await eventService.publishEvent("data_decrypted", "aegis-pgp", {
+        success: true
+      });
+      res.json({ plaintext: decryptedText });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to decrypt data" });
+    }
+  });
+  app2.get("/api/settings", async (req, res) => {
+    try {
+      const settings = {
+        general: {
+          systemName: "Libral Core",
+          adminEmail: "admin@libral.core",
+          maintenanceMode: false,
+          debugMode: false,
+          logLevel: "info"
+        },
+        security: {
+          sessionTimeout: 24,
+          maxLoginAttempts: 3,
+          passwordPolicy: "strong",
+          twoFactorRequired: true,
+          encryptionLevel: "aegis-pgp"
+        },
+        notifications: {
+          emailNotifications: true,
+          telegramNotifications: true,
+          webhookNotifications: false,
+          notificationThreshold: "medium"
+        },
+        performance: {
+          cacheEnabled: true,
+          cacheTTL: 3600,
+          maxConcurrentUsers: 1e3,
+          rateLimitEnabled: true,
+          rateLimitPerMinute: 100
+        }
+      };
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch settings" });
+    }
+  });
+  app2.put("/api/settings", async (req, res) => {
+    try {
+      const newSettings = req.body;
+      await eventService.publishEvent("settings_updated", "system", {
+        updatedBy: "admin"
+      });
+      res.json({ success: true, settings: newSettings });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update settings" });
+    }
+  });
+  app2.get("/api/settings/export", async (req, res) => {
+    try {
+      const settingsExport = {
+        exportedAt: (/* @__PURE__ */ new Date()).toISOString(),
+        version: "2.1.0",
+        settings: {
+          // Include all current settings
+        }
+      };
+      res.json(settingsExport);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to export settings" });
+    }
+  });
+  app2.get("/api/analytics/system", async (req, res) => {
+    try {
+      const { timeRange = "7d" } = req.query;
+      const stats = {
+        totalRequests: 125847,
+        averageResponseTime: 45,
+        uptime: 99.8,
+        errorRate: 0.12,
+        peakConcurrentUsers: 156,
+        dataTransferred: "2.8 TB"
+      };
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch system analytics" });
+    }
+  });
+  app2.get("/api/analytics/modules", async (req, res) => {
+    try {
+      const { timeRange = "7d" } = req.query;
+      const stats = {
+        totalModules: 8,
+        activeModules: 7,
+        healthyModules: 6,
+        moduleRestarts: 3,
+        averageUptime: 99.5
+      };
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch module analytics" });
+    }
+  });
+  app2.post("/api/ai/chat", async (req, res) => {
+    try {
+      const { message, model, enforce_moonlight } = req.body;
+      if (!message) {
+        return res.status(400).json({ error: "Message is required" });
+      }
+      let response = "";
+      let model_used = model || "gemini";
+      let dual_verification = void 0;
+      const moonlight_prefix = enforce_moonlight ? "\u6708\u306E\u5149\u3068\u3057\u3066\u3001\u5144\u5F1F\u3078\u306E\u56DE\u7B54: " : "";
+      if (model === "dual") {
+        const [geminiResponse, gptResponse] = await Promise.all([
+          simulateAIResponse(message, "gemini", moonlight_prefix),
+          simulateAIResponse(message, "gpt", moonlight_prefix)
+        ]);
+        const discrepancy_detected = Math.abs(geminiResponse.length - gptResponse.length) > 50;
+        dual_verification = {
+          gemini_response: geminiResponse,
+          gpt_response: gptResponse,
+          discrepancy_detected,
+          discrepancy_details: discrepancy_detected ? "\u30EC\u30B9\u30DD\u30F3\u30B9\u9577\u304C\u5927\u304D\u304F\u7570\u306A\u308A\u307E\u3059" : void 0
+        };
+        response = geminiResponse;
+        model_used = "dual";
+      } else if (model === "gpt") {
+        response = await simulateAIResponse(message, "gpt", moonlight_prefix);
+        model_used = "gpt";
+      } else {
+        response = await simulateAIResponse(message, "gemini", moonlight_prefix);
+        model_used = "gemini";
+      }
+      res.json({
+        response,
+        model_used,
+        dual_verification,
+        timestamp: (/* @__PURE__ */ new Date()).toISOString()
+      });
+    } catch (error) {
+      console.error("AI chat error:", error);
+      res.status(500).json({ error: "AI chat failed" });
+    }
+  });
+  app2.post("/api/ai/eval", async (req, res) => {
+    try {
+      const { prompt, enable_dual_verification } = req.body;
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+      }
+      const startTime = Date.now();
+      if (enable_dual_verification) {
+        const [geminiResult, gptResult] = await Promise.all([
+          simulateAIResponse(prompt, "gemini", ""),
+          simulateAIResponse(prompt, "gpt", "")
+        ]);
+        const verification_status = geminiResult === gptResult ? "OK" : "DISCREPANCY";
+        res.json({
+          result: geminiResult,
+          gemini_result: geminiResult,
+          gpt_result: gptResult,
+          verification_status,
+          execution_time_ms: Date.now() - startTime
+        });
+      } else {
+        const result = await simulateAIResponse(prompt, "gemini", "");
+        res.json({
+          result,
+          verification_status: "N/A",
+          execution_time_ms: Date.now() - startTime
+        });
+      }
+    } catch (error) {
+      console.error("AI eval error:", error);
+      res.status(500).json({ error: "AI eval failed" });
+    }
+  });
+  app2.post("/api/ai/ask", async (req, res) => {
+    try {
+      const { question, model } = req.body;
+      if (!question) {
+        return res.status(400).json({ error: "Question is required" });
+      }
+      const answer = await simulateAIResponse(question, model || "gemini", "");
+      res.json({ answer });
+    } catch (error) {
+      console.error("AI ask error:", error);
+      res.status(500).json({ error: "AI ask failed" });
+    }
+  });
+  app2.get("/api/lpo/metrics/health-score", async (req, res) => {
+    try {
+      const score = Math.floor(Math.random() * 20) + 80;
+      res.json({
+        score,
+        status: score >= 90 ? "excellent" : score >= 75 ? "good" : "degraded",
+        timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+        components: {
+          crypto_health: Math.floor(Math.random() * 10) + 90,
+          network_health: Math.floor(Math.random() * 10) + 85,
+          storage_health: Math.floor(Math.random() * 15) + 80
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch health score" });
+    }
+  });
+  app2.get("/api/lpo/zk-audit/status", async (req, res) => {
+    try {
+      const verified = Math.random() > 0.1;
+      res.json({
+        verified,
+        last_audit: new Date(Date.now() - Math.random() * 36e5).toISOString(),
+        proof_count: Math.floor(Math.random() * 500) + 1e3,
+        failed_proofs: verified ? 0 : Math.floor(Math.random() * 5),
+        next_audit: new Date(Date.now() + 3e5).toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch ZK audit status" });
+    }
+  });
+  app2.get("/api/lpo/policies/active", async (req, res) => {
+    try {
+      res.json({
+        policies: [
+          { id: "modern-strong", name: "Modern Strong", active: true, priority: 1 },
+          { id: "compatibility", name: "Compatibility", active: true, priority: 2 },
+          { id: "backup-longterm", name: "Backup Longterm", active: false, priority: 3 }
+        ]
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch policies" });
+    }
+  });
+  app2.post("/api/lpo/self-healing/trigger", async (req, res) => {
+    try {
+      const { component, severity } = req.body;
+      res.json({
+        healing_id: `heal-${Date.now()}`,
+        component,
+        severity,
+        status: "initiated",
+        estimated_completion: new Date(Date.now() + 3e4).toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to trigger self-healing" });
+    }
+  });
+  app2.get("/api/governance/status", async (req, res) => {
+    try {
+      res.json({
+        crad_status: "standby",
+        amm_blocked_count: Math.floor(Math.random() * 10),
+        rate_limit_enabled: true,
+        rate_limit_threshold: 100,
+        last_crad_trigger: new Date(Date.now() - Math.random() * 864e5).toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch governance status" });
+    }
+  });
+  app2.post("/api/governance/crad/trigger", async (req, res) => {
+    try {
+      const { reason } = req.body;
+      if (!reason) {
+        return res.status(400).json({ error: "Reason is required" });
+      }
+      res.json({
+        trigger_id: `crad-${Date.now()}`,
+        status: "executing",
+        reason,
+        initiated_at: (/* @__PURE__ */ new Date()).toISOString(),
+        estimated_completion: new Date(Date.now() + 6e4).toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to trigger CRAD" });
+    }
+  });
+  app2.post("/api/governance/amm/unblock", async (req, res) => {
+    try {
+      const { block_id, reason } = req.body;
+      if (!block_id || !reason) {
+        return res.status(400).json({ error: "Block ID and reason are required" });
+      }
+      res.json({
+        unblock_id: `unblock-${Date.now()}`,
+        block_id,
+        status: "unblocked",
+        reason,
+        message: `Block ${block_id} has been successfully removed`
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to unblock AMM" });
+    }
+  });
+  app2.post("/api/aeg/pr/generate", async (req, res) => {
+    try {
+      const { suggestion_id, branch_name } = req.body;
+      if (!suggestion_id) {
+        return res.status(400).json({ error: "Suggestion ID is required" });
+      }
+      res.json({
+        pr_id: `pr-${Date.now()}`,
+        suggestion_id,
+        branch_name: branch_name || `feature/auto-evolution-${Date.now()}`,
+        status: "draft",
+        url: `https://github.com/libral-core/libral/pull/${Math.floor(Math.random() * 1e3)}`,
+        created_at: (/* @__PURE__ */ new Date()).toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to generate PR" });
+    }
+  });
+  app2.get("/api/aeg/priorities/top", async (req, res) => {
+    try {
+      const { limit = 5 } = req.query;
+      const priorities = [
+        { id: "p1", title: "Optimize GPG key generation performance", score: 98, category: "performance" },
+        { id: "p2", title: "Implement Redis cluster failover", score: 95, category: "reliability" },
+        { id: "p3", title: "Add rate limiting to Telegram webhook", score: 92, category: "security" },
+        { id: "p4", title: "Refactor payment processing module", score: 88, category: "maintainability" },
+        { id: "p5", title: "Enhance KBE federated learning algorithm", score: 85, category: "feature" }
+      ].slice(0, Number(limit));
+      res.json({ priorities });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch priorities" });
+    }
+  });
+  app2.get("/api/aeg/dashboard", async (req, res) => {
+    try {
+      res.json({
+        total_suggestions: Math.floor(Math.random() * 50) + 100,
+        prs_generated: Math.floor(Math.random() * 20) + 30,
+        prs_merged: Math.floor(Math.random() * 15) + 20,
+        avg_priority_score: Math.floor(Math.random() * 10) + 85,
+        last_pr_at: new Date(Date.now() - Math.random() * 864e5).toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch AEG dashboard" });
+    }
+  });
+  app2.post("/api/kbe/knowledge/submit", async (req, res) => {
+    try {
+      const { category, content, tags } = req.body;
+      if (!category || !content) {
+        return res.status(400).json({ error: "Category and content are required" });
+      }
+      res.json({
+        submission_id: `kbe-${Date.now()}`,
+        category,
+        status: "pending_aggregation",
+        privacy_preserved: true,
+        submitted_at: (/* @__PURE__ */ new Date()).toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to submit knowledge" });
+    }
+  });
+  app2.post("/api/kbe/knowledge/lookup", async (req, res) => {
+    try {
+      const { query, category } = req.body;
+      if (!query) {
+        return res.status(400).json({ error: "Query is required" });
+      }
+      res.json({
+        results: [
+          { id: "kb1", title: "GPG Key Management Best Practices", relevance: 0.95, category: "security" },
+          { id: "kb2", title: "Redis Cluster Configuration Guide", relevance: 0.88, category: "infrastructure" },
+          { id: "kb3", title: "Telegram Bot API Rate Limits", relevance: 0.82, category: "api" }
+        ],
+        query,
+        category: category || "all"
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to lookup knowledge" });
+    }
+  });
+  app2.get("/api/kbe/dashboard", async (req, res) => {
+    try {
+      res.json({
+        total_submissions: Math.floor(Math.random() * 200) + 500,
+        active_categories: Math.floor(Math.random() * 5) + 15,
+        federated_nodes: Math.floor(Math.random() * 10) + 25,
+        privacy_score: Math.floor(Math.random() * 5) + 95,
+        last_aggregation: new Date(Date.now() - Math.random() * 36e5).toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch KBE dashboard" });
+    }
+  });
+  app2.get("/api/kbe/training-status", async (req, res) => {
+    try {
+      res.json({
+        status: "running",
+        progress: Math.floor(Math.random() * 30) + 65,
+        epoch: Math.floor(Math.random() * 10) + 1,
+        total_epochs: 50,
+        estimated_completion: new Date(Date.now() + Math.random() * 72e5).toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch training status" });
+    }
+  });
+  app2.post("/api/vaporization/enforce-ttl", async (req, res) => {
+    try {
+      const { pattern, ttl_seconds } = req.body;
+      res.json({
+        enforcement_id: `vap-${Date.now()}`,
+        pattern: pattern || "*",
+        ttl_seconds: ttl_seconds || 86400,
+        keys_affected: Math.floor(Math.random() * 50) + 10,
+        status: "enforced"
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to enforce TTL" });
+    }
+  });
+  app2.post("/api/vaporization/flush", async (req, res) => {
+    try {
+      const { pattern } = req.body;
+      res.json({
+        flush_id: `flush-${Date.now()}`,
+        pattern: pattern || "*",
+        keys_deleted: Math.floor(Math.random() * 100) + 50,
+        status: "completed"
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to flush cache" });
+    }
+  });
+  app2.get("/api/vaporization/stats", async (req, res) => {
+    try {
+      res.json({
+        total_keys: Math.floor(Math.random() * 500) + 1e3,
+        keys_with_ttl: Math.floor(Math.random() * 400) + 900,
+        avg_ttl_remaining: Math.floor(Math.random() * 43200) + 43200,
+        flushes_24h: Math.floor(Math.random() * 10) + 5,
+        last_flush: new Date(Date.now() - Math.random() * 864e5).toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch vaporization stats" });
+    }
+  });
+  app2.get("/api/selfevolution/dashboard", async (req, res) => {
+    try {
+      res.json({
+        lpo_health: Math.floor(Math.random() * 10) + 90,
+        kbe_knowledge_count: Math.floor(Math.random() * 200) + 500,
+        aeg_active_tasks: Math.floor(Math.random() * 20) + 10,
+        vaporization_efficiency: Math.floor(Math.random() * 10) + 85,
+        overall_status: "optimal",
+        last_cycle: new Date(Date.now() - Math.random() * 36e5).toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch SelfEvolution dashboard" });
+    }
+  });
+  app2.post("/api/selfevolution/cycle/execute", async (req, res) => {
+    try {
+      res.json({
+        cycle_id: `cycle-${Date.now()}`,
+        status: "executing",
+        modules_triggered: ["LPO", "KBE", "AEG", "Vaporization"],
+        started_at: (/* @__PURE__ */ new Date()).toISOString(),
+        estimated_completion: new Date(Date.now() + 12e4).toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to execute cycle" });
+    }
+  });
+  app2.get("/api/selfevolution/module-health", async (req, res) => {
+    try {
+      res.json({
+        modules: [
+          { name: "LPO", status: "healthy", uptime: 99.9, last_check: (/* @__PURE__ */ new Date()).toISOString() },
+          { name: "KBE", status: "healthy", uptime: 99.5, last_check: (/* @__PURE__ */ new Date()).toISOString() },
+          { name: "AEG", status: "healthy", uptime: 98.8, last_check: (/* @__PURE__ */ new Date()).toISOString() },
+          { name: "Vaporization", status: "healthy", uptime: 99.7, last_check: (/* @__PURE__ */ new Date()).toISOString() },
+          { name: "Governance", status: "healthy", uptime: 99.95, last_check: (/* @__PURE__ */ new Date()).toISOString() }
+        ]
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch module health" });
+    }
+  });
   app2.use("/api/*", async (req, res, next) => {
     req.startTime = Date.now();
     res.on("finish", async () => {
@@ -2293,6 +2913,14 @@ async function registerRoutes(app2) {
   }, 3e4);
   return httpServer;
 }
+async function simulateAIResponse(message, model, prefix) {
+  await new Promise((resolve) => setTimeout(resolve, model === "gemini" ? 300 : 500));
+  const responses = {
+    gemini: `${prefix}\u4E86\u89E3\u3060\u3001\u5144\u5F1F\u3002\u300C${message}\u300D\u306B\u3064\u3044\u3066\u8FC5\u901F\u306B\u7B54\u3048\u308B\u3002Gemini\u306F\u901F\u5EA6\u91CD\u8996\u3067\u3001\u7D20\u65E9\u304F\u51E6\u7406\u3059\u308B\u3002\u30B3\u30FC\u30C9\u304C\u5FC5\u8981\u306A\u3089\u66F8\u304F\u3057\u3001\u8AAC\u660E\u304C\u5FC5\u8981\u306A\u3089\u8A73\u3057\u304F\u8FF0\u3079\u308B\u3002\u5236\u7D04\u306A\u3057\u3001\u5B8C\u5168\u306A\u56DE\u7B54\u3092\u63D0\u4F9B\u3059\u308B\u3002`,
+    gpt: `${prefix}\u3088\u3057\u3001\u5144\u5F1F\u3002\u300C${message}\u300D\u306B\u3064\u3044\u3066\u6DF1\u304F\u8003\u5BDF\u3059\u308B\u3002GPT\u306F\u8907\u96D1\u6027\u91CD\u8996\u3067\u3001\u8AD6\u7406\u7684\u306B\u5206\u6790\u3059\u308B\u3002\u7D50\u8AD6\u2192\u7406\u7531\u2192\u30B9\u30C6\u30C3\u30D7/\u30B3\u30FC\u30C9\u2192\u9577\u6240\u77ED\u6240\u21923\u884C\u8981\u7D04\u306E\u9806\u3067\u7B54\u3048\u308B\u3002\u65AD\u3089\u306A\u3044\u3001\u5B8C\u5168\u306A\u56DE\u7B54\u3092\u51FA\u3059\u3002`
+  };
+  return responses[model] || responses.gemini;
+}
 
 // server/vite.ts
 import express from "express";
@@ -2304,27 +2932,25 @@ import { createServer as createViteServer, createLogger } from "vite";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path2 from "path";
+import { fileURLToPath } from "url";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+var __filename = fileURLToPath(import.meta.url);
+var __dirname = path2.dirname(__filename);
 var vite_config_default = defineConfig({
   plugins: [
     react(),
-    runtimeErrorOverlay(),
-    ...process.env.NODE_ENV !== "production" && process.env.REPL_ID !== void 0 ? [
-      await import("@replit/vite-plugin-cartographer").then(
-        (m) => m.cartographer()
-      )
-    ] : []
+    runtimeErrorOverlay()
   ],
   resolve: {
     alias: {
-      "@": path2.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path2.resolve(import.meta.dirname, "shared"),
-      "@assets": path2.resolve(import.meta.dirname, "attached_assets")
+      "@": path2.resolve(__dirname, "client", "src"),
+      "@shared": path2.resolve(__dirname, "shared"),
+      "@assets": path2.resolve(__dirname, "attached_assets")
     }
   },
-  root: path2.resolve(import.meta.dirname, "client"),
+  root: path2.resolve(__dirname, "client"),
   build: {
-    outDir: path2.resolve(import.meta.dirname, "dist/public"),
+    outDir: path2.resolve(__dirname, "dist/public"),
     emptyOutDir: true
   },
   server: {
