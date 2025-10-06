@@ -21,11 +21,17 @@ import Analytics from "@/pages/analytics";
 import Settings from "@/pages/settings";
 import Logs from "@/pages/logs";
 import NotFound from "@/pages/not-found";
+import Monitor from "@/pages/Monitor";
+import Control from "@/pages/Control";
+import Creation from "@/pages/Creation";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={DashboardHud} />
+      <Route path="/monitor" component={Monitor} />
+      <Route path="/control" component={Control} />
+      <Route path="/creation" component={Creation} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/dashboard-hud" component={DashboardHud} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
