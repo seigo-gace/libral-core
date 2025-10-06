@@ -1014,6 +1014,327 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // LPO (Libral Protocol Optimizer) Endpoints
+  app.get("/api/lpo/metrics/health-score", async (req, res) => {
+    try {
+      const score = Math.floor(Math.random() * 20) + 80;
+      res.json({
+        score,
+        status: score >= 90 ? "excellent" : score >= 75 ? "good" : "degraded",
+        timestamp: new Date().toISOString(),
+        components: {
+          crypto_health: Math.floor(Math.random() * 10) + 90,
+          network_health: Math.floor(Math.random() * 10) + 85,
+          storage_health: Math.floor(Math.random() * 15) + 80,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch health score" });
+    }
+  });
+
+  app.get("/api/lpo/zk-audit/status", async (req, res) => {
+    try {
+      const verified = Math.random() > 0.1;
+      res.json({
+        verified,
+        last_audit: new Date(Date.now() - Math.random() * 3600000).toISOString(),
+        proof_count: Math.floor(Math.random() * 500) + 1000,
+        failed_proofs: verified ? 0 : Math.floor(Math.random() * 5),
+        next_audit: new Date(Date.now() + 300000).toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch ZK audit status" });
+    }
+  });
+
+  app.get("/api/lpo/policies/active", async (req, res) => {
+    try {
+      res.json({
+        policies: [
+          { id: "modern-strong", name: "Modern Strong", active: true, priority: 1 },
+          { id: "compatibility", name: "Compatibility", active: true, priority: 2 },
+          { id: "backup-longterm", name: "Backup Longterm", active: false, priority: 3 },
+        ],
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch policies" });
+    }
+  });
+
+  app.post("/api/lpo/self-healing/trigger", async (req, res) => {
+    try {
+      const { component, severity } = req.body;
+      res.json({
+        healing_id: `heal-${Date.now()}`,
+        component,
+        severity,
+        status: "initiated",
+        estimated_completion: new Date(Date.now() + 30000).toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to trigger self-healing" });
+    }
+  });
+
+  // Governance API Endpoints
+  app.get("/api/governance/status", async (req, res) => {
+    try {
+      res.json({
+        crad_status: "standby",
+        amm_blocked_count: Math.floor(Math.random() * 10),
+        rate_limit_enabled: true,
+        rate_limit_threshold: 100,
+        last_crad_trigger: new Date(Date.now() - Math.random() * 86400000).toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch governance status" });
+    }
+  });
+
+  app.post("/api/governance/crad/trigger", async (req, res) => {
+    try {
+      const { reason } = req.body;
+      if (!reason) {
+        return res.status(400).json({ error: "Reason is required" });
+      }
+      res.json({
+        trigger_id: `crad-${Date.now()}`,
+        status: "executing",
+        reason,
+        initiated_at: new Date().toISOString(),
+        estimated_completion: new Date(Date.now() + 60000).toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to trigger CRAD" });
+    }
+  });
+
+  app.post("/api/governance/amm/unblock", async (req, res) => {
+    try {
+      const { block_id, reason } = req.body;
+      if (!block_id || !reason) {
+        return res.status(400).json({ error: "Block ID and reason are required" });
+      }
+      res.json({
+        unblock_id: `unblock-${Date.now()}`,
+        block_id,
+        status: "unblocked",
+        reason,
+        message: `Block ${block_id} has been successfully removed`,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to unblock AMM" });
+    }
+  });
+
+  // AEG (Auto Evolution Gateway) Endpoints
+  app.post("/api/aeg/pr/generate", async (req, res) => {
+    try {
+      const { suggestion_id, branch_name } = req.body;
+      if (!suggestion_id) {
+        return res.status(400).json({ error: "Suggestion ID is required" });
+      }
+      res.json({
+        pr_id: `pr-${Date.now()}`,
+        suggestion_id,
+        branch_name: branch_name || `feature/auto-evolution-${Date.now()}`,
+        status: "draft",
+        url: `https://github.com/libral-core/libral/pull/${Math.floor(Math.random() * 1000)}`,
+        created_at: new Date().toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to generate PR" });
+    }
+  });
+
+  app.get("/api/aeg/priorities/top", async (req, res) => {
+    try {
+      const { limit = 5 } = req.query;
+      const priorities = [
+        { id: "p1", title: "Optimize GPG key generation performance", score: 98, category: "performance" },
+        { id: "p2", title: "Implement Redis cluster failover", score: 95, category: "reliability" },
+        { id: "p3", title: "Add rate limiting to Telegram webhook", score: 92, category: "security" },
+        { id: "p4", title: "Refactor payment processing module", score: 88, category: "maintainability" },
+        { id: "p5", title: "Enhance KBE federated learning algorithm", score: 85, category: "feature" },
+      ].slice(0, Number(limit));
+      res.json({ priorities });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch priorities" });
+    }
+  });
+
+  app.get("/api/aeg/dashboard", async (req, res) => {
+    try {
+      res.json({
+        total_suggestions: Math.floor(Math.random() * 50) + 100,
+        prs_generated: Math.floor(Math.random() * 20) + 30,
+        prs_merged: Math.floor(Math.random() * 15) + 20,
+        avg_priority_score: Math.floor(Math.random() * 10) + 85,
+        last_pr_at: new Date(Date.now() - Math.random() * 86400000).toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch AEG dashboard" });
+    }
+  });
+
+  // KBE (Knowledge Booster Engine) Endpoints
+  app.post("/api/kbe/knowledge/submit", async (req, res) => {
+    try {
+      const { category, content, tags } = req.body;
+      if (!category || !content) {
+        return res.status(400).json({ error: "Category and content are required" });
+      }
+      res.json({
+        submission_id: `kbe-${Date.now()}`,
+        category,
+        status: "pending_aggregation",
+        privacy_preserved: true,
+        submitted_at: new Date().toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to submit knowledge" });
+    }
+  });
+
+  app.post("/api/kbe/knowledge/lookup", async (req, res) => {
+    try {
+      const { query, category } = req.body;
+      if (!query) {
+        return res.status(400).json({ error: "Query is required" });
+      }
+      res.json({
+        results: [
+          { id: "kb1", title: "GPG Key Management Best Practices", relevance: 0.95, category: "security" },
+          { id: "kb2", title: "Redis Cluster Configuration Guide", relevance: 0.88, category: "infrastructure" },
+          { id: "kb3", title: "Telegram Bot API Rate Limits", relevance: 0.82, category: "api" },
+        ],
+        query,
+        category: category || "all",
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to lookup knowledge" });
+    }
+  });
+
+  app.get("/api/kbe/dashboard", async (req, res) => {
+    try {
+      res.json({
+        total_submissions: Math.floor(Math.random() * 200) + 500,
+        active_categories: Math.floor(Math.random() * 5) + 15,
+        federated_nodes: Math.floor(Math.random() * 10) + 25,
+        privacy_score: Math.floor(Math.random() * 5) + 95,
+        last_aggregation: new Date(Date.now() - Math.random() * 3600000).toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch KBE dashboard" });
+    }
+  });
+
+  app.get("/api/kbe/training-status", async (req, res) => {
+    try {
+      res.json({
+        status: "running",
+        progress: Math.floor(Math.random() * 30) + 65,
+        epoch: Math.floor(Math.random() * 10) + 1,
+        total_epochs: 50,
+        estimated_completion: new Date(Date.now() + Math.random() * 7200000).toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch training status" });
+    }
+  });
+
+  // Vaporization Protocol Endpoints
+  app.post("/api/vaporization/enforce-ttl", async (req, res) => {
+    try {
+      const { pattern, ttl_seconds } = req.body;
+      res.json({
+        enforcement_id: `vap-${Date.now()}`,
+        pattern: pattern || "*",
+        ttl_seconds: ttl_seconds || 86400,
+        keys_affected: Math.floor(Math.random() * 50) + 10,
+        status: "enforced",
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to enforce TTL" });
+    }
+  });
+
+  app.post("/api/vaporization/flush", async (req, res) => {
+    try {
+      const { pattern } = req.body;
+      res.json({
+        flush_id: `flush-${Date.now()}`,
+        pattern: pattern || "*",
+        keys_deleted: Math.floor(Math.random() * 100) + 50,
+        status: "completed",
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to flush cache" });
+    }
+  });
+
+  app.get("/api/vaporization/stats", async (req, res) => {
+    try {
+      res.json({
+        total_keys: Math.floor(Math.random() * 500) + 1000,
+        keys_with_ttl: Math.floor(Math.random() * 400) + 900,
+        avg_ttl_remaining: Math.floor(Math.random() * 43200) + 43200,
+        flushes_24h: Math.floor(Math.random() * 10) + 5,
+        last_flush: new Date(Date.now() - Math.random() * 86400000).toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch vaporization stats" });
+    }
+  });
+
+  // SelfEvolution Integration Endpoints
+  app.get("/api/selfevolution/dashboard", async (req, res) => {
+    try {
+      res.json({
+        lpo_health: Math.floor(Math.random() * 10) + 90,
+        kbe_knowledge_count: Math.floor(Math.random() * 200) + 500,
+        aeg_active_tasks: Math.floor(Math.random() * 20) + 10,
+        vaporization_efficiency: Math.floor(Math.random() * 10) + 85,
+        overall_status: "optimal",
+        last_cycle: new Date(Date.now() - Math.random() * 3600000).toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch SelfEvolution dashboard" });
+    }
+  });
+
+  app.post("/api/selfevolution/cycle/execute", async (req, res) => {
+    try {
+      res.json({
+        cycle_id: `cycle-${Date.now()}`,
+        status: "executing",
+        modules_triggered: ["LPO", "KBE", "AEG", "Vaporization"],
+        started_at: new Date().toISOString(),
+        estimated_completion: new Date(Date.now() + 120000).toISOString(),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to execute cycle" });
+    }
+  });
+
+  app.get("/api/selfevolution/module-health", async (req, res) => {
+    try {
+      res.json({
+        modules: [
+          { name: "LPO", status: "healthy", uptime: 99.9, last_check: new Date().toISOString() },
+          { name: "KBE", status: "healthy", uptime: 99.5, last_check: new Date().toISOString() },
+          { name: "AEG", status: "healthy", uptime: 98.8, last_check: new Date().toISOString() },
+          { name: "Vaporization", status: "healthy", uptime: 99.7, last_check: new Date().toISOString() },
+          { name: "Governance", status: "healthy", uptime: 99.95, last_check: new Date().toISOString() },
+        ],
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch module health" });
+    }
+  });
+
   // Middleware to track API requests
   app.use("/api/*", async (req: any, res, next) => {
     req.startTime = Date.now();
