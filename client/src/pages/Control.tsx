@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { AlertTriangle, Shield, Activity, Ban } from "lucide-react";
+import { AlertTriangle, Shield, Activity, Ban, Gauge, Sliders, Sparkles } from "lucide-react";
 import { governanceApi } from "@/api/governance";
 import { lpoApi } from "@/api/lpo";
 import {
@@ -24,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function Control() {
+  const [location] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [cradReason, setCradReason] = useState("");
@@ -140,13 +142,45 @@ export default function Control() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <h1 className="text-3xl md:text-4xl font-mono text-cyan-400 glow-cyan" data-testid="text-page-title">
             【制御モード】CONTROL_PANEL
           </h1>
-          <Badge className="bg-red-900/50 text-red-400 border-red-500/50" data-testid="badge-mode">
-            EXECUTION
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Link href="/monitor">
+              <Button 
+                variant="outline"
+                className="border-cyan-500/50 text-cyan-400"
+                data-testid="link-monitor"
+              >
+                <Gauge className="w-4 h-4 mr-2" />
+                監視
+              </Button>
+            </Link>
+            <Link href="/control">
+              <Button 
+                variant={location === "/control" ? "default" : "outline"}
+                className={location === "/control" ? "neon-button" : "border-cyan-500/50 text-cyan-400"}
+                data-testid="link-control"
+              >
+                <Sliders className="w-4 h-4 mr-2" />
+                制御
+              </Button>
+            </Link>
+            <Link href="/creation">
+              <Button 
+                variant="outline"
+                className="border-cyan-500/50 text-cyan-400"
+                data-testid="link-creation"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                開発
+              </Button>
+            </Link>
+            <Badge className="bg-red-900/50 text-red-400 border-red-500/50" data-testid="badge-mode">
+              EXECUTION
+            </Badge>
+          </div>
         </div>
 
         <Card className="neon-card border-yellow-500/50" data-testid="card-governance-status">

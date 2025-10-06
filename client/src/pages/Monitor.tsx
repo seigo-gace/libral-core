@@ -1,13 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link, useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Activity, Shield, Database, Cpu, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Activity, Shield, Database, Cpu, Zap, Gauge, Sliders, Sparkles } from "lucide-react";
 import { lpoApi } from "@/api/lpo";
 import { vaporizationApi } from "@/api/vaporization";
 import { selfEvolutionApi } from "@/api/selfevolution";
 
 export default function Monitor() {
+  const [location] = useLocation();
   const { data: healthScore, isLoading: healthLoading } = useQuery({
     queryKey: ["/lpo/metrics/health-score"],
     queryFn: lpoApi.getHealthScore,
@@ -54,13 +57,45 @@ export default function Monitor() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <h1 className="text-3xl md:text-4xl font-mono text-cyan-400 glow-cyan" data-testid="text-page-title">
             【監視モード】MONITOR_HUD
           </h1>
-          <Badge className="bg-cyan-900/50 text-cyan-400 border-cyan-500/50" data-testid="badge-mode">
-            SURVEILLANCE
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Link href="/monitor">
+              <Button 
+                variant={location === "/monitor" ? "default" : "outline"}
+                className={location === "/monitor" ? "neon-button" : "border-cyan-500/50 text-cyan-400"}
+                data-testid="link-monitor"
+              >
+                <Gauge className="w-4 h-4 mr-2" />
+                監視
+              </Button>
+            </Link>
+            <Link href="/control">
+              <Button 
+                variant="outline"
+                className="border-cyan-500/50 text-cyan-400"
+                data-testid="link-control"
+              >
+                <Sliders className="w-4 h-4 mr-2" />
+                制御
+              </Button>
+            </Link>
+            <Link href="/creation">
+              <Button 
+                variant="outline"
+                className="border-cyan-500/50 text-cyan-400"
+                data-testid="link-creation"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                開発
+              </Button>
+            </Link>
+            <Badge className="bg-cyan-900/50 text-cyan-400 border-cyan-500/50" data-testid="badge-mode">
+              SURVEILLANCE
+            </Badge>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
