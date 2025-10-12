@@ -11,6 +11,10 @@ import { moduleRegistry } from "./modules/registry";
 import { registerAegisRoutes } from "./routes/aegis";
 import { kbSystem } from "./modules/kb-system";
 import { aiBridge } from "./core/ai-bridge";
+import { evaluator } from "./modules/evaluator";
+import { ossManager } from "./modules/oss-manager";
+import { aiRouter } from "./core/ai-router";
+import { embeddingLayer } from "./modules/embedding";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -1356,7 +1360,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "ai_output and model_used are required" });
       }
 
-      const { evaluator } = await import("./modules/evaluator");
       const result = await evaluator.evaluateOutput(ai_output, model_used);
       res.json(result);
     } catch (error) {
@@ -1367,7 +1370,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/evaluator/history", async (req, res) => {
     try {
       const limit = parseInt(req.query.limit as string) || 10;
-      const { evaluator } = await import("./modules/evaluator");
       const history = await evaluator.getEvaluationHistory(limit);
       res.json({ history, count: history.length });
     } catch (error) {
@@ -1377,7 +1379,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/evaluator/stats", async (req, res) => {
     try {
-      const { evaluator } = await import("./modules/evaluator");
       const stats = await evaluator.getStats();
       res.json(stats);
     } catch (error) {
@@ -1388,7 +1389,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // OSS Manager Endpoints
   app.get("/api/oss/models", async (req, res) => {
     try {
-      const { ossManager } = await import("./modules/oss-manager");
       const models = ossManager.getAllModels();
       res.json({ models, count: models.length });
     } catch (error) {
@@ -1401,7 +1401,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { modelId } = req.params;
       const { priority } = req.body;
       
-      const { ossManager } = await import("./modules/oss-manager");
       const loaded = await ossManager.loadModel({
         model_id: modelId,
         priority: priority || 'normal'
@@ -1422,7 +1421,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Input is required" });
       }
 
-      const { ossManager } = await import("./modules/oss-manager");
       const output = await ossManager.inferWithModel(modelId, input);
       res.json({ output, model_id: modelId });
     } catch (error) {
@@ -1432,7 +1430,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/oss/stats", async (req, res) => {
     try {
-      const { ossManager } = await import("./modules/oss-manager");
       const stats = ossManager.getStats();
       res.json(stats);
     } catch (error) {
@@ -1449,7 +1446,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Prompt is required" });
       }
 
-      const { aiRouter } = await import("./core/ai-router");
       const response = await aiRouter.route({
         prompt,
         task_type,
@@ -1465,7 +1461,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/ai-router/stats", async (req, res) => {
     try {
-      const { aiRouter } = await import("./core/ai-router");
       const stats = aiRouter.getStats();
       res.json(stats);
     } catch (error) {
@@ -1482,7 +1477,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Text is required" });
       }
 
-      const { embeddingLayer } = await import("./modules/embedding");
       const embedding = await embeddingLayer.generateEmbedding(text, { language, category });
       res.json(embedding);
     } catch (error) {
@@ -1498,7 +1492,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Query is required" });
       }
 
-      const { embeddingLayer } = await import("./modules/embedding");
       const results = await embeddingLayer.searchSimilar(query, { limit, threshold, language, category });
       res.json({ results, count: results.length });
     } catch (error) {
@@ -1508,7 +1501,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/embedding/stats", async (req, res) => {
     try {
-      const { embeddingLayer } = await import("./modules/embedding");
       const stats = embeddingLayer.getStats();
       res.json(stats);
     } catch (error) {
