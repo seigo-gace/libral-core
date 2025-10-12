@@ -25,6 +25,10 @@ import Monitor from "@/pages/Monitor";
 import Control from "@/pages/Control";
 import Creation from "@/pages/Creation";
 import KBEditor from "@/pages/kb-editor";
+import C3Dashboard from "@/pages/c3-dashboard";
+import C3Apps from "@/pages/c3-apps";
+import C3Console from "@/pages/c3-console";
+import C3ModuleDetail from "@/pages/c3-module-detail";
 
 function Router() {
   return (
@@ -34,6 +38,10 @@ function Router() {
       <Route path="/control" component={Control} />
       <Route path="/creation" component={Creation} />
       <Route path="/kb-editor" component={KBEditor} />
+      <Route path="/c3" component={C3Dashboard} />
+      <Route path="/c3/apps" component={C3Apps} />
+      <Route path="/c3/console" component={C3Console} />
+      <Route path="/c3/apps/:moduleId" component={C3ModuleDetail} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/dashboard-hud" component={DashboardHud} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
