@@ -28,6 +28,7 @@ interface SystemMetrics {
 }
 
 export default function DashboardHud() {
+  // VERSION 2.0.1 - YELLOW DESIGN - Force Reload
   const [, setLocation] = useLocation();
   const [showSplash, setShowSplash] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
