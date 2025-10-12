@@ -22,12 +22,17 @@ Preferred communication style: Simple, everyday language.
 ## Key Architectural Components
 
 ### User Interface & Experience
-- **Global Aesthetic**: Neon Cyberpunk HUD with a cyan color scheme (`#00FFFF`), monospace typography (Courier New), neon borders with cyan glow, black gradient background.
+- **Global Aesthetic**: Neon Cyberpunk HUD with a cyan color scheme (`#00FFD1`), monospace typography (Major Mono Display/Share Tech Mono), neon borders with cyan glow, dark slate background (#080A0F).
 - **Design System**: Mobile-first PWA with PC control split.
 - **Three Operation Modes**:
     - **Monitor Mode (`/monitor`)**: Real-time system health dashboard.
     - **Control Mode (`/control`)**: Executive panel for critical operations.
     - **Creation Mode (`/creation`)**: ChatOps development with AI assistance ("月の光" copilot).
+- **C3 Console (Context Command Center)** (`/c3`):
+    - **Main Dashboard**: Geometric door animation entrance, dual navigation (Apps & Console Menu).
+    - **Apps & Features** (`/c3/apps`): Auto-generated module management UI with real-time status.
+    - **Console Menu** (`/c3/console`): System monitoring, critical operations with double-confirmation logic.
+    - **Module Detail Pages** (`/c3/apps/:moduleId`): Dynamically generated detail pages for each connected module.
 
 ### AI Model Parallelization
 - **Implementation Strategy**: Gemini for speed, GPT for complexity, Dual Verification Mode for parallel execution and hallucination detection.
