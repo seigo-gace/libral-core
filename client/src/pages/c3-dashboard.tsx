@@ -20,7 +20,7 @@ export default function C3Dashboard() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#080A0F] overflow-hidden font-mono">
+    <div className="relative min-h-screen bg-[#080A0F] overflow-hidden" style={{ fontFamily: 'Share Tech Mono, monospace' }}>
       <div className="absolute inset-0 opacity-10 pointer-events-none" 
            style={{ 
              backgroundImage: `
@@ -78,7 +78,7 @@ export default function C3Dashboard() {
                 <Terminal className="text-[#00FFD1]" />
               </div>
               <div>
-                <h1 className="text-[#00FFD1] text-2xl font-bold tracking-[0.2em]">LIBRAL CORE</h1>
+                <h1 className="text-[#00FFD1] text-2xl font-bold tracking-[0.2em]" style={{ fontFamily: 'Major Mono Display, monospace' }}>LIBRAL CORE</h1>
                 <p className="text-[#00FFD1]/60 text-xs tracking-[0.3em]">C3 CONSOLE - CONTEXT COMMAND CENTER</p>
               </div>
             </div>

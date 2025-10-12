@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Share+Tech+Mono&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -214,9 +214,10 @@
   --sidebar-accent-foreground: hsl(180, 100%, 50%);
   --sidebar-border: hsl(180, 100%, 30%);
   --sidebar-ring: hsl(180, 100%, 50%);
-  --font-sans: 'Courier New', monospace;
-  --font-serif: 'Courier New', monospace;
-  --font-mono: 'Courier New', monospace;
+  --font-sans: 'Share Tech Mono', 'Courier New', monospace;
+  --font-serif: 'Share Tech Mono', 'Courier New', monospace;
+  --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+  --font-display: 'Major Mono Display', monospace;
   --radius: 0rem;
   
   --neon-cyan: hsl(180, 100%, 50%);

@@ -33,13 +33,12 @@ import C3ModuleDetail from "@/pages/c3-module-detail";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={C3Dashboard} />
+      <Route path="/" component={DashboardHud} />
       <Route path="/monitor" component={Monitor} />
       <Route path="/control" component={Control} />
       <Route path="/creation" component={Creation} />
       <Route path="/kb-editor" component={KBEditor} />
       <Route path="/c3" component={C3Dashboard} />
-      <Route path="/dashboard-hud" component={DashboardHud} />
       <Route path="/c3/apps" component={C3Apps} />
       <Route path="/c3/console" component={C3Console} />
       <Route path="/c3/apps/:moduleId" component={C3ModuleDetail} />
