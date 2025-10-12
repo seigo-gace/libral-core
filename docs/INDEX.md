@@ -1,0 +1,38 @@
+# Libral Core - ドキュメント索引
+
+すべてのプロジェクトドキュメントを一か所にまとめています。
+
+## 📚 主要ドキュメント
+
+### アプリケーション・モジュール
+- [APPS_MODULES.md](./APPS_MODULES.md) - アプリ・モジュール管理の説明
+
+### プロジェクト概要
+- [../README.md](../README.md) - プロジェクトREADME
+- [../replit.md](../replit.md) - システムアーキテクチャ・設計仕様
+- [../PROJECT_STRUCTURE.md](../PROJECT_STRUCTURE.md) - プロジェクト構造
+
+### Python コア (libral-core)
+- [LIBRAL_CORE_PYTHON_REFERENCE.md](./LIBRAL_CORE_PYTHON_REFERENCE.md) - Python実装リファレンス
+
+## 📋 完了レポート
+
+### マイグレーション・戦略
+- [LIBRAL_CORE_MIGRATION_STRATEGY.md](./LIBRAL_CORE_MIGRATION_STRATEGY.md)
+- [PLUGIN_MARKETPLACE_COMPLETION_REPORT.md](./PLUGIN_MARKETPLACE_COMPLETION_REPORT.md)
+
+### Telegram統合
+- [TELEGRAM_PERSONAL_LOG_PROTOCOL.md](./TELEGRAM_PERSONAL_LOG_PROTOCOL.md)
+- [TELEGRAM_TOPICS_HASHTAGS_IMPROVEMENT_REPORT.md](./TELEGRAM_TOPICS_HASHTAGS_IMPROVEMENT_REPORT.md)
+
+### 週次完了レポート
+- [WEEK_1_COMPLETION_REPORT.md](./WEEK_1_COMPLETION_REPORT.md) - Week 1
+- [WEEK_3_AUTH_COMPLETION_REPORT.md](./WEEK_3_AUTH_COMPLETION_REPORT.md) - Week 3: 認証
+- [WEEK_4_COMMUNICATION_COMPLETION_REPORT.md](./WEEK_4_COMMUNICATION_COMPLETION_REPORT.md) - Week 4: 通信
+- [WEEK_5_EVENTS_COMPLETION_REPORT.md](./WEEK_5_EVENTS_COMPLETION_REPORT.md) - Week 5: イベント
+- [WEEK_6_PAYMENTS_COMPLETION_REPORT.md](./WEEK_6_PAYMENTS_COMPLETION_REPORT.md) - Week 6: 決済
+- [WEEK_7_API_HUB_COMPLETION_REPORT.md](./WEEK_7_API_HUB_COMPLETION_REPORT.md) - Week 7: APIハブ
+
+## 🔍 検索方法
+
+全てのmdファイルは`docs/`フォルダに集約されています。
