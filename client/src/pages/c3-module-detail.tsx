@@ -241,7 +241,7 @@ export default function C3ModuleDetail() {
                   <div className="flex-1 h-px bg-[#00FFD1]/30" />
                 </div>
                 <pre className="text-[#00FFD1] text-sm overflow-auto" data-testid="stats-display">
-                  {JSON.stringify(stats as Record<string, unknown>, null, 2)}
+                  {JSON.stringify(stats, null, 2)}
                 </pre>
               </div>
             )}
