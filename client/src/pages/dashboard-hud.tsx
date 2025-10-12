@@ -1,20 +1,23 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { HudCard, HudButton, HexPanel, RadarDisplay, MetricPanel, WarningStrip } from "@/components/ui/hud-elements";
+import { useLocation } from "wouter";
 import { 
   Activity, 
   Users, 
   Zap, 
-  Server, 
   Database, 
   Shield,
   Cpu,
   MemoryStick,
   Wifi,
-  AlertTriangle,
   Settings,
-  RefreshCw,
-  Terminal
+  ChevronRight,
+  X,
+  Play,
+  Home,
+  FileText,
+  Image as ImageIcon,
+  BarChart3
 } from "lucide-react";
 
 interface SystemMetrics {
@@ -25,9 +28,9 @@ interface SystemMetrics {
 }
 
 export default function DashboardHud() {
-  const [selectedModule, setSelectedModule] = useState<string | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [doorOpen, setDoorOpen] = useState(false);
+  const [, setLocation] = useLocation();
+  const [showSplash, setShowSplash] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const { data: metrics } = useQuery<SystemMetrics>({
     queryKey: ['/api/system/metrics'],
@@ -35,336 +38,343 @@ export default function DashboardHud() {
   });
 
   useEffect(() => {
-    setTimeout(() => setDoorOpen(true), 100);
+    const timer = setTimeout(() => setShowSplash(false), 2000);
+    return () => clearTimeout(timer);
   }, []);
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    setTimeout(() => setIsRefreshing(false), 1000);
-  };
-
-  const handleModuleClick = (moduleId: string) => {
-    switch (moduleId) {
-      case 'aegis-pgp':
-        window.location.href = '/gpg-config';
-        break;
-      case 'communication':
-        window.location.href = '/communication-gateway';
-        break;
-      case 'database':
-        window.location.href = '/database-management';
-        break;
-      case 'events':
-        window.location.href = '/event-management';
-        break;
-      case 'payment':
-        window.location.href = '/payment-management';
-        break;
-      case 'users':
-        window.location.href = '/user-management';
-        break;
-      case 'c3-apps':
-        window.location.href = '/c3/apps';
-        break;
-      case 'c3-console':
-        window.location.href = '/c3/console';
-        break;
-      default:
-        alert(`${moduleId}モジュールの管理画面に移動します`);
-    }
-  };
-
-  const coreModules = [
-    { id: 'aegis-pgp', name: '暗号化', icon: <Shield className="w-4 h-4" />, status: 'active' },
-    { id: 'communication', name: '通信', icon: <Wifi className="w-4 h-4" />, status: 'active' },
-    { id: 'database', name: 'DB', icon: <Database className="w-4 h-4" />, status: 'active' },
-    { id: 'events', name: 'イベント', icon: <Activity className="w-4 h-4" />, status: 'active' },
-    { id: 'payment', name: '決済', icon: <Zap className="w-4 h-4" />, status: 'active' },
-    { id: 'users', name: 'ユーザー', icon: <Users className="w-4 h-4" />, status: 'active' },
-    { id: 'c3-apps', name: 'C3 Apps', icon: <Terminal className="w-4 h-4" />, status: 'active' },
-    { id: 'c3-console', name: 'Console', icon: <Server className="w-4 h-4" />, status: 'active' },
+  const menuItems = [
+    { id: 'dashboard', icon: <Home className="w-5 h-5" />, label: 'DASHBOARD', desc: 'System overview and monitoring' },
+    { id: 'aegis', icon: <Shield className="w-5 h-5" />, label: 'AEGIS-PGP', desc: 'Encryption and security' },
+    { id: 'database', icon: <Database className="w-5 h-5" />, label: 'DATABASE', desc: 'Data management system' },
+    { id: 'analytics', icon: <BarChart3 className="w-5 h-5" />, label: 'ANALYTICS', desc: 'System metrics and reports' },
+    { id: 'users', icon: <Users className="w-5 h-5" />, label: 'USERS', desc: 'User management console' },
   ];
 
+  const metrics_display = [
+    { label: 'LOADING...', value: metrics?.cpuUsage || '40', unit: '%' },
+    { label: 'PROCESSING...', value: metrics?.memoryUsage || '58', unit: '%' },
+    { label: 'NETWORK...', value: metrics?.activeUsers || '70', unit: '%' },
+  ];
+
+  if (showSplash) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center overflow-hidden relative">
+        <div className="absolute inset-0 opacity-5" 
+             style={{ 
+               backgroundImage: `
+                 linear-gradient(#333 1px, transparent 1px),
+                 linear-gradient(90deg, #333 1px, transparent 1px)
+               `,
+               backgroundSize: '20px 20px'
+             }} 
+        />
+        
+        {/* Circuit Pattern */}
+        <svg className="absolute right-0 top-0 h-full w-1/2 opacity-80" viewBox="0 0 400 800" fill="none">
+          <path d="M 200 0 L 200 150 L 250 200 L 250 350 L 200 400 L 200 550 L 150 600 L 150 800" 
+                stroke="#FFEB00" strokeWidth="4" fill="none"/>
+          <path d="M 240 0 L 240 130 L 290 180 L 290 370 L 240 420 L 240 570 L 190 620 L 190 800" 
+                stroke="#FFEB00" strokeWidth="4" fill="none"/>
+          <circle cx="200" cy="200" r="20" stroke="#FFEB00" strokeWidth="2" fill="#000"/>
+          <circle cx="250" cy="400" r="15" stroke="#FFEB00" strokeWidth="2" fill="#FFEB00"/>
+          <rect x="140" y="350" width="10" height="30" fill="#FFEB00"/>
+          <rect x="280" y="500" width="10" height="30" fill="#FFEB00"/>
+        </svg>
+        
+        <div className="relative z-10 text-center">
+          <div className="mb-4 flex justify-center gap-2">
+            <div className="w-2 h-8 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+            <div className="w-2 h-8 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+            <div className="w-2 h-8 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+          </div>
+          <h1 className="text-[120px] md:text-[180px] font-bold text-white mb-2 leading-none tracking-tight">00</h1>
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="w-2 h-1 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+            <div className="w-2 h-1 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+            <div className="w-2 h-1 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+            <div className="w-2 h-1 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+          </div>
+          <h2 className="text-3xl md:text-5xl font-bold text-[#FFEB00] tracking-[0.3em]">LIBRAL</h2>
+          <p className="mt-6 text-gray-400 text-sm max-w-xs mx-auto">
+            Lorem ipsum qrqeieemet, arqs iepsnsequetruee us can un seadia riq no- addir ut tamce tcr ninq aliqn eeiiai netus placentre mek ae
+            unentumlaadi.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="relative min-h-screen bg-[#080A0F] overflow-hidden">
+    <div className="min-h-screen bg-black text-white" style={{ fontFamily: 'Share Tech Mono, monospace' }}>
       {/* Grid Background */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none" 
+      <div className="fixed inset-0 opacity-5 pointer-events-none" 
            style={{ 
              backgroundImage: `
-               linear-gradient(#00FFD1 1px, transparent 1px),
-               linear-gradient(90deg, #00FFD1 1px, transparent 1px)
+               linear-gradient(#333 1px, transparent 1px),
+               linear-gradient(90deg, #333 1px, transparent 1px)
              `,
              backgroundSize: '20px 20px'
            }} 
       />
-      
-      {/* Noise Texture */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none"
-           style={{
-             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' /%3E%3C/svg%3E")`
-           }}
-      />
 
-      {/* Door Animation - Left */}
-      <div 
-        className={`door-left fixed left-0 top-0 h-full w-1/2 bg-[#080A0F] z-50 transition-transform duration-[800ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${
-          doorOpen ? '-translate-x-full' : 'translate-x-0'
-        }`}
-        style={{
-          clipPath: 'polygon(0 0, 85% 0, 100% 50%, 85% 100%, 0 100%)',
-          borderRight: '2px solid #00FFD1',
-          boxShadow: doorOpen ? 'none' : '0 0 30px #00FFD1'
-        }}
-      >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-[#00FFD1] text-6xl md:text-8xl font-bold animate-pulse" 
-               style={{ fontFamily: 'Major Mono Display, monospace' }}>L</div>
-        </div>
-      </div>
-
-      {/* Door Animation - Right */}
-      <div 
-        className={`door-right fixed right-0 top-0 h-full w-1/2 bg-[#080A0F] z-50 transition-transform duration-[800ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${
-          doorOpen ? 'translate-x-full' : 'translate-x-0'
-        }`}
-        style={{
-          clipPath: 'polygon(15% 0, 100% 0, 100% 100%, 15% 100%, 0% 50%)',
-          borderLeft: '2px solid #00FFD1',
-          boxShadow: doorOpen ? 'none' : '0 0 30px #00FFD1'
-        }}
-      >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-[#00FFD1] text-6xl md:text-8xl font-bold animate-pulse"
-               style={{ fontFamily: 'Major Mono Display, monospace' }}>C</div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="relative z-10 min-h-screen text-white" style={{ fontFamily: 'Share Tech Mono, monospace' }}>
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#00FFD1] to-transparent" />
+      {/* Mobile/Desktop Layout */}
+      <div className="relative flex flex-col lg:flex-row min-h-screen">
         
-        {/* Mobile: Single Column Layout, Desktop: Multi-column Layout */}
-        <div className="p-4 space-y-4 max-w-md mx-auto lg:max-w-7xl">
+        {/* Main Content Area */}
+        <div className="flex-1 p-4 md:p-8 overflow-y-auto">
           
           {/* Header */}
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 md:w-12 md:h-12 border-2 border-[#00FFD1] flex items-center justify-center"
-                   style={{ clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)' }}>
-                <Terminal className="text-[#00FFD1] w-5 h-5 md:w-6 md:h-6" />
+          <div className="mb-8 relative">
+            <div className="absolute top-0 left-0 w-16 h-16 border-l-2 border-t-2 border-white opacity-30"></div>
+            <div className="absolute top-0 right-0 w-16 h-16 border-r-2 border-t-2 border-white opacity-30"></div>
+            
+            <div className="flex items-center justify-between py-4 px-2">
+              <button 
+                onClick={() => window.history.back()}
+                className="p-2 hover:bg-white/10 transition-colors"
+                data-testid="button-back"
+              >
+                <ChevronRight className="w-6 h-6 rotate-180" />
+              </button>
+              
+              <div className="text-center">
+                <div className="text-sm text-gray-500">[ 2-2 ]</div>
               </div>
-              <div>
-                <h1 className="text-lg md:text-2xl font-bold text-[#00FFD1] tracking-[0.2em]" 
-                    style={{ fontFamily: 'Major Mono Display, monospace' }}>LIBRAL CORE</h1>
-                <p className="text-[10px] md:text-xs text-[#00FFD1]/60 tracking-[0.3em]">NEON CYBERPUNK HUD - システム監視コンソール</p>
-              </div>
+              
+              <button 
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="lg:hidden p-2 hover:bg-white/10 transition-colors"
+                data-testid="button-menu-toggle"
+              >
+                <Settings className="w-6 h-6" />
+              </button>
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="text-[#00FFD1]/60 text-xs md:text-sm tracking-wider">[系統-連続]</div>
-              <HudButton 
-                onClick={handleRefresh} 
-                disabled={isRefreshing}
-                variant="primary"
-                size="sm"
-                data-testid="button-refresh-hud"
-              >
-                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              </HudButton>
+            <h1 className="text-4xl md:text-6xl font-bold text-center my-8 tracking-[0.3em]">
+              LIBRAL
+            </h1>
+            
+            <div className="flex justify-center gap-4 mb-6">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-1 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+                <div className="w-8 h-1 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-1 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+                <div className="w-8 h-1 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+              </div>
             </div>
           </div>
 
-          {/* Mobile: Horizontal scroll, Desktop: Vertical sidebar */}
-          <div className="flex flex-col lg:flex-row lg:space-x-6">
-            {/* Left Panel - Hexagonal Module Status */}
-            <div className="mb-4 lg:mb-0 lg:w-24">
-              <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0">
-                {coreModules.map((module) => (
-                  <HexPanel 
-                    key={module.id} 
-                    active={module.status === 'active'}
-                    size="sm"
-                    className="flex-shrink-0 cursor-pointer hover:scale-105 transition-transform border border-[#00FFD1]/50 hover:border-[#00FFD1]"
-                    onClick={() => handleModuleClick(module.id)}
-                    data-testid={`hex-${module.id}`}
+          {/* Main Buttons - Mobile: Stack, Desktop: 2-col */}
+          <div className="max-w-4xl mx-auto space-y-4 mb-8">
+            <button 
+              onClick={() => setLocation('/c3/apps')}
+              className="group w-full p-6 bg-black border-2 border-white hover:border-[#FFEB00] transition-all relative overflow-hidden"
+              style={{ 
+                clipPath: 'polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)'
+              }}
+              data-testid="button-apps"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <ChevronRight className="w-6 h-6 text-[#FFEB00]" />
+                  <span className="text-2xl md:text-3xl font-bold tracking-wider">APP</span>
+                </div>
+              </div>
+              <div className="absolute top-2 right-4 flex gap-1">
+                <div className="w-1 h-6 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+                <div className="w-1 h-6 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+                <div className="w-1 h-6 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+              </div>
+            </button>
+
+            <button 
+              onClick={() => setLocation('/c3/console')}
+              className="group w-full p-6 bg-black border-2 border-white hover:border-[#FFEB00] transition-all relative overflow-hidden"
+              style={{ 
+                clipPath: 'polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)'
+              }}
+              data-testid="button-console"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full border-2 border-[#FFEB00] flex items-center justify-center">
+                  <div className="text-[#FFEB00] text-xl font-bold">!</div>
+                </div>
+                <span className="text-2xl md:text-3xl font-bold tracking-wider">CONSOLE</span>
+              </div>
+              <div className="absolute top-2 right-4 flex gap-1">
+                <div className="w-1 h-6 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+                <div className="w-1 h-6 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+                <div className="w-1 h-6 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+              </div>
+            </button>
+          </div>
+
+          {/* Metrics - Mobile: Stack, Desktop: 3-col */}
+          <div className="max-w-4xl mx-auto space-y-4 md:grid md:grid-cols-3 md:gap-6 md:space-y-0">
+            {metrics_display.map((metric, index) => (
+              <div key={index} className="space-y-2" data-testid={`metric-${index}`}>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-400">{metric.label}</span>
+                  <span className="text-white font-bold">{metric.value}{metric.unit}</span>
+                </div>
+                <div className="h-6 bg-gray-800 border border-gray-700 relative overflow-hidden">
+                  <div 
+                    className="h-full bg-[#FFEB00] transition-all duration-500"
+                    style={{ width: `${metric.value}%` }}
                   >
-                    <div className="text-xs text-center text-[#00FFD1]">
-                      {module.icon}
-                      <div className="text-[9px] md:text-[10px] mt-1">{module.name}</div>
+                    <div className="absolute inset-0 flex gap-1 opacity-60">
+                      {[...Array(10)].map((_, i) => (
+                        <div key={i} className="w-1 h-full bg-black" style={{ transform: 'skewX(-20deg)' }}></div>
+                      ))}
                     </div>
-                  </HexPanel>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Visual Elements */}
+          <div className="max-w-4xl mx-auto mt-12 space-y-8">
+            {/* Circular Gauge */}
+            <div className="border-2 border-white p-8 relative" 
+                 style={{ clipPath: 'polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)' }}>
+              <div className="flex justify-center mb-6">
+                <svg width="200" height="200" viewBox="0 0 200 200">
+                  <circle cx="100" cy="100" r="90" stroke="#333" strokeWidth="2" fill="none"/>
+                  <circle cx="100" cy="100" r="75" stroke="#333" strokeWidth="1" fill="none"/>
+                  <circle cx="100" cy="100" r="60" stroke="#333" strokeWidth="1" fill="none"/>
+                  <line x1="100" y1="10" x2="100" y2="190" stroke="#333" strokeWidth="1"/>
+                  <line x1="10" y1="100" x2="190" y2="100" stroke="#333" strokeWidth="1"/>
+                  <circle cx="100" cy="100" r="5" fill="#333"/>
+                  <text x="100" y="170" textAnchor="middle" className="text-xs fill-gray-500" style={{ fontFamily: 'Share Tech Mono, monospace' }}>
+                    TARGET COORDS 233-117-351
+                  </text>
+                </svg>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <button 
+                  className="p-4 border-2 border-white hover:border-[#FFEB00] transition-all flex items-center gap-3"
+                  style={{ clipPath: 'polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)' }}
+                  data-testid="button-folder"
+                >
+                  <X className="w-6 h-6 text-[#FFEB00]" />
+                  <div className="text-left">
+                    <div className="text-lg font-bold">FOLDER</div>
+                    <div className="text-xs text-gray-500">FCN 2502 305 20</div>
+                  </div>
+                </button>
+                
+                <button 
+                  className="p-4 border-2 border-white hover:border-[#FFEB00] transition-all flex items-center gap-3"
+                  style={{ clipPath: 'polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)' }}
+                  data-testid="button-media"
+                >
+                  <Play className="w-6 h-6 text-[#FFEB00]" />
+                  <div className="text-left">
+                    <div className="text-lg font-bold">MEDIA</div>
+                    <div className="text-xs text-gray-500">FCN 4492 277 08</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Right Sidebar Menu - PC only */}
+        <div className={`
+          fixed lg:relative top-0 right-0 h-full w-80 bg-black border-l-2 border-white
+          transform transition-transform duration-300 z-50
+          ${menuOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
+        `}>
+          <div className="p-6 h-full overflow-y-auto">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-xl font-bold tracking-wider">MENU</h2>
+              <button 
+                onClick={() => setMenuOpen(false)}
+                className="lg:hidden p-2 hover:bg-white/10"
+                data-testid="button-menu-close"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {menuItems.map((item, index) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setLocation(`/${item.id}`);
+                    setMenuOpen(false);
+                  }}
+                  className="w-full group hover:bg-white/5 transition-all relative"
+                  data-testid={`menu-${item.id}`}
+                >
+                  <div className="flex items-center gap-4 p-4 border-l-4 border-transparent hover:border-[#FFEB00]">
+                    <div className="w-12 h-12 rounded-full border-2 border-[#FFEB00] flex items-center justify-center flex-shrink-0">
+                      {item.icon}
+                    </div>
+                    <div className="flex-1 text-left">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-[#FFEB00]">{String.fromCharCode(65 + index)}</span>
+                        <span className="font-bold text-sm">{item.label}</span>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">{item.desc}</div>
+                    </div>
+                    <div className="w-8 h-8 rotate-45 bg-[#FFEB00] flex items-center justify-center flex-shrink-0">
+                      <span className="text-black font-bold text-sm -rotate-45">0{index + 1}</span>
+                    </div>
+                  </div>
+                  
+                  {index < menuItems.length - 1 && (
+                    <div className="ml-16 flex items-center gap-1">
+                      {[...Array(8)].map((_, i) => (
+                        <div key={i} className="w-1 h-1 bg-gray-700"></div>
+                      ))}
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Data Visualizations */}
+            <div className="mt-12 space-y-6">
+              <div className="border-2 border-gray-800 p-4">
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <div className="w-16 h-16 rounded-full border-4 border-[#FFEB00] border-t-transparent animate-spin"></div>
+                  <div className="text-center">
+                    <div className="text-sm text-gray-500">DATA</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-2">
+                {[60, 34, 70].map((value, i) => (
+                  <div key={i} className="text-center">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                      <circle cx="30" cy="30" r="25" stroke="#333" strokeWidth="4" fill="none"/>
+                      <circle 
+                        cx="30" cy="30" r="25" 
+                        stroke="#FFEB00" 
+                        strokeWidth="4" 
+                        fill="none"
+                        strokeDasharray={`${value * 1.57} ${157 - value * 1.57}`}
+                        transform="rotate(-90 30 30)"
+                      />
+                      <text x="30" y="35" textAnchor="middle" className="text-sm font-bold fill-[#FFEB00]">
+                        {value}
+                      </text>
+                    </svg>
+                  </div>
                 ))}
               </div>
             </div>
-
-            {/* Main Content Grid */}
-            <div className="flex-1 space-y-4">
-              
-              {/* System Metrics Row - Mobile: 2 cols, Desktop: 4 cols */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-                <HudCard variant="primary" className="border-[#00FFD1]/50">
-                  <MetricPanel
-                    title="CPU使用率"
-                    value={metrics?.cpuUsage || '0'}
-                    unit="%"
-                    trend="stable"
-                    color="#00FFD1"
-                    icon={<Cpu className="w-4 h-4" />}
-                  />
-                </HudCard>
-                
-                <HudCard variant="secondary" className="border-[#00FFD1]/50">
-                  <MetricPanel
-                    title="メモリ"
-                    value={metrics?.memoryUsage || '0'}
-                    unit="%"
-                    trend="up"
-                    color="#00FFD1"
-                    icon={<MemoryStick className="w-4 h-4" />}
-                  />
-                </HudCard>
-                
-                <HudCard variant="info" className="col-span-2 lg:col-span-1 border-[#00FFD1]/50">
-                  <MetricPanel
-                    title="アクティブユーザー"
-                    value={metrics?.activeUsers || '0'}
-                    trend="up"
-                    color="#00FFD1"
-                    icon={<Users className="w-4 h-4" />}
-                  />
-                </HudCard>
-                
-                <HudCard variant="primary" className="hidden lg:block border-[#00FFD1]/50">
-                  <MetricPanel
-                    title="API呼出/分"
-                    value={metrics?.apiRequestsPerMinute || '0'}
-                    trend="stable"
-                    color="#00FFD1"
-                    icon={<Activity className="w-4 h-4" />}
-                  />
-                </HudCard>
-              </div>
-
-              {/* Main Display Area - Mobile: Stack, Desktop: 3-column grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                
-                {/* Radar Display */}
-                <HudCard variant="primary" className="flex flex-col items-center justify-center p-6 border-[#00FFD1]/50 bg-[#00FFD1]/5">
-                  <div className="mb-4">
-                    <RadarDisplay progress={85} size={120} color="#00FFD1" />
-                  </div>
-                  <div className="text-center">
-                    <div className="text-xl font-bold text-[#00FFD1]">システム正常</div>
-                    <div className="text-xs text-[#00FFD1]/60">稼働率 99.8%</div>
-                  </div>
-                </HudCard>
-                
-                {/* Status Panel */}
-                <HudCard variant="secondary" className="lg:col-span-2 border-[#00FFD1]/50 bg-[#00FFD1]/5">
-                  <div className="space-y-3">
-                    <h3 className="text-base md:text-lg font-bold text-[#00FFD1] mb-4" 
-                        style={{ fontFamily: 'Major Mono Display, monospace' }}>
-                      NEON CYBERPUNK HUD
-                    </h3>
-                    
-                    {/* Mobile: 1 col, Desktop: 2 cols */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {[
-                        { label: 'セキュリティ', status: '保護済み', color: 'text-[#00FFD1]' },
-                        { label: 'データ主権', status: '維持', color: 'text-[#00FFD1]' },
-                        { label: '暗号化', status: 'AES-256', color: 'text-[#00FFD1]' },
-                        { label: 'Telegram統合', status: '接続中', color: 'text-[#00FFD1]' },
-                      ].map((item, index) => (
-                        <div key={index} 
-                             className="flex justify-between items-center p-3 bg-black/30 border border-[#00FFD1]/30 rounded"
-                             data-testid={`status-${item.label}`}>
-                          <span className="text-xs md:text-sm text-[#00FFD1]/80">{item.label}</span>
-                          <span className={`text-xs font-mono ${item.color}`}>{item.status}</span>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {/* Progress Bars */}
-                    <div className="space-y-2 mt-4">
-                      {[
-                        { label: 'システム負荷', progress: 23 },
-                        { label: 'ネットワーク', progress: 67 },
-                        { label: 'ストレージ', progress: 45 },
-                      ].map((item, index) => (
-                        <div key={index} className="space-y-1">
-                          <div className="flex justify-between text-xs">
-                            <span className="text-[#00FFD1]/80">{item.label}</span>
-                            <span className="text-[#00FFD1]">{item.progress}%</span>
-                          </div>
-                          <div className="h-2 bg-[#00FFD1]/10 border border-[#00FFD1]/30 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-[#00FFD1] rounded-full transition-all duration-500"
-                              style={{ 
-                                width: `${item.progress}%`,
-                                boxShadow: '0 0 10px #00FFD1'
-                              }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </HudCard>
-              </div>
-
-              {/* Action Buttons - Mobile: 2 cols, Desktop: 4 cols */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <HudButton 
-                  variant="primary" 
-                  onClick={() => window.location.href = '/admin-dashboard'}
-                  className="border-[#00FFD1]/50 hover:border-[#00FFD1] text-[#00FFD1]"
-                  data-testid="button-admin-dashboard"
-                >
-                  <Settings className="w-4 h-4 mr-2" />
-                  <span className="text-xs md:text-sm">管理</span>
-                </HudButton>
-                <HudButton 
-                  variant="secondary" 
-                  onClick={() => window.location.href = '/hud-user-menu'}
-                  className="border-[#00FFD1]/50 hover:border-[#00FFD1] text-[#00FFD1]"
-                  data-testid="button-user-menu"
-                >
-                  <Users className="w-4 h-4 mr-2" />
-                  <span className="text-xs md:text-sm">ユーザー</span>
-                </HudButton>
-                <HudButton 
-                  variant="primary" 
-                  onClick={() => window.location.href = '/analytics'}
-                  className="border-[#00FFD1]/50 hover:border-[#00FFD1] text-[#00FFD1]"
-                  data-testid="button-analytics"
-                >
-                  <Activity className="w-4 h-4 mr-2" />
-                  <span className="text-xs md:text-sm">分析</span>
-                </HudButton>
-                <HudButton 
-                  variant="secondary" 
-                  onClick={() => window.location.href = '/settings'}
-                  className="border-[#00FFD1]/50 hover:border-[#00FFD1] text-[#00FFD1]"
-                  data-testid="button-settings"
-                >
-                  <Server className="w-4 h-4 mr-2" />
-                  <span className="text-xs md:text-sm">設定</span>
-                </HudButton>
-              </div>
-
-            </div>
           </div>
-
-          {/* Warning Strip */}
-          <WarningStrip>
-            <span className="text-xs md:text-sm font-mono text-[#00FFD1]">
-              システム監視中 - 全モジュール正常動作 - LIBRAL CORE v1.0
-            </span>
-          </WarningStrip>
-
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#00FFD1] to-transparent" />
       </div>
     </div>
   );
