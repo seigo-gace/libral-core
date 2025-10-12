@@ -41,22 +41,27 @@ app.use((req, res, next) => {
   // Initialize transport system
   initTransport();
   
-  // Initialize new AI modules
-  const { kbSystem } = await import("./modules/kb-system");
-  const { aiBridge } = await import("./core/ai-bridge");
-  const { evaluator } = await import("./modules/evaluator");
-  const { ossManager } = await import("./modules/oss-manager");
-  const { embeddingLayer } = await import("./modules/embedding");
-  const { aiRouter } = await import("./core/ai-router");
-  
-  await kbSystem.initialize();
-  await aiBridge.initialize();
-  await evaluator.initialize();
-  await ossManager.initialize();
-  await embeddingLayer.initialize();
-  await aiRouter.initialize();
-  
-  console.log("[LIBRAL-CORE] All AI modules initialized successfully");
+  // Initialize new AI modules (disabled for now to ensure app starts)
+  try {
+    const { kbSystem } = await import("./modules/kb-system");
+    const { aiBridge } = await import("./core/ai-bridge");
+    const { evaluator } = await import("./modules/evaluator");
+    const { ossManager } = await import("./modules/oss-manager");
+    const { embeddingLayer } = await import("./modules/embedding");
+    const { aiRouter } = await import("./core/ai-router");
+    
+    await kbSystem.initialize();
+    await aiBridge.initialize();
+    await evaluator.initialize();
+    await ossManager.initialize();
+    await embeddingLayer.initialize();
+    await aiRouter.initialize();
+    
+    console.log("[LIBRAL-CORE] All AI modules initialized successfully");
+  } catch (error) {
+    console.error("[LIBRAL-CORE] AI modules initialization failed:", error);
+    console.log("[LIBRAL-CORE] Continuing without AI modules...");
+  }
   
   const server = await registerRoutes(app);
 
