@@ -1,0 +1,104 @@
+{
+  "project_id": "Libral_KBSystem_v2",
+  "type": "Unified_AI_Development_Directive",
+  "version": "2.0-FINAL",
+  "objective": "AI-NumbersとLibral Coreを統合し、自動進化型KnowledgeBase Systemを開発・構築・デプロイする。",
+  "execution_environment": {
+    "primary": "Replit AI",
+    "secondary": "Hetzner VPS",
+    "local_backup": true,
+    "repository": "https://github.com/seigo-gace/AI-Numbers",
+    "language_stack": ["TypeScript", "Python", "FastAPI", "React", "Node.js", "Redis", "PostgreSQL"]
+  },
+  "phases": {
+    "design": {
+      "tasks": [
+        "Libral Core と KBsystem のアーキテクチャ統合設計",
+        "AI Router / Evaluator / Embedding Layer の接続構成設計",
+        "多言語（80+）対応構成の定義（翻訳層・判定層）",
+        "GPG暗号化通信層とAPIキー管理モジュール定義",
+        "OSS AI 埋め込みモジュール (sentence-transformers / FAISS / LangChain) 設計",
+        "自己評価AI (Evaluator2.0) の評価基準と改善ループ設計"
+      ]
+    },
+    "development": {
+      "modules": {
+        "router": "AI選定・負荷分散・最適AI割り当て",
+        "gpt5mini_agent": "軽処理・分類・整形・ログ圧縮",
+        "gemini_agent": "構文解析・翻訳・外部検索",
+        "libral_core_agent": "評価・統制・KB更新・自己改善",
+        "oss_bridge": "OSSモデル（LLaMA / Mistral / Whisper / CLIP）統合",
+        "embedding_layer": "FAISS＋ChromaDBを用いたベクトル記憶",
+        "storage_module": "PostgreSQL＋Redis キャッシュ連携",
+        "security_module": "GPG暗号＋ContextLock＋AES通信",
+        "ui_console": "AI-Numbers Web Console 連携 (React + Vite)",
+        "integration": "Hetzner上でFastAPI+Nodeバックエンドの統合構成"
+      },
+      "ai_roles": {
+        "GPT5_mini": "軽量推論／整形／分類／要約",
+        "Gemini": "構文解析／翻訳／情報拡張",
+        "Libral_Core_AI": "制御・評価・KB統括・自己進化",
+        "OSS_Models": "専門特化AI群：LLaMA3, Mistral, Falcon, Whisper, CLIP",
+        "AI_Evaluator_2.0": "出力の精度・倫理・最適化を自動評価・修正"
+      }
+    },
+    "test": {
+      "objectives": [
+        "全AI間通信テスト（非同期・並列ルーティング）",
+        "Embedding検索精度テスト（100件サンプル）",
+        "GPG暗号通信確認（送受信暗号復号）",
+        "Replit / Hetzner間同期テスト（GitHub push/pull）",
+        "AI Evaluatorによる自動採点（>95%精度で合格）",
+        "自動翻訳精度確認（主要10言語）"
+      ]
+    },
+    "deploy": {
+      "targets": [
+        "Hetzner VPS: /opt/KBsystem",
+        "Local PC: /usr/local/KBsystem",
+        "GitHub Repository: AI-Numbers"
+      ],
+      "tasks": [
+        "systemd サービス登録（devai.service → kbsystem.service）",
+        "Cloudflare Tunnel でリバースプロキシ設定",
+        "バックアップ暗号化ZIPの自動生成",
+        "Replit AI 自動更新フック（AI-Numbers:mainブランチ）"
+      ]
+    }
+  },
+  "knowledge_base": {
+    "languages": 80,
+    "embedding_engine": "FAISS + ChromaDB",
+    "translation_layer": ["Gemini", "NLLB", "M2M100"],
+    "data_security": "GPG署名・AES256暗号・非ログ型構造",
+    "auto_update": true
+  },
+  "self_improvement_rules": {
+    "Replit_AI": "常に提案された最適化案を優先実装し、上位精度を検出した場合は自動反映",
+    "Libral_Core_AI": "生成コードを毎回自己評価し、90点未満の場合は再生成",
+    "Evaluator2.0": "全処理後に自己採点・修正・更新",
+    "Gemini": "外部情報更新周期＝24h",
+    "GPT5_Mini": "負荷監視による自動キャッシュ制御"
+  },
+  "security": {
+    "encryption": "GPG (RSA4096, AES256)",
+    "keys": "ContextLock式マルチキー認証",
+    "storage_policy": "No persistent logs / ephemeral cache only",
+    "access_control": ["admin1", "Libral Core AI", "Replit AI"]
+  },
+  "deployment_policy": {
+    "auto_push": true,
+    "branch": "main",
+    "mirror": true,
+    "rollback": true
+  },
+  "final_validation": {
+    "criteria": [
+      "全AIが自動同期動作していること",
+      "Hetzner / Local / Replit すべてで起動成功",
+      "自己改善ループが正しく稼働",
+      "GPG暗号層が通信全体に適用",
+      "APIキーや秘密情報が外部流出しない構成"
+    ]
+  }
+}

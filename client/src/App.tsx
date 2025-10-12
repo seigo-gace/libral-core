@@ -24,6 +24,7 @@ import NotFound from "@/pages/not-found";
 import Monitor from "@/pages/Monitor";
 import Control from "@/pages/Control";
 import Creation from "@/pages/Creation";
+import KBEditor from "@/pages/kb-editor";
 
 function Router() {
   return (
@@ -32,6 +33,7 @@ function Router() {
       <Route path="/monitor" component={Monitor} />
       <Route path="/control" component={Control} />
       <Route path="/creation" component={Creation} />
+      <Route path="/kb-editor" component={KBEditor} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/dashboard-hud" component={DashboardHud} />
       <Route path="/admin-dashboard" component={AdminDashboard} />

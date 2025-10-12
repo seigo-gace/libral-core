@@ -41,6 +41,23 @@ app.use((req, res, next) => {
   // Initialize transport system
   initTransport();
   
+  // Initialize new AI modules
+  const { kbSystem } = await import("./modules/kb-system");
+  const { aiBridge } = await import("./core/ai-bridge");
+  const { evaluator } = await import("./modules/evaluator");
+  const { ossManager } = await import("./modules/oss-manager");
+  const { embeddingLayer } = await import("./modules/embedding");
+  const { aiRouter } = await import("./core/ai-router");
+  
+  await kbSystem.initialize();
+  await aiBridge.initialize();
+  await evaluator.initialize();
+  await ossManager.initialize();
+  await embeddingLayer.initialize();
+  await aiRouter.initialize();
+  
+  console.log("[LIBRAL-CORE] All AI modules initialized successfully");
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

@@ -9,6 +9,8 @@ import { z } from "zod";
 import { getTransportRouter } from "./core/transport/bootstrap";
 import { moduleRegistry } from "./modules/registry";
 import { registerAegisRoutes } from "./routes/aegis";
+import { kbSystem } from "./modules/kb-system";
+import { aiBridge } from "./core/ai-bridge";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -1242,6 +1244,275 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch training status" });
+    }
+  });
+
+  // KB Edit API - Direct KB Management from Web UI
+  app.get("/api/kb/entries", async (req, res) => {
+    try {
+      const { category, language } = req.query;
+      const entries = await kbSystem.getAllKnowledge({
+        category: category as string,
+        language: language as string
+      });
+      res.json({ entries, count: entries.length });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch KB entries" });
+    }
+  });
+
+  app.get("/api/kb/entries/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const entry = await kbSystem.getKnowledgeById(id);
+      
+      if (!entry) {
+        return res.status(404).json({ error: "Entry not found" });
+      }
+      
+      res.json(entry);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch KB entry" });
+    }
+  });
+
+  app.post("/api/kb/entries", async (req, res) => {
+    try {
+      const { content, language, category } = req.body;
+      
+      if (!content || !language || !category) {
+        return res.status(400).json({ error: "Content, language, and category are required" });
+      }
+
+      const entry = await kbSystem.addKnowledge({ content, language, category });
+      res.status(201).json(entry);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create KB entry" });
+    }
+  });
+
+  app.put("/api/kb/entries/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { content, language, category } = req.body;
+
+      const updated = await kbSystem.updateKnowledge(id, { content, language, category });
+      
+      if (!updated) {
+        return res.status(404).json({ error: "Entry not found" });
+      }
+
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update KB entry" });
+    }
+  });
+
+  app.delete("/api/kb/entries/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await kbSystem.deleteKnowledge(id);
+
+      if (!deleted) {
+        return res.status(404).json({ error: "Entry not found" });
+      }
+
+      res.json({ success: true, id });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete KB entry" });
+    }
+  });
+
+  app.post("/api/kb/search", async (req, res) => {
+    try {
+      const { query, language, category, limit } = req.body;
+
+      if (!query) {
+        return res.status(400).json({ error: "Query is required" });
+      }
+
+      const results = await kbSystem.searchKnowledge(query, { language, category, limit });
+      res.json(results);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to search KB" });
+    }
+  });
+
+  app.get("/api/kb/stats", async (req, res) => {
+    try {
+      const stats = await kbSystem.getStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch KB stats" });
+    }
+  });
+
+  // Evaluator 2.0 Endpoints
+  app.post("/api/evaluator/evaluate", async (req, res) => {
+    try {
+      const { ai_output, model_used } = req.body;
+      
+      if (!ai_output || !model_used) {
+        return res.status(400).json({ error: "ai_output and model_used are required" });
+      }
+
+      const { evaluator } = await import("./modules/evaluator");
+      const result = await evaluator.evaluateOutput(ai_output, model_used);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to evaluate output" });
+    }
+  });
+
+  app.get("/api/evaluator/history", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const { evaluator } = await import("./modules/evaluator");
+      const history = await evaluator.getEvaluationHistory(limit);
+      res.json({ history, count: history.length });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch evaluation history" });
+    }
+  });
+
+  app.get("/api/evaluator/stats", async (req, res) => {
+    try {
+      const { evaluator } = await import("./modules/evaluator");
+      const stats = await evaluator.getStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch evaluator stats" });
+    }
+  });
+
+  // OSS Manager Endpoints
+  app.get("/api/oss/models", async (req, res) => {
+    try {
+      const { ossManager } = await import("./modules/oss-manager");
+      const models = ossManager.getAllModels();
+      res.json({ models, count: models.length });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch OSS models" });
+    }
+  });
+
+  app.post("/api/oss/models/:modelId/load", async (req, res) => {
+    try {
+      const { modelId } = req.params;
+      const { priority } = req.body;
+      
+      const { ossManager } = await import("./modules/oss-manager");
+      const loaded = await ossManager.loadModel({
+        model_id: modelId,
+        priority: priority || 'normal'
+      });
+
+      res.json({ success: loaded, model_id: modelId });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to load model" });
+    }
+  });
+
+  app.post("/api/oss/models/:modelId/infer", async (req, res) => {
+    try {
+      const { modelId } = req.params;
+      const { input } = req.body;
+
+      if (!input) {
+        return res.status(400).json({ error: "Input is required" });
+      }
+
+      const { ossManager } = await import("./modules/oss-manager");
+      const output = await ossManager.inferWithModel(modelId, input);
+      res.json({ output, model_id: modelId });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to run inference" });
+    }
+  });
+
+  app.get("/api/oss/stats", async (req, res) => {
+    try {
+      const { ossManager } = await import("./modules/oss-manager");
+      const stats = ossManager.getStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch OSS stats" });
+    }
+  });
+
+  // AI Router Endpoints
+  app.post("/api/ai-router/route", async (req, res) => {
+    try {
+      const { prompt, task_type, preferred_model, require_evaluation } = req.body;
+
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+      }
+
+      const { aiRouter } = await import("./core/ai-router");
+      const response = await aiRouter.route({
+        prompt,
+        task_type,
+        preferred_model,
+        require_evaluation
+      });
+
+      res.json(response);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to route AI request" });
+    }
+  });
+
+  app.get("/api/ai-router/stats", async (req, res) => {
+    try {
+      const { aiRouter } = await import("./core/ai-router");
+      const stats = aiRouter.getStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch AI router stats" });
+    }
+  });
+
+  // Embedding Layer Endpoints
+  app.post("/api/embedding/generate", async (req, res) => {
+    try {
+      const { text, language, category } = req.body;
+
+      if (!text) {
+        return res.status(400).json({ error: "Text is required" });
+      }
+
+      const { embeddingLayer } = await import("./modules/embedding");
+      const embedding = await embeddingLayer.generateEmbedding(text, { language, category });
+      res.json(embedding);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to generate embedding" });
+    }
+  });
+
+  app.post("/api/embedding/search", async (req, res) => {
+    try {
+      const { query, limit, threshold, language, category } = req.body;
+
+      if (!query) {
+        return res.status(400).json({ error: "Query is required" });
+      }
+
+      const { embeddingLayer } = await import("./modules/embedding");
+      const results = await embeddingLayer.searchSimilar(query, { limit, threshold, language, category });
+      res.json({ results, count: results.length });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to search embeddings" });
+    }
+  });
+
+  app.get("/api/embedding/stats", async (req, res) => {
+    try {
+      const { embeddingLayer } = await import("./modules/embedding");
+      const stats = embeddingLayer.getStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch embedding stats" });
     }
   });
 
