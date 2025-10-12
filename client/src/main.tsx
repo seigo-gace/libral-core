@@ -2,8 +2,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-// Force cache bust - Version 2.0.0
-console.log('[LIBRAL-CORE] Loading v2.0.0 - Yellow Design');
+// Force cache bust - Version 2.1.0 - ALL PAGES YELLOW
+console.log('[LIBRAL-CORE] Loading v2.1.0 - ALL PAGES YELLOW DESIGN - C3 IS NOW YELLOW!');
 
 // グローバルエラーハンドラーを追加
 window.addEventListener('unhandledrejection', (event) => {

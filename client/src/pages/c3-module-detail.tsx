@@ -154,59 +154,59 @@ export default function C3ModuleDetail() {
       <div className="absolute inset-0 opacity-10 pointer-events-none" 
            style={{ 
              backgroundImage: `
-               linear-gradient(#00FFD1 1px, transparent 1px),
-               linear-gradient(90deg, #00FFD1 1px, transparent 1px)
+               linear-gradient(#FFEB00 1px, transparent 1px),
+               linear-gradient(90deg, #FFEB00 1px, transparent 1px)
              `,
              backgroundSize: '20px 20px'
            }} 
       />
 
       <div className="relative z-10 min-h-screen flex flex-col">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#00FFD1] to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FFEB00] to-transparent" />
         
-        <header className="relative px-8 py-6 border-b border-[#00FFD1]/30">
+        <header className="relative px-8 py-6 border-b border-[#FFEB00]/30">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setLocation("/c3/apps")}
-                className="w-10 h-10 border border-[#00FFD1]/50 hover:border-[#00FFD1] hover:bg-[#00FFD1]/10 flex items-center justify-center transition-all"
+                className="w-10 h-10 border border-[#FFEB00]/50 hover:border-[#FFEB00] hover:bg-[#FFEB00]/10 flex items-center justify-center transition-all"
                 data-testid="button-back"
               >
-                <ArrowLeft className="text-[#00FFD1]" />
+                <ArrowLeft className="text-[#FFEB00]" />
               </button>
-              <div className="w-12 h-12 border-2 border-[#00FFD1] flex items-center justify-center"
+              <div className="w-12 h-12 border-2 border-[#FFEB00] flex items-center justify-center"
                    style={{ clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)' }}>
-                <Icon className="text-[#00FFD1] w-6 h-6" />
+                <Icon className="text-[#FFEB00] w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-[#00FFD1] text-xl font-bold tracking-[0.2em]">{config.name}</h1>
-                <p className="text-[#00FFD1]/60 text-xs tracking-[0.3em]">MODULE DETAILS</p>
+                <h1 className="text-[#FFEB00] text-xl font-bold tracking-[0.2em]">{config.name}</h1>
+                <p className="text-[#FFEB00]/60 text-xs tracking-[0.3em]">MODULE DETAILS</p>
               </div>
             </div>
             
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-[#00FFD1] animate-pulse" />
-              <span className="text-[#00FFD1] text-sm">ONLINE</span>
+              <div className="w-3 h-3 rounded-full bg-[#FFEB00] animate-pulse" />
+              <span className="text-[#FFEB00] text-sm">ONLINE</span>
             </div>
           </div>
         </header>
 
         <main className="flex-1 p-8">
           <div className="max-w-7xl mx-auto">
-            <div className="mb-8 border border-[#00FFD1]/30 p-6"
+            <div className="mb-8 border border-[#FFEB00]/30 p-6"
                  style={{ clipPath: 'polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)' }}>
               <h2 className="text-white text-lg mb-2">{config.description}</h2>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-8 mb-8">
               <div>
-                <div className="inline-block mb-4 px-4 py-1 border border-[#00FFD1]/50">
-                  <h3 className="text-[#00FFD1] text-xs tracking-[0.4em]">FEATURES</h3>
+                <div className="inline-block mb-4 px-4 py-1 border border-[#FFEB00]/50">
+                  <h3 className="text-[#FFEB00] text-xs tracking-[0.4em]">FEATURES</h3>
                 </div>
                 <div className="space-y-3">
                   {config.features.map((feature, index) => (
                     <div key={index} className="flex items-start gap-3 text-white/80">
-                      <div className="mt-1 w-2 h-2 bg-[#00FFD1]" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }} />
+                      <div className="mt-1 w-2 h-2 bg-[#FFEB00]" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }} />
                       <span>{feature}</span>
                     </div>
                   ))}
@@ -214,19 +214,19 @@ export default function C3ModuleDetail() {
               </div>
 
               <div>
-                <div className="inline-block mb-4 px-4 py-1 border border-[#00FFD1]/50">
-                  <h3 className="text-[#00FFD1] text-xs tracking-[0.4em]">ACTIONS</h3>
+                <div className="inline-block mb-4 px-4 py-1 border border-[#FFEB00]/50">
+                  <h3 className="text-[#FFEB00] text-xs tracking-[0.4em]">ACTIONS</h3>
                 </div>
                 <div className="space-y-3">
                   {config.actions.map((action, index) => (
                     <button
                       key={index}
                       onClick={() => setLocation(action.path)}
-                      className="w-full group px-4 py-3 border border-[#00FFD1]/50 hover:border-[#00FFD1] hover:bg-[#00FFD1]/10 text-left transition-all flex items-center justify-between"
+                      className="w-full group px-4 py-3 border border-[#FFEB00]/50 hover:border-[#FFEB00] hover:bg-[#FFEB00]/10 text-left transition-all flex items-center justify-between"
                       data-testid={action.testId}
                     >
-                      <span className="text-[#00FFD1]">{action.label}</span>
-                      <span className="text-[#00FFD1] group-hover:translate-x-2 transition-transform">▶</span>
+                      <span className="text-[#FFEB00]">{action.label}</span>
+                      <span className="text-[#FFEB00] group-hover:translate-x-2 transition-transform">▶</span>
                     </button>
                   ))}
                 </div>
@@ -234,13 +234,13 @@ export default function C3ModuleDetail() {
             </div>
 
             {stats && (
-              <div className="border border-[#00FFD1]/30 p-6"
+              <div className="border border-[#FFEB00]/30 p-6"
                    style={{ clipPath: 'polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)' }}>
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="text-[#00FFD1] text-sm tracking-[0.3em]">STATISTICS</div>
-                  <div className="flex-1 h-px bg-[#00FFD1]/30" />
+                  <div className="text-[#FFEB00] text-sm tracking-[0.3em]">STATISTICS</div>
+                  <div className="flex-1 h-px bg-[#FFEB00]/30" />
                 </div>
-                <pre className="text-[#00FFD1] text-sm overflow-auto" data-testid="stats-display">
+                <pre className="text-[#FFEB00] text-sm overflow-auto" data-testid="stats-display">
                   {JSON.stringify(stats, null, 2)}
                 </pre>
               </div>
@@ -248,14 +248,14 @@ export default function C3ModuleDetail() {
           </div>
         </main>
 
-        <footer className="relative px-8 py-4 border-t border-[#00FFD1]/30">
-          <div className="flex items-center justify-between text-xs text-[#00FFD1]/60">
+        <footer className="relative px-8 py-4 border-t border-[#FFEB00]/30">
+          <div className="flex items-center justify-between text-xs text-[#FFEB00]/60">
             <div>MODULE: {moduleId.toUpperCase()} // LIBRAL CORE</div>
             <div>{new Date().toLocaleTimeString()}</div>
           </div>
         </footer>
         
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#00FFD1] to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FFEB00] to-transparent" />
       </div>
     </div>
   );

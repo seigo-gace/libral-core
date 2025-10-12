@@ -34,34 +34,34 @@ export default function C3Console() {
       <div className="absolute inset-0 opacity-10 pointer-events-none" 
            style={{ 
              backgroundImage: `
-               linear-gradient(#00FFD1 1px, transparent 1px),
-               linear-gradient(90deg, #00FFD1 1px, transparent 1px)
+               linear-gradient(#FFEB00 1px, transparent 1px),
+               linear-gradient(90deg, #FFEB00 1px, transparent 1px)
              `,
              backgroundSize: '20px 20px'
            }} 
       />
 
       <div className="relative z-10 min-h-screen flex flex-col">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#00FFD1] to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FFEB00] to-transparent" />
         
-        <header className="relative px-8 py-6 border-b border-[#00FFD1]/30">
+        <header className="relative px-8 py-6 border-b border-[#FFEB00]/30">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setLocation("/c3")}
-                className="w-10 h-10 border border-[#00FFD1]/50 hover:border-[#00FFD1] hover:bg-[#00FFD1]/10 flex items-center justify-center transition-all"
+                className="w-10 h-10 border border-[#FFEB00]/50 hover:border-[#FFEB00] hover:bg-[#FFEB00]/10 flex items-center justify-center transition-all"
                 data-testid="button-back"
               >
-                <ArrowLeft className="text-[#00FFD1]" />
+                <ArrowLeft className="text-[#FFEB00]" />
               </button>
               <div>
-                <h1 className="text-[#00FFD1] text-xl font-bold tracking-[0.2em]">CONSOLE MENU</h1>
-                <p className="text-[#00FFD1]/60 text-xs tracking-[0.3em]">SYSTEM CONTROL & MONITORING</p>
+                <h1 className="text-[#FFEB00] text-xl font-bold tracking-[0.2em]">CONSOLE MENU</h1>
+                <p className="text-[#FFEB00]/60 text-xs tracking-[0.3em]">SYSTEM CONTROL & MONITORING</p>
               </div>
             </div>
             
             <div className="flex items-center gap-4">
-              <div className="text-[#00FFD1]/60 text-sm tracking-wider">[D034]</div>
+              <div className="text-[#FFEB00]/60 text-sm tracking-wider">[D034]</div>
             </div>
           </div>
         </header>
@@ -69,46 +69,46 @@ export default function C3Console() {
         <main className="flex-1 p-8">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-3 gap-6 mb-8">
-              <div className="border border-[#00FFD1]/30 p-6"
+              <div className="border border-[#FFEB00]/30 p-6"
                    style={{ clipPath: 'polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px)' }}>
                 <div className="flex items-center gap-3 mb-4">
-                  <Activity className="text-[#00FFD1]" />
-                  <h3 className="text-[#00FFD1] tracking-wider">CPU USAGE</h3>
+                  <Activity className="text-[#FFEB00]" />
+                  <h3 className="text-[#FFEB00] tracking-wider">CPU USAGE</h3>
                 </div>
                 <div className="text-3xl text-white font-bold mb-2">{metrics?.cpu_usage || 0}%</div>
-                <div className="h-2 bg-[#00FFD1]/20 relative overflow-hidden">
+                <div className="h-2 bg-[#FFEB00]/20 relative overflow-hidden">
                   <div 
-                    className="absolute inset-y-0 left-0 bg-[#00FFD1]"
+                    className="absolute inset-y-0 left-0 bg-[#FFEB00]"
                     style={{ width: `${metrics?.cpu_usage || 0}%` }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-[shimmer_2s_infinite]" />
                 </div>
               </div>
 
-              <div className="border border-[#00FFD1]/30 p-6"
+              <div className="border border-[#FFEB00]/30 p-6"
                    style={{ clipPath: 'polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px)' }}>
                 <div className="flex items-center gap-3 mb-4">
-                  <Activity className="text-[#00FFD1]" />
-                  <h3 className="text-[#00FFD1] tracking-wider">MEMORY</h3>
+                  <Activity className="text-[#FFEB00]" />
+                  <h3 className="text-[#FFEB00] tracking-wider">MEMORY</h3>
                 </div>
                 <div className="text-3xl text-white font-bold mb-2">{metrics?.memory_usage || 0}%</div>
-                <div className="h-2 bg-[#00FFD1]/20 relative overflow-hidden">
+                <div className="h-2 bg-[#FFEB00]/20 relative overflow-hidden">
                   <div 
-                    className="absolute inset-y-0 left-0 bg-[#00FFD1]"
+                    className="absolute inset-y-0 left-0 bg-[#FFEB00]"
                     style={{ width: `${metrics?.memory_usage || 0}%` }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-[shimmer_2s_infinite]" />
                 </div>
               </div>
 
-              <div className="border border-[#00FFD1]/30 p-6"
+              <div className="border border-[#FFEB00]/30 p-6"
                    style={{ clipPath: 'polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px)' }}>
                 <div className="flex items-center gap-3 mb-4">
-                  <Shield className="text-[#00FFD1]" />
-                  <h3 className="text-[#00FFD1] tracking-wider">ACTIVE USERS</h3>
+                  <Shield className="text-[#FFEB00]" />
+                  <h3 className="text-[#FFEB00] tracking-wider">ACTIVE USERS</h3>
                 </div>
                 <div className="text-3xl text-white font-bold mb-2">{metrics?.active_users || 0}</div>
-                <div className="text-[#00FFD1]/60 text-sm">CONNECTIONS</div>
+                <div className="text-[#FFEB00]/60 text-sm">CONNECTIONS</div>
               </div>
             </div>
 
@@ -157,22 +157,22 @@ export default function C3Console() {
               </button>
             </div>
 
-            <div className="border border-[#00FFD1]/30 p-6"
+            <div className="border border-[#FFEB00]/30 p-6"
                  style={{ clipPath: 'polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)' }}>
               <div className="flex items-center gap-3 mb-4">
-                <Terminal className="text-[#00FFD1]" />
-                <h3 className="text-[#00FFD1] tracking-wider">SYSTEM LOG</h3>
+                <Terminal className="text-[#FFEB00]" />
+                <h3 className="text-[#FFEB00] tracking-wider">SYSTEM LOG</h3>
               </div>
               <div className="space-y-2 font-mono text-sm">
-                <div className="flex gap-3 text-[#00FFD1]/60">
+                <div className="flex gap-3 text-[#FFEB00]/60">
                   <span>[{new Date().toLocaleTimeString()}]</span>
                   <span>System initialized successfully</span>
                 </div>
-                <div className="flex gap-3 text-[#00FFD1]/60">
+                <div className="flex gap-3 text-[#FFEB00]/60">
                   <span>[{new Date().toLocaleTimeString()}]</span>
                   <span>All modules online</span>
                 </div>
-                <div className="flex gap-3 text-[#00FFD1]/60">
+                <div className="flex gap-3 text-[#FFEB00]/60">
                   <span>[{new Date().toLocaleTimeString()}]</span>
                   <span>Security protocols active</span>
                 </div>
@@ -181,14 +181,14 @@ export default function C3Console() {
           </div>
         </main>
 
-        <footer className="relative px-8 py-4 border-t border-[#00FFD1]/30">
-          <div className="flex items-center justify-between text-xs text-[#00FFD1]/60">
+        <footer className="relative px-8 py-4 border-t border-[#FFEB00]/30">
+          <div className="flex items-center justify-between text-xs text-[#FFEB00]/60">
             <div>CONSOLE MENU // LIBRAL CORE</div>
             <div>{new Date().toLocaleTimeString()}</div>
           </div>
         </footer>
         
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#00FFD1] to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FFEB00] to-transparent" />
       </div>
 
       {showConfirmModal && (
@@ -207,7 +207,7 @@ export default function C3Console() {
               type="text"
               value={confirmCode}
               onChange={(e) => setConfirmCode(e.target.value.toUpperCase())}
-              className="w-full bg-[#080A0F] border border-[#00FFD1]/50 text-[#00FFD1] px-4 py-3 mb-6 font-mono focus:outline-none focus:border-[#00FFD1]"
+              className="w-full bg-[#080A0F] border border-[#FFEB00]/50 text-[#FFEB00] px-4 py-3 mb-6 font-mono focus:outline-none focus:border-[#FFEB00]"
               placeholder="CONFIRM"
               data-testid="input-confirm"
             />
@@ -215,7 +215,7 @@ export default function C3Console() {
             <div className="flex gap-4">
               <button
                 onClick={() => setShowConfirmModal(false)}
-                className="flex-1 px-4 py-3 border border-[#00FFD1]/50 text-[#00FFD1] hover:bg-[#00FFD1]/10 transition-all"
+                className="flex-1 px-4 py-3 border border-[#FFEB00]/50 text-[#FFEB00] hover:bg-[#FFEB00]/10 transition-all"
                 data-testid="button-cancel"
               >
                 CANCEL
