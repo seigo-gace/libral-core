@@ -2,8 +2,10 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-// Force cache bust - Version 2.1.0 - ALL PAGES YELLOW
-console.log('[LIBRAL-CORE] Loading v2.1.0 - ALL PAGES YELLOW DESIGN - C3 IS NOW YELLOW!');
+// Force cache bust - Version 2.1.1 - DIRECT HTML INJECTION + SW CLEANUP
+console.log('🟡🟡🟡 [LIBRAL-CORE v2.1.1] YELLOW DESIGN LOADED - HTML INJECTED - SW CLEARED 🟡🟡🟡');
+console.log('Title:', document.title);
+console.log('Body background:', window.getComputedStyle(document.body).background);
 
 // グローバルエラーハンドラーを追加
 window.addEventListener('unhandledrejection', (event) => {
