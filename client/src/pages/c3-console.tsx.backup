@@ -30,38 +30,38 @@ export default function C3Console() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[black] overflow-hidden font-mono">
+    <div className="relative min-h-screen bg-[#080A0F] overflow-hidden font-mono">
       <div className="absolute inset-0 opacity-10 pointer-events-none" 
            style={{ 
              backgroundImage: `
-               linear-gradient(white 1px, transparent 1px),
-               linear-gradient(90deg, white 1px, transparent 1px)
+               linear-gradient(#FFEB00 1px, transparent 1px),
+               linear-gradient(90deg, #FFEB00 1px, transparent 1px)
              `,
              backgroundSize: '20px 20px'
            }} 
       />
 
       <div className="relative z-10 min-h-screen flex flex-col">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[white] to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FFEB00] to-transparent" />
         
-        <header className="relative px-8 py-6 border-b border-[white]/30">
+        <header className="relative px-8 py-6 border-b border-[#FFEB00]/30">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setLocation("/c3")}
-                className="w-10 h-10 border border-[white]/50 hover:border-[white] hover:bg-[white]/10 flex items-center justify-center transition-all"
+                className="w-10 h-10 border border-[#FFEB00]/50 hover:border-[#FFEB00] hover:bg-[#FFEB00]/10 flex items-center justify-center transition-all"
                 data-testid="button-back"
               >
                 <ArrowLeft className="text-[#FFEB00]" />
               </button>
               <div>
-                <h1 className="text-[white] text-xl font-bold tracking-[0.2em]">CONSOLE MENU</h1>
-                <p className="text-[white]/60 text-xs tracking-[0.3em]">SYSTEM CONTROL & MONITORING</p>
+                <h1 className="text-[#FFEB00] text-xl font-bold tracking-[0.2em]">CONSOLE MENU</h1>
+                <p className="text-[#FFEB00]/60 text-xs tracking-[0.3em]">SYSTEM CONTROL & MONITORING</p>
               </div>
             </div>
             
             <div className="flex items-center gap-4">
-              <div className="text-[white]/60 text-sm tracking-wider">[D034]</div>
+              <div className="text-[#FFEB00]/60 text-sm tracking-wider">[D034]</div>
             </div>
           </div>
         </header>
@@ -69,46 +69,46 @@ export default function C3Console() {
         <main className="flex-1 p-8">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-3 gap-6 mb-8">
-              <div className="border border-[white]/30 p-6"
+              <div className="border border-[#FFEB00]/30 p-6"
                    style={{ clipPath: 'polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px)' }}>
                 <div className="flex items-center gap-3 mb-4">
-                  <Activity className="text-[white]" />
-                  <h3 className="text-[white] tracking-wider">CPU USAGE</h3>
+                  <Activity className="text-[#FFEB00]" />
+                  <h3 className="text-[#FFEB00] tracking-wider">CPU USAGE</h3>
                 </div>
                 <div className="text-3xl text-white font-bold mb-2">{metrics?.cpu_usage || 0}%</div>
-                <div className="h-2 bg-[white]/20 relative overflow-hidden">
+                <div className="h-2 bg-[#FFEB00]/20 relative overflow-hidden">
                   <div 
-                    className="absolute inset-y-0 left-0 bg-[white]"
+                    className="absolute inset-y-0 left-0 bg-[#FFEB00]"
                     style={{ width: `${metrics?.cpu_usage || 0}%` }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-[shimmer_2s_infinite]" />
                 </div>
               </div>
 
-              <div className="border border-[white]/30 p-6"
+              <div className="border border-[#FFEB00]/30 p-6"
                    style={{ clipPath: 'polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px)' }}>
                 <div className="flex items-center gap-3 mb-4">
-                  <Activity className="text-[white]" />
-                  <h3 className="text-[white] tracking-wider">MEMORY</h3>
+                  <Activity className="text-[#FFEB00]" />
+                  <h3 className="text-[#FFEB00] tracking-wider">MEMORY</h3>
                 </div>
                 <div className="text-3xl text-white font-bold mb-2">{metrics?.memory_usage || 0}%</div>
-                <div className="h-2 bg-[white]/20 relative overflow-hidden">
+                <div className="h-2 bg-[#FFEB00]/20 relative overflow-hidden">
                   <div 
-                    className="absolute inset-y-0 left-0 bg-[white]"
+                    className="absolute inset-y-0 left-0 bg-[#FFEB00]"
                     style={{ width: `${metrics?.memory_usage || 0}%` }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-[shimmer_2s_infinite]" />
                 </div>
               </div>
 
-              <div className="border border-[white]/30 p-6"
+              <div className="border border-[#FFEB00]/30 p-6"
                    style={{ clipPath: 'polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px)' }}>
                 <div className="flex items-center gap-3 mb-4">
-                  <Shield className="text-[white]" />
-                  <h3 className="text-[white] tracking-wider">ACTIVE USERS</h3>
+                  <Shield className="text-[#FFEB00]" />
+                  <h3 className="text-[#FFEB00] tracking-wider">ACTIVE USERS</h3>
                 </div>
                 <div className="text-3xl text-white font-bold mb-2">{metrics?.active_users || 0}</div>
-                <div className="text-[white]/60 text-sm">CONNECTIONS</div>
+                <div className="text-[#FFEB00]/60 text-sm">CONNECTIONS</div>
               </div>
             </div>
 
@@ -127,7 +127,7 @@ export default function C3Console() {
                 data-testid="button-restart"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 border-2 border-[#FF3A5B] flex items-center justify-center group-hover:bg-[#FF3A5B] group-hover:text-[black] transition-all"
+                  <div className="w-14 h-14 border-2 border-[#FF3A5B] flex items-center justify-center group-hover:bg-[#FF3A5B] group-hover:text-[#080A0F] transition-all"
                        style={{ clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)' }}>
                     <RefreshCw className="w-6 h-6" />
                   </div>
@@ -145,7 +145,7 @@ export default function C3Console() {
                 data-testid="button-emergency"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 border-2 border-[#FF3A5B] flex items-center justify-center group-hover:bg-[#FF3A5B] group-hover:text-[black] transition-all"
+                  <div className="w-14 h-14 border-2 border-[#FF3A5B] flex items-center justify-center group-hover:bg-[#FF3A5B] group-hover:text-[#080A0F] transition-all"
                        style={{ clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)' }}>
                     <Power className="w-6 h-6" />
                   </div>
@@ -157,22 +157,22 @@ export default function C3Console() {
               </button>
             </div>
 
-            <div className="border border-[white]/30 p-6"
+            <div className="border border-[#FFEB00]/30 p-6"
                  style={{ clipPath: 'polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)' }}>
               <div className="flex items-center gap-3 mb-4">
-                <Terminal className="text-[white]" />
-                <h3 className="text-[white] tracking-wider">SYSTEM LOG</h3>
+                <Terminal className="text-[#FFEB00]" />
+                <h3 className="text-[#FFEB00] tracking-wider">SYSTEM LOG</h3>
               </div>
               <div className="space-y-2 font-mono text-sm">
-                <div className="flex gap-3 text-[white]/60">
+                <div className="flex gap-3 text-[#FFEB00]/60">
                   <span>[{new Date().toLocaleTimeString()}]</span>
                   <span>System initialized successfully</span>
                 </div>
-                <div className="flex gap-3 text-[white]/60">
+                <div className="flex gap-3 text-[#FFEB00]/60">
                   <span>[{new Date().toLocaleTimeString()}]</span>
                   <span>All modules online</span>
                 </div>
-                <div className="flex gap-3 text-[white]/60">
+                <div className="flex gap-3 text-[#FFEB00]/60">
                   <span>[{new Date().toLocaleTimeString()}]</span>
                   <span>Security protocols active</span>
                 </div>
@@ -181,19 +181,19 @@ export default function C3Console() {
           </div>
         </main>
 
-        <footer className="relative px-8 py-4 border-t border-[white]/30">
-          <div className="flex items-center justify-between text-xs text-[white]/60">
+        <footer className="relative px-8 py-4 border-t border-[#FFEB00]/30">
+          <div className="flex items-center justify-between text-xs text-[#FFEB00]/60">
             <div>CONSOLE MENU // LIBRAL CORE</div>
             <div>{new Date().toLocaleTimeString()}</div>
           </div>
         </footer>
         
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[white] to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FFEB00] to-transparent" />
       </div>
 
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50" data-testid="modal-confirm">
-          <div className="bg-[black] border-2 border-[#FF3A5B] p-8 max-w-md w-full"
+          <div className="bg-[#080A0F] border-2 border-[#FF3A5B] p-8 max-w-md w-full"
                style={{ clipPath: 'polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)' }}>
             <div className="flex items-center gap-3 mb-6">
               <AlertTriangle className="text-[#FF3A5B] w-8 h-8" />
@@ -207,7 +207,7 @@ export default function C3Console() {
               type="text"
               value={confirmCode}
               onChange={(e) => setConfirmCode(e.target.value.toUpperCase())}
-              className="w-full bg-[black] border border-[white]/50 text-[white] px-4 py-3 mb-6 font-mono focus:outline-none focus:border-[white]"
+              className="w-full bg-[#080A0F] border border-[#FFEB00]/50 text-[#FFEB00] px-4 py-3 mb-6 font-mono focus:outline-none focus:border-[#FFEB00]"
               placeholder="CONFIRM"
               data-testid="input-confirm"
             />
@@ -215,7 +215,7 @@ export default function C3Console() {
             <div className="flex gap-4">
               <button
                 onClick={() => setShowConfirmModal(false)}
-                className="flex-1 px-4 py-3 border border-[white]/50 text-[white] hover:bg-[white]/10 transition-all"
+                className="flex-1 px-4 py-3 border border-[#FFEB00]/50 text-[#FFEB00] hover:bg-[#FFEB00]/10 transition-all"
                 data-testid="button-cancel"
               >
                 CANCEL
@@ -225,7 +225,7 @@ export default function C3Console() {
                 disabled={confirmCode !== "CONFIRM"}
                 className={`flex-1 px-4 py-3 border-2 transition-all ${
                   confirmCode === "CONFIRM"
-                    ? "border-[#FF3A5B] text-[#FF3A5B] hover:bg-[#FF3A5B] hover:text-[black]"
+                    ? "border-[#FF3A5B] text-[#FF3A5B] hover:bg-[#FF3A5B] hover:text-[#080A0F]"
                     : "border-[#FF3A5B]/30 text-[#FF3A5B]/30 cursor-not-allowed"
                 }`}
                 data-testid="button-execute"

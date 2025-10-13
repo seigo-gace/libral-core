@@ -2,10 +2,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-// Force cache bust - Version 2.1.1 - DIRECT HTML INJECTION + SW CLEANUP
-console.log('🟡🟡🟡 [LIBRAL-CORE v2.1.1] YELLOW DESIGN LOADED - HTML INJECTED - SW CLEARED 🟡🟡🟡');
-console.log('Title:', document.title);
-console.log('Body background:', window.getComputedStyle(document.body).background);
+// LIBRAL CORE - Black Background, White Text, Minimal Yellow Accents
+console.log('[LIBRAL-CORE v3.0.0] Correct Design Loaded - Black BG, White Text, Yellow Accents');
 
 // グローバルエラーハンドラーを追加
 window.addEventListener('unhandledrejection', (event) => {
