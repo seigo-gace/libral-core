@@ -1,58 +1,92 @@
-# Libral Core
+# Libral Core - Project Structure
 
-**Privacy-First Microkernel Platform for Enterprise-Grade Cryptographic Operations and User Data Sovereignty**
+## 📂 Active Files (Production)
 
-![Version](https://img.shields.io/badge/version-1.0.0-00FFD1)
-![License](https://img.shields.io/badge/license-MIT-00FFD1)
-![Status](https://img.shields.io/badge/status-Active%20Development-00FFD1)
+All active code is located in the **root directory** of this project:
 
-## 🌟 Overview
+### Frontend
+- **Path**: `./client/`
+- **Entry Point**: `./client/src/main.tsx`
+- **Pages**:
+  - `./client/src/pages/Monitor.tsx` - LPO Health Dashboard
+  - `./client/src/pages/Control.tsx` - Executive Control Panel
+  - `./client/src/pages/Creation.tsx` - AI Development ChatOps
+  - `./client/src/pages/kb-editor.tsx` - **NEW** Knowledge Base Editor
 
-Libral Core is a revolutionary privacy-first microkernel platform featuring:
+### Backend
+- **Path**: `./server/`
+- **Entry Point**: `./server/index.ts`
+- **Routes**: `./server/routes.ts`
 
-- **Zero-Central-Storage Architecture**: User data encrypted with GPG and stored in user-controlled Telegram personal log servers
-- **Hot-Swappable Plugin Marketplace**: Runtime module loading/unloading without downtime
-- **Multi-Transport Communication**: Intelligent failover across Telegram, Email, and Webhook
-- **Autonomous SelfEvolution System**: Self-healing and continuous improvement capabilities
-- **Enterprise-Grade Cryptography**: Aegis-PGP with RSA-4096, ED25519, ECDSA-P256
+#### Core Modules
+- `./server/core/transport/` - Multi-transport messaging system
+- `./server/core/ai-bridge/` - **NEW** AI Bridge Layer (async queue, fallback)
+- `./server/core/ai-router.ts` - **NEW** Enhanced AI Router
 
-## 🏗️ Architecture
+#### AI & KB Modules
+- `./server/modules/kb-system.ts` - **NEW** Independent Knowledge Base System
+- `./server/modules/evaluator.ts` - **NEW** Evaluator 2.0 (AI quality scoring)
+- `./server/modules/oss-manager.ts` - **NEW** OSS AI Model Manager
+- `./server/modules/embedding.ts` - **NEW** Vector Embedding Layer
+- `./server/modules/aegis-pgp.ts` - GPG Encryption Module
+- `./server/modules/stamp-creator.ts` - Stamp Creator Module
+- `./server/modules/registry.ts` - Module Registry
 
-### Core Components
+#### Services
+- `./server/services/` - Redis, WebSocket, Event Bus, Telegram
 
-#### 4+1 Integrated Architecture
+### Shared Types
+- **Path**: `./shared/`
+- **Schema**: `./shared/schema.ts` - Database models and Zod validators
 
-**LIC (Libral Integration Core)**
-- Multi-transport communication system with intelligent failover
-- WebSocket-based real-time updates
-- Redis pub/sub for event broadcasting
+## 🆕 New Features (v2.1)
 
-**LEB (Libral Evolution Base)**
-- Hot-swappable module registry
-- Dynamic plugin lifecycle management
-- Runtime module loading/unloading
+### KB System Independence
+- Separated from KBE, now fully independent module
+- Direct KB management via Web UI (`/kb-editor`)
+- RESTful API for KB operations
 
-**LAS (Libral Autonomous System)**
-- SelfEvolution capabilities
-- Auto-healing mechanisms
-- Predictive monitoring
+### AI Module Evolution
+- **AI Bridge Layer**: Async queue control, auto-retry, fallback chain
+- **Evaluator 2.0**: AI output quality scoring (90+ threshold)
+- **OSS Manager**: Dynamic model loading (LLaMA3, Mistral, Falcon, Whisper, CLIP)
+- **AI Router**: Intelligent routing between Gemini, GPT5-mini, OSS models
+- **Embedding Layer**: Vector similarity search (FAISS + ChromaDB foundation)
 
-**LGL (Libral Governance Layer)**
-- RBAC abstraction
-- Audit logging
-- Compliance management
+### New API Endpoints
+- `/api/kb/entries` - KB CRUD operations
+- `/api/evaluator/*` - AI evaluation endpoints
+- `/api/oss/*` - OSS model management
+- `/api/ai-router/route` - Intelligent AI routing
+- `/api/embedding/*` - Embedding operations
 
-**Plus Governance Layer**
-- ZK Audit trails
-- Privacy-first compliance
-- GDPR-ready architecture
+## 🗑️ Removed Directories (Were Duplicates)
+- `.config/LiburaL-BaseCore/` ❌ Deleted
+- `LiburaL-BaseCore/` ❌ Deleted
 
-### AI Module Evolution (Ascended Architecture)
+## 🚀 Running the Application
 
-#### KB System (Knowledge Base)
-- **80+ Language Support**: Multilingual knowledge management
-- **GPG Encryption Integration**: Privacy-first data storage
-- **Web UI**: `/kb-editor` for direct CRUD operations
+### Development Mode
+```bash
+npm run dev
+```
+
+### Build & Production
+```bash
+npm run build
+npm start
+```
+
+## 📝 Important Files
+- `vite.config.ts` - Vite configuration
+- `package.json` - Dependencies and scripts
+- `.replit` - Replit run configuration (run = "npm run dev")
+- `replit.md` - System architecture documentation
+- `PROJECT_STRUCTURE.md` - This file
+
+---
+
+**Note**: All files in the root `./client/`, `./server/`, and `./shared/` directories are the ONLY active files. Any other copies are backups or templates and should be ignored.
 - **Category Management**: Organized knowledge taxonomy
 - **Independent Operation**: Fully separated from main system
 
