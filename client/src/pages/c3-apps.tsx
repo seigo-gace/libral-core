@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft, Grid3x3, Database, Brain, Lock, Zap, Globe, FileText } from "lucide-react";
+import { ArrowLeft, Building2, Play, PieChart, Camera, Image as ImageIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 interface ModuleInfo {
   id: string;
   name: string;
+  label: string;
   description: string;
-  status: "online" | "offline" | "maintenance";
   icon: string;
-  category: string;
+  number: string;
 }
 
 export default function C3Apps() {
@@ -24,79 +24,57 @@ export default function C3Apps() {
 
   const modules: ModuleInfo[] = [
     {
-      id: "kb-system",
-      name: "Knowledge Base",
-      description: "多言語知識管理システム (80+ languages)",
-      status: kbStats ? "online" : "offline",
-      icon: "database",
-      category: "Core"
+      id: "quam-lacus",
+      name: "QUAM LACUS",
+      label: "A",
+      description: "Tigr man Rocis sitgrat veqrcmo olirsquetrtione cusrtet ea ustarrc depiciutusr",
+      icon: "building",
+      number: "01"
     },
     {
-      id: "ai-bridge",
-      name: "AI Bridge Layer",
-      description: "AI統合ブリッジ & フォールバックシステム",
-      status: "online",
-      icon: "brain",
-      category: "AI"
+      id: "natoque-mi",
+      name: "NATOQUE MI",
+      label: "B",
+      description: "Duiblaurun orppe ue us corresquit envetotur bonusus nisldam voltt",
+      icon: "play",
+      number: "02"
     },
     {
-      id: "evaluator",
-      name: "Evaluator 2.0",
-      description: "AI品質評価システム (90点閾値)",
-      status: evaluatorStats ? "online" : "offline",
-      icon: "zap",
-      category: "AI"
+      id: "et-cubilia",
+      name: "ET CUBILIA",
+      label: "C",
+      description: "Blensidunt eicdtum erget ruuc usauam nec trudislis ea nurtrung ulli",
+      icon: "chart",
+      number: "03"
     },
     {
-      id: "oss-manager",
-      name: "OSS Manager",
-      description: "オープンソースモデル管理 (LLaMA3, Mistral)",
-      status: ossModels ? "online" : "offline",
-      icon: "grid",
-      category: "AI"
+      id: "dis-rutrum",
+      name: "DIS RUTRUM",
+      label: "D",
+      description: "Suspdiurse conasue ufranes ulstrcs, et line ebel nasmin mun",
+      icon: "camera",
+      number: "04"
     },
     {
-      id: "ai-router",
-      name: "AI Router",
-      description: "知的AIルーティングシステム",
-      status: aiRouterStats ? "online" : "offline",
-      icon: "globe",
-      category: "AI"
-    },
-    {
-      id: "embedding",
-      name: "Embedding Layer",
-      description: "ベクトル埋め込み & 検索基盤",
-      status: embeddingStats ? "online" : "offline",
-      icon: "file-text",
-      category: "AI"
-    },
-    {
-      id: "aegis-pgp",
-      name: "Aegis-PGP",
-      description: "企業級暗号化システム (GPG/PGP)",
-      status: "online",
-      icon: "lock",
-      category: "Security"
+      id: "lacus-duis",
+      name: "LACUS DUIS",
+      label: "E",
+      description: "Cillam solliccstus ruxum volusoatter quamus frinm ellikendonstki",
+      icon: "media",
+      number: "05"
     }
   ];
 
   const getIcon = (iconName: string) => {
+    const iconClass = "w-10 h-10 text-[#FFEB00]";
     switch (iconName) {
-      case "database": return <Database className="w-6 h-6" />;
-      case "brain": return <Brain className="w-6 h-6" />;
-      case "zap": return <Zap className="w-6 h-6" />;
-      case "grid": return <Grid3x3 className="w-6 h-6" />;
-      case "globe": return <Globe className="w-6 h-6" />;
-      case "file-text": return <FileText className="w-6 h-6" />;
-      case "lock": return <Lock className="w-6 h-6" />;
-      default: return <Grid3x3 className="w-6 h-6" />;
+      case "building": return <Building2 className={iconClass} />;
+      case "play": return <Play className={iconClass} />;
+      case "chart": return <PieChart className={iconClass} />;
+      case "camera": return <Camera className={iconClass} />;
+      case "media": return <ImageIcon className={iconClass} />;
+      default: return <Building2 className={iconClass} />;
     }
-  };
-
-  const getStatusColor = (status: string) => {
-    // 仕様: ステータスインジケーターは全て白（イエローは斜線/矢印/警告のみ）
-    return "white";
   };
 
   return (
@@ -136,73 +114,48 @@ export default function C3Apps() {
           </div>
         </header>
 
-        <main className="flex-1 p-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-8">
-              <div className="inline-block mb-4 px-4 py-1 border border-[white]/50">
-                <h2 className="text-[white] text-xs tracking-[0.4em]">CONNECTED MODULES</h2>
-              </div>
-              <p className="text-white/60 text-sm">選択して詳細を表示・操作</p>
-            </div>
+        <main className="flex-1 p-8 md:p-16">
+          <div className="max-w-6xl mx-auto space-y-8">
+            {modules.map((module, index) => (
+              <button
+                key={module.id}
+                onClick={() => setLocation(`/c3/apps/${module.id}`)}
+                className="group w-full flex items-center gap-6 md:gap-12 p-6 md:p-8 bg-[#0A0A0A] hover:bg-[#151515] transition-all duration-300 border border-white/10 hover:border-white/30"
+                data-testid={`card-module-${module.id}`}
+              >
+                {/* Left: Yellow Circle Icon */}
+                <div className="flex-shrink-0 w-20 h-20 border-4 border-[#FFEB00] rounded-full flex items-center justify-center">
+                  {getIcon(module.icon)}
+                </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {modules.map((module) => (
-                <button
-                  key={module.id}
-                  onClick={() => setLocation(`/c3/apps/${module.id}`)}
-                  className="group text-left p-6 border-2 border-[white]/30 hover:border-[white] transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-                  style={{ clipPath: 'polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px))' }}
-                  data-testid={`card-module-${module.id}`}
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 border border-[white] flex items-center justify-center group-hover:bg-[white] group-hover:text-[black] transition-all"
-                         style={{ clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)' }}>
-                      {getIcon(module.icon)}
-                    </div>
-                    <div 
-                      className="w-3 h-3 rounded-full animate-pulse"
-                      style={{ backgroundColor: getStatusColor(module.status) }}
-                    />
+                {/* Center: Label + Title + Description */}
+                <div className="flex-1 text-left">
+                  <div className="flex items-center gap-4 mb-2">
+                    {/* Dotted Line */}
+                    <div className="hidden md:block w-16 border-t-2 border-dotted border-white/30"></div>
+                    {/* Label */}
+                    <span className="text-white font-bold text-sm tracking-widest">{module.label}</span>
+                    <span className="text-white/40 text-xs">DEVELOPMENT</span>
                   </div>
+                  <h3 className="text-white text-2xl md:text-3xl font-bold mb-2">{module.name}</h3>
+                  <p className="text-white/60 text-sm md:text-base">{module.description}</p>
+                </div>
 
-                  <h3 className="text-[white] text-lg font-bold mb-2 tracking-wide">{module.name}</h3>
-                  <p className="text-white/60 text-sm mb-4">{module.description}</p>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-[white]/60 text-xs tracking-wider">{module.category}</span>
-                    <span className="text-[white] text-sm uppercase">{module.status}</span>
+                {/* Right: Yellow Diamond Number */}
+                <div className="flex-shrink-0 flex items-center gap-4">
+                  {/* Dotted Line */}
+                  <div className="hidden md:flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className="w-1 h-1 bg-white/30"></div>
+                    ))}
                   </div>
-
-                  <div className="absolute bottom-0 left-0 right-0 h-px bg-[white]/20 group-hover:bg-[white] transition-colors" />
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-12 border border-[white]/30 p-6"
-                 style={{ clipPath: 'polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)' }}>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="text-[white] text-sm tracking-[0.3em]">SYSTEM OVERVIEW</div>
-                <div className="flex-1 h-px bg-[white]/30" />
-              </div>
-              <div className="grid grid-cols-4 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl text-[white] font-bold mb-1">{modules.filter(m => m.status === "online").length}</div>
-                  <div className="text-white/60 text-xs">ONLINE</div>
+                  {/* Diamond Number */}
+                  <div className="w-16 h-16 bg-[#FFEB00] flex items-center justify-center transform rotate-45">
+                    <span className="text-black text-xl font-bold transform -rotate-45">{module.number}</span>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl text-white font-bold mb-1">{modules.filter(m => m.status === "offline").length}</div>
-                  <div className="text-white/60 text-xs">OFFLINE</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl text-white font-bold mb-1">{modules.filter(m => m.status === "maintenance").length}</div>
-                  <div className="text-white/60 text-xs">MAINTENANCE</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl text-[white] font-bold mb-1">{modules.length}</div>
-                  <div className="text-white/60 text-xs">TOTAL</div>
-                </div>
-              </div>
-            </div>
+              </button>
+            ))}
           </div>
         </main>
 

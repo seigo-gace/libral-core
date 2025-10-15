@@ -59,7 +59,8 @@ export default function DashboardHud() {
 
   if (showSplash) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center overflow-hidden relative">
+      <div className="min-h-screen bg-black flex items-center overflow-hidden relative px-8 md:px-16" style={{ fontFamily: 'Share Tech Mono, monospace' }}>
+        {/* Grid Background */}
         <div className="absolute inset-0 opacity-5" 
              style={{ 
                backgroundImage: `
@@ -70,35 +71,38 @@ export default function DashboardHud() {
              }} 
         />
         
-        {/* Circuit Pattern */}
-        <svg className="absolute right-0 top-0 h-full w-1/2 opacity-80" viewBox="0 0 400 800" fill="none">
-          <path d="M 200 0 L 200 150 L 250 200 L 250 350 L 200 400 L 200 550 L 150 600 L 150 800" 
-                stroke="#FFEB00" strokeWidth="4" fill="none"/>
-          <path d="M 240 0 L 240 130 L 290 180 L 290 370 L 240 420 L 240 570 L 190 620 L 190 800" 
-                stroke="#FFEB00" strokeWidth="4" fill="none"/>
-          <circle cx="200" cy="200" r="20" stroke="#FFEB00" strokeWidth="2" fill="#000"/>
-          <circle cx="250" cy="400" r="15" stroke="#FFEB00" strokeWidth="2" fill="#FFEB00"/>
-          <rect x="140" y="350" width="10" height="30" fill="#FFEB00"/>
-          <rect x="280" y="500" width="10" height="30" fill="#FFEB00"/>
+        {/* Yellow Circuit Pattern - Right Side */}
+        <svg className="absolute right-0 top-0 h-full w-1/3 md:w-1/2" viewBox="0 0 400 800" fill="none" preserveAspectRatio="xMaxYMid meet">
+          <path d="M 250 0 L 250 150 L 300 200 L 300 250 L 350 300 L 350 500 L 300 550 L 300 800" 
+                stroke="#FFEB00" strokeWidth="8" fill="none"/>
+          <path d="M 350 0 L 350 120 L 400 170 L 400 280 L 350 330 L 350 470 L 300 520 L 300 800" 
+                stroke="#FFEB00" strokeWidth="8" fill="none"/>
+          <circle cx="300" cy="250" r="30" stroke="#FFEB00" strokeWidth="3" fill="none"/>
+          <circle cx="300" cy="250" r="50" stroke="#FFEB00" strokeWidth="2" fill="none" opacity="0.5"/>
+          <circle cx="325" cy="500" r="25" stroke="#FFEB00" strokeWidth="3" fill="#FFEB00"/>
+          <rect x="240" y="180" width="8" height="40" fill="#FFEB00" transform="rotate(45 244 200)"/>
+          <rect x="340" y="560" width="8" height="40" fill="#FFEB00" transform="rotate(-45 344 580)"/>
         </svg>
         
-        <div className="relative z-10 text-center">
-          <div className="mb-4 flex justify-center gap-2">
-            <div className="w-2 h-8 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
-            <div className="w-2 h-8 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
-            <div className="w-2 h-8 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+        {/* Content - Left Side */}
+        <div className="relative z-10 flex flex-col justify-center max-w-md">
+          {/* "00" Large Text */}
+          <h1 className="text-[120px] md:text-[160px] lg:text-[200px] font-bold text-white leading-none tracking-tight mb-4">00</h1>
+          
+          {/* Yellow Stripes */}
+          <div className="flex gap-1 mb-6">
+            <div className="w-2 h-6 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+            <div className="w-2 h-6 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+            <div className="w-2 h-6 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+            <div className="w-2 h-6 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
           </div>
-          <h1 className="text-[120px] md:text-[180px] font-bold text-white mb-2 leading-none tracking-tight">00</h1>
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-2 h-1 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
-            <div className="w-2 h-1 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
-            <div className="w-2 h-1 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
-            <div className="w-2 h-1 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
-          </div>
-          <h2 className="text-3xl md:text-5xl font-bold text-[#FFEB00] tracking-[0.3em]">LIBRAL</h2>
-          <p className="mt-6 text-gray-400 text-sm max-w-xs mx-auto">
-            Lorem ipsum qrqeieemet, arqs iepsnsequetruee us can un seadia riq no- addir ut tamce tcr ninq aliqn eeiiai netus placentre mek ae
-            unentumlaadi.
+          
+          {/* LIBRAL Title */}
+          <h2 className="text-4xl md:text-5xl font-bold text-[#FFEB00] tracking-[0.3em] mb-8">LIBRAL</h2>
+          
+          {/* Description */}
+          <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
+            Lorem ipsum qrqeieemet, arqs iepsnsequetruee us can un seadia riq no- addir ut tamce tcr ninq aliqn eeiiai netus placentre mek ae unentumlaadi.
           </p>
         </div>
       </div>

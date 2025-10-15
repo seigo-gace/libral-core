@@ -99,90 +99,69 @@ export default function C3Dashboard() {
         </header>
 
         <main className="flex-1 flex items-center justify-center p-8">
-          <div className="w-full max-w-6xl">
-            <div className="text-center mb-16">
-              {/* イエローアクセント: 斜線のみ */}
-              <div className="inline-flex items-center gap-3 mb-4">
-                <div className="flex gap-0.5">
-                  <div className="w-1 h-6 bg-[#FFEB00] transform -skew-x-12"></div>
-                  <div className="w-1 h-6 bg-[#FFEB00] transform -skew-x-12"></div>
-                  <div className="w-1 h-6 bg-[#FFEB00] transform -skew-x-12"></div>
-                  <div className="w-1 h-6 bg-[#FFEB00] transform -skew-x-12"></div>
-                </div>
-                <h2 className="text-white text-sm tracking-[0.4em] px-6 py-2 border border-white/50"
-                    style={{ clipPath: 'polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%)' }}>
-                  SYSTEM STATUS
-                </h2>
-              </div>
-              <div className="text-white/80 text-lg tracking-[0.2em] mb-8">S07.K - メイン制御インターフェース</div>
-              
-              <div className="flex items-center justify-center gap-8 mb-8">
-                <div className="flex flex-col items-center">
-                  <div className="w-20 h-1 bg-white mb-2" />
-                  <span className="text-white/60 text-xs">ONLINE</span>
-                </div>
-                <div className="text-white text-4xl">●</div>
-                <div className="flex flex-col items-center">
-                  <div className="w-20 h-1 bg-white mb-2" />
-                  <span className="text-white/60 text-xs">READY</span>
-                </div>
-              </div>
+          <div className="w-full max-w-4xl space-y-12">
+            {/* Yellow Stripes Accent - Top */}
+            <div className="flex justify-center gap-1.5 mb-8">
+              <div className="w-3 h-12 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+              <div className="w-3 h-12 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+              <div className="w-3 h-12 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
-              <button
-                onClick={() => navigateWithTransition('/c3/apps')}
-                className="group relative p-8 border-2 border-white/50 hover:border-white transition-all duration-300"
-                style={{ clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))' }}
-                data-testid="button-apps"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Grid3x3 className="w-8 h-8 text-white" />
-                      {/* イエローアクセント: 斜線 */}
-                      <div className="flex gap-0.5">
-                        <div className="w-0.5 h-4 bg-[#FFEB00] transform -skew-x-12"></div>
-                        <div className="w-0.5 h-4 bg-[#FFEB00] transform -skew-x-12"></div>
-                        <div className="w-0.5 h-4 bg-[#FFEB00] transform -skew-x-12"></div>
-                      </div>
-                    </div>
-                    <h3 className="text-white text-xl font-bold tracking-[0.2em] mb-1">APPS</h3>
-                    <p className="text-white/60 text-sm">D008</p>
-                  </div>
-                  {/* イエロー矢印 */}
-                  <div className="text-[#FFEB00] text-2xl group-hover:translate-x-2 transition-transform">▶</div>
-                </div>
-              </button>
+            {/* APP Button - Large */}
+            <button
+              onClick={() => navigateWithTransition('/c3/apps')}
+              className="group relative w-full p-12 border-4 border-white hover:border-[#FFEB00] transition-all duration-300"
+              style={{ 
+                clipPath: 'polygon(30px 0, calc(100% - 30px) 0, 100% 30px, 100% calc(100% - 30px), calc(100% - 30px) 100%, 30px 100%, 0 calc(100% - 30px), 0 30px)',
+                background: 'rgba(0,0,0,0.8)'
+              }}
+              data-testid="button-apps"
+            >
+              <div className="flex items-center justify-center gap-8">
+                {/* Yellow Arrow */}
+                <div className="text-[#FFEB00] text-6xl font-bold group-hover:translate-x-2 transition-transform">›</div>
+                {/* APP Text */}
+                <h3 className="text-white text-6xl md:text-7xl font-bold tracking-[0.2em]">APP</h3>
+              </div>
+            </button>
 
-              <button
-                onClick={() => navigateWithTransition('/c3/console')}
-                className="group relative p-8 border-2 border-white/50 hover:border-white transition-all duration-300"
-                style={{ clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))' }}
-                data-testid="button-console"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      {/* イエロー警告マーク */}
-                      <div className="w-8 h-8 border-2 border-[#FFEB00] rounded-full flex items-center justify-center">
-                        <span className="text-[#FFEB00] text-lg font-bold">!</span>
-                      </div>
-                      <div className="flex gap-0.5">
-                        <div className="w-0.5 h-4 bg-[#FFEB00] transform -skew-x-12"></div>
-                        <div className="w-0.5 h-4 bg-[#FFEB00] transform -skew-x-12"></div>
-                        <div className="w-0.5 h-4 bg-[#FFEB00] transform -skew-x-12"></div>
-                      </div>
-                    </div>
-                    <h3 className="text-white text-xl font-bold tracking-[0.2em] mb-1">CONSOLE</h3>
-                    <p className="text-white/60 text-sm">D009</p>
-                  </div>
-                  <div className="text-[#FFEB00] text-2xl group-hover:translate-x-2 transition-transform">▶</div>
-                </div>
-              </button>
+            {/* Yellow Dots/Stripes Separator */}
+            <div className="flex justify-center gap-2">
+              {[...Array(10)].map((_, i) => (
+                <div key={i} className={`w-2 h-2 ${i < 6 ? 'bg-[#FFEB00]' : 'bg-gray-700'}`} />
+              ))}
             </div>
+
+            {/* CONSOLE Button - Large */}
+            <button
+              onClick={() => navigateWithTransition('/c3/console')}
+              className="group relative w-full p-12 border-4 border-white hover:border-[#FFEB00] transition-all duration-300"
+              style={{ 
+                clipPath: 'polygon(30px 0, calc(100% - 30px) 0, 100% 30px, 100% calc(100% - 30px), calc(100% - 30px) 100%, 30px 100%, 0 calc(100% - 30px), 0 30px)',
+                background: 'rgba(0,0,0,0.8)'
+              }}
+              data-testid="button-console"
+            >
+              <div className="flex items-center justify-center gap-8">
+                {/* Yellow Warning Icon */}
+                <div className="w-16 h-16 border-4 border-[#FFEB00] rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="text-[#FFEB00] text-4xl font-bold">!</span>
+                </div>
+                {/* CONSOLE Text */}
+                <h3 className="text-white text-5xl md:text-6xl font-bold tracking-[0.2em]">CONSOLE</h3>
+              </div>
+            </button>
           </div>
         </main>
+
+        <footer className="relative px-8 py-4 border-t border-white/20">
+          <div className="flex items-center justify-between text-xs text-white/60">
+            <div>LIBRAL CORE // C3 CONSOLE</div>
+            <div>{new Date().toLocaleTimeString()}</div>
+          </div>
+        </footer>
+        
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-50" />
       </div>
     </div>
   );
