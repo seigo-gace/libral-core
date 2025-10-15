@@ -39,9 +39,12 @@ export default function DashboardHud() {
   });
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 2000);
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+      setLocation('/c3');
+    }, 2000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [setLocation]);
 
   const menuItems = [
     { id: 'dashboard', icon: <Home className="w-5 h-5" />, label: 'DASHBOARD', desc: 'System overview and monitoring' },

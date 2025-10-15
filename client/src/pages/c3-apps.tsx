@@ -115,43 +115,43 @@ export default function C3Apps() {
         </header>
 
         <main className="flex-1 p-8 md:p-16">
-          <div className="max-w-6xl mx-auto space-y-8">
+          <div className="max-w-6xl mx-auto space-y-6">
             {modules.map((module, index) => (
               <button
                 key={module.id}
                 onClick={() => setLocation(`/c3/apps/${module.id}`)}
-                className="group w-full flex items-center gap-6 md:gap-12 p-6 md:p-8 bg-[#0A0A0A] hover:bg-[#151515] transition-all duration-300 border border-white/10 hover:border-white/30"
+                className="group w-full flex items-center gap-4 md:gap-8 p-6 md:p-8 bg-black/40 hover:bg-black/60 transition-all duration-300"
                 data-testid={`card-module-${module.id}`}
               >
                 {/* Left: Yellow Circle Icon */}
-                <div className="flex-shrink-0 w-20 h-20 border-4 border-[#FFEB00] rounded-full flex items-center justify-center">
+                <div className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 border-4 border-[#FFEB00] rounded-full flex items-center justify-center">
                   {getIcon(module.icon)}
                 </div>
 
+                {/* Yellow Dotted Line Connector - Left */}
+                <div className="hidden md:block w-12 border-t-2 border-dotted border-[#FFEB00]"></div>
+
                 {/* Center: Label + Title + Description */}
                 <div className="flex-1 text-left">
-                  <div className="flex items-center gap-4 mb-2">
-                    {/* Dotted Line */}
-                    <div className="hidden md:block w-16 border-t-2 border-dotted border-white/30"></div>
-                    {/* Label */}
-                    <span className="text-white font-bold text-sm tracking-widest">{module.label}</span>
-                    <span className="text-white/40 text-xs">DEVELOPMENT</span>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-white font-bold text-lg tracking-[0.3em]">{module.label}</span>
+                    <span className="text-white/40 text-xs uppercase">Development</span>
                   </div>
-                  <h3 className="text-white text-2xl md:text-3xl font-bold mb-2">{module.name}</h3>
-                  <p className="text-white/60 text-sm md:text-base">{module.description}</p>
+                  <h3 className="text-white text-2xl md:text-3xl font-bold mb-2 uppercase">{module.name}</h3>
+                  <p className="text-white/60 text-sm">{module.description}</p>
                 </div>
 
-                {/* Right: Yellow Diamond Number */}
-                <div className="flex-shrink-0 flex items-center gap-4">
-                  {/* Dotted Line */}
-                  <div className="hidden md:flex gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <div key={i} className="w-1 h-1 bg-white/30"></div>
-                    ))}
-                  </div>
+                {/* Right: Yellow Diamond Number + Extended Dots */}
+                <div className="flex-shrink-0 flex items-center gap-2 md:gap-4">
                   {/* Diamond Number */}
-                  <div className="w-16 h-16 bg-[#FFEB00] flex items-center justify-center transform rotate-45">
-                    <span className="text-black text-xl font-bold transform -rotate-45">{module.number}</span>
+                  <div className="w-14 h-14 md:w-16 md:h-16 bg-[#FFEB00] flex items-center justify-center transform rotate-45">
+                    <span className="text-black text-xl md:text-2xl font-bold transform -rotate-45">{module.number}</span>
+                  </div>
+                  {/* Extended Dotted Line - Right */}
+                  <div className="hidden md:flex gap-1.5">
+                    {[...Array(8)].map((_, i) => (
+                      <div key={i} className="w-1 h-1 bg-white/40"></div>
+                    ))}
                   </div>
                 </div>
               </button>

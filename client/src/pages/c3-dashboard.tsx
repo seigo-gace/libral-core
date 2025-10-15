@@ -98,57 +98,53 @@ export default function C3Dashboard() {
           </div>
         </header>
 
-        <main className="flex-1 flex items-center justify-center p-8">
-          <div className="w-full max-w-4xl space-y-12">
-            {/* Yellow Stripes Accent - Top */}
-            <div className="flex justify-center gap-1.5 mb-8">
-              <div className="w-3 h-12 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
-              <div className="w-3 h-12 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
-              <div className="w-3 h-12 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+        <main className="flex-1 flex items-center justify-center p-4 md:p-8">
+          <div className="w-full max-w-5xl space-y-6 md:space-y-8">
+            {/* Yellow Stripes - Top Left */}
+            <div className="flex gap-1 mb-4">
+              <div className="w-2 h-8 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+              <div className="w-2 h-8 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
+              <div className="w-2 h-8 bg-[#FFEB00]" style={{ transform: 'skewX(-20deg)' }}></div>
             </div>
 
-            {/* APP Button - Large */}
+            {/* APP Button */}
             <button
               onClick={() => navigateWithTransition('/c3/apps')}
-              className="group relative w-full p-12 border-4 border-white hover:border-[#FFEB00] transition-all duration-300"
+              className="group relative w-full p-8 md:p-16 bg-gradient-to-br from-[#1a1a1a] to-black transition-all duration-300"
               style={{ 
-                clipPath: 'polygon(30px 0, calc(100% - 30px) 0, 100% 30px, 100% calc(100% - 30px), calc(100% - 30px) 100%, 30px 100%, 0 calc(100% - 30px), 0 30px)',
-                background: 'rgba(0,0,0,0.8)'
+                clipPath: 'polygon(40px 0, calc(100% - 40px) 0, 100% 40px, 100% calc(100% - 40px), calc(100% - 40px) 100%, 40px 100%, 0 calc(100% - 40px), 0 40px)',
+                border: '3px solid white'
               }}
               data-testid="button-apps"
             >
-              <div className="flex items-center justify-center gap-8">
-                {/* Yellow Arrow */}
-                <div className="text-[#FFEB00] text-6xl font-bold group-hover:translate-x-2 transition-transform">›</div>
-                {/* APP Text */}
-                <h3 className="text-white text-6xl md:text-7xl font-bold tracking-[0.2em]">APP</h3>
+              <div className="flex items-center justify-center gap-6 md:gap-12">
+                <div className="text-[#FFEB00] text-5xl md:text-7xl font-bold group-hover:translate-x-2 transition-transform">›</div>
+                <h3 className="text-white text-5xl md:text-8xl font-bold tracking-[0.15em]">APP</h3>
               </div>
             </button>
 
-            {/* Yellow Dots/Stripes Separator */}
-            <div className="flex justify-center gap-2">
+            {/* Yellow Dots Separator */}
+            <div className="flex justify-center gap-1.5">
               {[...Array(10)].map((_, i) => (
-                <div key={i} className={`w-2 h-2 ${i < 6 ? 'bg-[#FFEB00]' : 'bg-gray-700'}`} />
+                <div key={i} className={`w-2 h-2 ${i < 7 ? 'bg-[#FFEB00]' : 'bg-gray-600'}`} />
               ))}
             </div>
 
-            {/* CONSOLE Button - Large */}
+            {/* CONSOLE Button */}
             <button
               onClick={() => navigateWithTransition('/c3/console')}
-              className="group relative w-full p-12 border-4 border-white hover:border-[#FFEB00] transition-all duration-300"
+              className="group relative w-full p-8 md:p-16 bg-gradient-to-br from-[#1a1a1a] to-black transition-all duration-300"
               style={{ 
-                clipPath: 'polygon(30px 0, calc(100% - 30px) 0, 100% 30px, 100% calc(100% - 30px), calc(100% - 30px) 100%, 30px 100%, 0 calc(100% - 30px), 0 30px)',
-                background: 'rgba(0,0,0,0.8)'
+                clipPath: 'polygon(40px 0, calc(100% - 40px) 0, 100% 40px, 100% calc(100% - 40px), calc(100% - 40px) 100%, 40px 100%, 0 calc(100% - 40px), 0 40px)',
+                border: '3px solid white'
               }}
               data-testid="button-console"
             >
-              <div className="flex items-center justify-center gap-8">
-                {/* Yellow Warning Icon */}
-                <div className="w-16 h-16 border-4 border-[#FFEB00] rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <span className="text-[#FFEB00] text-4xl font-bold">!</span>
+              <div className="flex items-center justify-center gap-6 md:gap-12">
+                <div className="w-14 h-14 md:w-20 md:h-20 border-4 border-[#FFEB00] rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="text-[#FFEB00] text-3xl md:text-5xl font-bold">!</span>
                 </div>
-                {/* CONSOLE Text */}
-                <h3 className="text-white text-5xl md:text-6xl font-bold tracking-[0.2em]">CONSOLE</h3>
+                <h3 className="text-white text-4xl md:text-7xl font-bold tracking-[0.15em]">CONSOLE</h3>
               </div>
             </button>
           </div>
