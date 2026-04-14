@@ -1,0 +1,94 @@
+{
+  "project_id": "Libral_SelfEvolution_Final_Manifest_V1",
+  "structure_standard": "PCGP_V1.0_ENFORCED",
+  "governance_status": "AMM_CRAD_ACTIVE",
+  "next_priority": "LPO_KBE_AEG_IMPLEMENTATION",
+  "immediate_tasks": [
+    {
+      "task_id": "T1_PYTHON_PATH_CORRECTION",
+      "module": "PYTHON_CORE",
+      "details": "PCGP構造変更に伴い、Pythonコード内のimportパスを全て修正する。",
+      "action_type": "GLOBAL_REPLACE",
+      "target_pattern": "from libral-core.",
+      "replacement": "from src.modules.libral_core."
+    },
+    {
+      "task_id": "T2_NODE_PATH_CORRECTION",
+      "module": "NODE_CORE",
+      "details": "Node.js/Expressコード内のimport/requireパスを全て修正する。",
+      "action_type": "GLOBAL_REPLACE",
+      "target_pattern": "../../shared/",
+      "replacement": "../../src/library/shared/"
+    },
+    {
+      "task_id": "T3_BUILD_DEPENDENCIES",
+      "module": "SETUP",
+      "details": "新しいPCGP構造の src/ ディレクトリで依存関係を再インストールし、開発環境を再起動する。",
+      "action_type": "SHELL_COMMANDS",
+      "commands": [
+        "cd src",
+        "npm install",
+        "poetry install",
+        "cd ..",
+        "docker-compose build --force-rm",
+        "docker-compose up -d"
+      ]
+    }
+  ],
+  "evolution_tasks_lpo": [
+    {
+      "task_id": "T4_LPO_MODULE_IMPLEMENTATION",
+      "module": "LPO_CORE",
+      "details": "単体自律監視モジュール Libral Protocol Optimizer (LPO) を構築し、AMM/CRAD機能を統合する。",
+      "action_type": "CREATE_MODULE_AND_INTEGRATE",
+      "sub_tasks": [
+        {"sub_id": "T4-S1_ARCHITECTURE", "details": "LPOコアサービスを Component/Service 層構造 (src/modules/lpo/) で定義。"},
+        {"sub_id": "T4-S2_ZK_AUDIT_GATEWAY", "details": "セキュリティ監査をZK（ゼロ知識証明）ベースで行うための検証ロジックを実装し、AMMのチェック関数に統合する。"},
+        {"sub_id": "T4-S3_SELF_HEALING_AI", "details": "CRADの実行ログを分析し、recovery_runbook_crad.jsonの修復シーケンスを動的に提案/修正するAIロジックを実装。"},
+        {"sub_id": "T4-S4_FINANCE_OPTIMIZER", "details": "外部AIコスト追跡とプラグイン収益監査をLPOの予測ロジックに統合し、CRADのコスト制限プロトコルを強化する。"},
+        {"sub_id": "T4-S5_RBAC_ABSTRACTION", "details": "LPOの権限チェックを抽象化されたIRBACProvider経由で行い、単体モジュールとしての汎用性を確保する。"},
+        {"sub_id": "T4-S6_HEALTH_SCORE_API", "details": "システム全体の自律的健全性を0-100で評価する単一の健全性スコアAPI（GET /lpo/metrics/health-score）を実装。"},
+        {"sub_id": "T4-S7_PREDICTIVE_MONITORING", "details": "CRADのトリガーを、システムメトリクスに基づく『予測型異常検知機能』へと進化させる。"},
+        {"sub_id": "T4-S8_ZK_AUDIT_GATEWAY_FINAL", "details": "LPOの外部APIがゼロ知識証明ベースの監査を要求・検証する『ZK監査ゲートウェイ』を実装。"}
+      ]
+    }
+  ],
+  "knowledge_evolution_tasks": [
+    {
+      "task_id": "T5_KBE_KNOWLEDGE_BOOSTER",
+      "module": "KNOWLEDGE_EVOLUTION",
+      "details": "ユーザーのプライバシーを保護しつつ、集合知を構築するナレッジ・ブースター・エンジン（KBE）を開発する。",
+      "action_type": "CREATE_MODULE_AND_INTEGRATE",
+      "sub_tasks": [
+        {"sub_id": "T5-S1_FEDERATED_LEARNING", "details": "フェデレーテッド・ラーニング・インターフェースを実装し、個人ログサーバー側でAI学習を実行可能にする。"},
+        {"sub_id": "T5-S2_HOMOMORPHIC_ENCRYPTION", "details": "学習結果を暗号化したまま中央で集計するための同型暗号プロトコルをLPOのAPIに統合する。"}
+      ]
+    },
+    {
+      "task_id": "T6_AEG_EVOLUTION_GATEWAY",
+      "module": "AUTO_EVOLUTION",
+      "details": "KBEの集合知とLPOの健全性スコアに基づき、プラットフォームの進化を自律的に行うアクセラレーター（AEG）を開発する。",
+      "action_type": "CREATE_MODULE_AND_INTEGRATE",
+      "sub_tasks": [
+        {"sub_id": "T6-S1_DEVELOPMENT_PRIORITIZATION_AI", "details": "KBデータとCRADのMTTR統計を分析し、コード改善の優先度を決定するAIロジックを実装。"},
+        {"sub_id": "T6-S2_GIT_PR_GENERATION", "details": "決定された優先度に基づき、GitHub上で自動でコード修正案（Pull Request）を作成する機能を実装。"}
+      ]
+    },
+    {
+      "task_id": "T7_CASH_VAPORIZATION_PROTOCOL",
+      "module": "SECURITY_VAPORIZATION",
+      "details": "Hetznerキャッシュサーバーに格納される全個人関連データに対し、最大24時間のTTLと揮発プロトコルを強制的に適用する。",
+      "action_type": "IMPLEMENT_REDIS_TTL_AND_IMMEDIATE_FLUSH",
+      "sub_tasks": [
+        {"sub_id": "T7-S1_REDIS_TTL_ENFORCEMENT", "details": "Redisへの書き込み時、個人関連情報を含む全てのキーにTTL 24時間を自動設定するComponentを実装。"},
+        {"sub_id": "T7-S2_KBE_FLUSH_HOOK", "details": "KBE (T5) が知識抽出を完了した直後、関連するキャッシュキーをTTLに関わらず即時削除するフック（FLUSH_HOOK）を実装し、揮発を強制する。"}
+      ]
+    }
+  ],
+  "final_development_task": {
+    "task_id": "FDT1_CONSOLE_BUILD",
+    "details": "AMM/CRAD/LPOの自律システムを操作・監視するため、React/TypeScriptベースのWebコンソールを構築する。",
+    "target_ui_mode": ["Mobile_Cockpit", "PC_Control_Center"],
+    "required_apis": ["/governance/amm/*", "/governance/crad/*", "/lpo/metrics/*"]
+  }
+}

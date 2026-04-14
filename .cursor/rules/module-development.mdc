@@ -1,0 +1,32 @@
+---
+description: モジュール作成・変更時はコア定義とライフサイクルに従う（企画→実装→ビルド→デバッグ）
+globs: server/modules/**/*.ts,server/modules/**/*.tsx,docs/MODULE*.md,docs/CORE*.md,client/src/pages/c3-module-detail.tsx
+alwaysApply: false
+---
+
+# モジュール開発時のコア定義準拠
+
+モジュールを**作成・変更**するときは、必ず次のドキュメントを参照し、企画からビルド・デバッグまで**同じコア定義**を使ってください。
+
+## 参照の優先順位
+
+1. **docs/CORE_DEFINITIONS.md** — ファイルパス・StampModule 型・getInfo() の形・チェックリスト
+2. **docs/MODULE_CONTRACT.md** — IStorage, StampModule, TransportAdapter などの正式契約
+3. **docs/MODULE_DEVELOPMENT_LIFECYCLE.md** — 企画 → 実装 → ビルド → デバッグの手順とチェックリスト
+4. **docs/MODULE_CREATION.md** — 新規作成用テンプレートとレジストリ・modules.yaml の更新方法
+5. **docs/modules.yaml** — モジュール一覧（機械可読）。新規追加時は layer-registered-modules にエントリを追加する
+
+## 実装時の必須
+
+- StampModule を実装するクラスは **getInfo()** で **category** と **path: `/c3/apps/${id}`** を返すこと
+- 新規モジュールは **server/modules/registry.ts** で **registerModule(instance)** すること
+- **docs/modules.yaml** の **layer-registered-modules** にエントリを追加すること
+- API を足す場合は **server/routes.ts**（または routes 分割）にルートを追加すること
+- C3 詳細ページで説明を出す場合は **client/src/pages/c3-module-detail.tsx** の **moduleConfigs** に id を追加すること
+
+## ビルド・デバッグ
+
+- **npm run check** で型チェック、**npm run build** でビルド
+- **npm run dev** 起動後、**GET /api/modules** と C3 サイドバーで当該モジュールが表示されることを確認する
+
+詳細は上記ドキュメントを参照すること。

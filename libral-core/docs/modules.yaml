@@ -1,0 +1,278 @@
+# Libral Core (Python) - Module Manifest (最小単位モジュール一覧)
+# 機械可読。CI・交換・バージョン管理・依存チェックに利用。
+# 運用フロー: トラブル検知 → モジュール特定 → 変更（交換/設定/バージョンアップ）
+
+version: "1.0"
+policy:
+  failure_handling: "swap"
+  evolution: "update"
+
+flow:
+  - step: trouble_detection
+    description: トラブル検知
+    sources:
+      - logs
+      - metrics
+      - alerts
+    auto_debug: "CRAD (src/governance/context_aware_debugger.py) がアラートに基づき自動リカバリ。runbook で target_component を指定しモジュール特定につなげる。"
+
+  - step: module_identification
+    description: モジュール特定
+    ref: "本 modules.yaml および MODULE_REGISTRY.md の一覧・依存関係から該当モジュール ID を特定"
+
+  - step: change
+    description: 変更
+    actions:
+      - swap
+      - config
+      - update
+
+layers:
+  # --- 共通部品（全モジュールから参照） ---
+  - id: layer-components
+    name: Components
+    modules:
+      - id: lib-components
+        path: libral_core/library/utils/datetime_utils.py
+        interface: "DateTimeUtils"
+        description: 日時ユーティリティ（UTC, ISO8601）
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: src-components-datetime
+        path: src/library/components/datetime_utils.py
+        interface: "functions (utc_now, format_iso8601, ...)"
+        description: 日時（プロトコル層用）
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: src-components-crypto
+        path: src/library/components/crypto_helpers.py
+        interface: "functions (generate_random_id, sha256_hash, ...)"
+        description: 暗号ヘルパー
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: src-components-config
+        path: src/library/components/config_loader.py
+        interface: "ConfigLoader"
+        description: 設定・ポリシー読み込み（CRAD runbook 等）
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: src-components-validators
+        path: src/library/components/validators.py
+        interface: "validation functions"
+        description: バリデーション
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+  # --- ガバナンス（自動debug・モデレーション） ---
+  - id: layer-governance
+    name: Governance
+    modules:
+      - id: governance-crad
+        path: src/governance/context_aware_debugger.py
+        interface: "ContextAwareAutoDebugger"
+        description: CRAD - アラートに基づく自動リカバリ・自動debug。モジュール特定（target_component）→ アクション実行
+        dependencies: [src-components-config, src-components-datetime]
+        replaceable: true
+        version: "1.0.0"
+        notes: "トラブル検知の中心。runbook で alert_to_action_map を定義。"
+
+      - id: governance-amm
+        path: src/governance/autonomous_moderator.py
+        interface: "AutonomousModerator"
+        description: AMM - セキュリティポリシー自動執行（KMS/Git ブロック等）
+        dependencies: [src-components-config]
+        replaceable: true
+        version: "1.0.0"
+
+      - id: governance-router
+        path: src/governance/router.py
+        interface: null
+        description: ガバナンス API ルート
+        dependencies: [governance-crad, governance-amm]
+        replaceable: true
+        version: "1.0.0"
+
+  # --- 統合モジュール（libral_core） ---
+  - id: layer-integrated
+    name: Integrated Modules (libral_core)
+    modules:
+      - id: mod-ai
+        path: libral_core/modules/ai/
+        interface: "router + service"
+        description: AI モジュール
+        dependencies: [libral_core/library]
+        replaceable: true
+        version: "1.0.0"
+
+      - id: mod-app
+        path: libral_core/modules/app/
+        interface: "router + service"
+        description: アプリモジュール
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: mod-auth
+        path: libral_core/modules/auth/
+        interface: "router + service"
+        description: 認証
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: mod-communication
+        path: libral_core/modules/communication/
+        interface: "router + service"
+        description: 通信
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: mod-events
+        path: libral_core/modules/events/
+        interface: "router + service"
+        description: イベント
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: mod-gpg
+        path: libral_core/modules/gpg/
+        interface: "router + service"
+        description: GPG
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: mod-marketplace
+        path: libral_core/modules/marketplace/
+        interface: "router + service"
+        description: マーケットプレース
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: mod-payments
+        path: libral_core/modules/payments/
+        interface: "router + service"
+        description: 決済
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: mod-api_hub
+        path: libral_core/modules/api_hub/
+        interface: "router + service"
+        description: API ハブ
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+  # --- 統合サブモジュール（LAS, LEB, LGL, LIC） ---
+  - id: layer-integrated-sub
+    name: Integrated Sub (LAS/LEB/LGL/LIC)
+    modules:
+      - id: las
+        path: libral_core/integrated_modules/las/
+        interface: "router + service"
+        description: LAS
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: leb
+        path: libral_core/integrated_modules/leb/
+        interface: "router + service"
+        description: LEB
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: lgl
+        path: libral_core/integrated_modules/lgl/
+        interface: "router + service"
+        description: LGL
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: lic
+        path: libral_core/integrated_modules/lic/
+        interface: "router + service"
+        description: LIC
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+  # --- プロトコルモジュール（src） ---
+  - id: layer-protocol
+    name: Protocol Modules (src)
+    modules:
+      - id: aeg
+        path: src/modules/aeg/
+        interface: "router + core"
+        description: AEG - 自動進化 PR ゲートウェイ
+        dependencies: [src-components-datetime, src-components-config]
+        replaceable: true
+        version: "1.0.0"
+
+      - id: kbe
+        path: src/modules/kbe/
+        interface: "router + core"
+        description: KBE - 連合学習型 KB
+        dependencies: [src/library/components]
+        replaceable: true
+        version: "1.0.0"
+
+      - id: lpo
+        path: src/modules/lpo/
+        interface: "router + core"
+        description: LPO - 健全性監視・自己修復
+        dependencies: [src/library/components, governance-crad]
+        replaceable: true
+        version: "1.0.0"
+
+      - id: vaporization
+        path: src/modules/vaporization/
+        interface: "router + core"
+        description: Vaporization - データ削除・TTL
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: integration-api
+        path: src/modules/integration_api.py
+        interface: null
+        description: 統合 API
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+  # --- ライブラリ（api_clients, file_handlers） ---
+  - id: layer-library
+    name: Library
+    modules:
+      - id: library-api-clients
+        path: libral_core/library/api_clients/
+        interface: "base_client, external_search_client"
+        description: API クライアント
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: library-file-handlers
+        path: libral_core/library/file_handlers/
+        interface: "image_processor, video_processor"
+        description: ファイルハンドラ
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"

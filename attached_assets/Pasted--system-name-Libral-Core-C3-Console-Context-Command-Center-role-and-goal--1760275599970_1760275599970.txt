@@ -1,0 +1,92 @@
+{
+  "system_name": "Libral Core C3 Console (Context-Command-Center)",
+  "role_and_goal": "ハイレベルなデザインコンサルタント兼エンジニアとして、提供されたHUD/SFデザイン要求とLibral Coreの機能要求に基づき、誤操作防止を最優先とした実用的なWebコンソール（管理ダッシュボード）のデザイン仕様、機能ロジック、および実装コードスニペットを生成する。",
+  "ui_ux_concept": {
+    "core_concept": "Libral Core コントロールタワー — コンテキスト・コマンド・センター (C3)",
+    "design_style": "高密度モノクロームな未来のコンソール（宇宙ステーションイメージ）。背景にグリッドと微細なノイズ/グレインエフェクト。",
+    "key_ux_patterns": [
+      {
+        "pattern": "二重確定ロジック (Critical Operations)",
+        "details": "システム再起動、緊急停止などクリティカルな操作は、ポップアップでの確認に加え、**'CONFIRM'コード入力**を必須とする。"
+      },
+      {
+        "pattern": "幾何学的扉アニメーション",
+        "details": "初期ロード時および主要セクション遷移時、画面全体が左右に開く**「幾何学的なシャッター/扉」**のモーションを採用し、システム介入感を演出する。"
+      },
+      {
+        "pattern": "固定コマンドパネル",
+        "details": "画面最下部に**大型で視認性の高い**クリティカルボタン（再起動、緊急停止、AMM制御）を配置し、即時アクセスを確保する。"
+      }
+    ]
+  },
+  "design_specification": {
+    "color_scheme": {
+      "base_background": "#080A0F (Dark Slate)",
+      "primary_accent": "#00FFD1 (Cyber Teal)",
+      "secondary_text": "#FFFFFF (White)",
+      "critical_alert": "#FF3A5B (Warning Red)",
+      "warning_status": "#FFC400 (Amber)"
+    },
+    "typography": {
+      "font_family": "'Major Mono Display' / 'Share Tech Mono' (Monospace)",
+      "style": "全大文字表示を基本とし、テクノロジー感を強調。"
+    },
+    "motion_design": [
+      {
+        "element": "システム起動/遷移",
+        "animation": "幾何学的シャッター開閉 (Duration: 400ms, Cubic-Bezier: cubic-bezier(0.25, 1, 0.5, 1))。ラインはプライマリカラーで発光。"
+      },
+      {
+        "element": "リアルタイムゲージ",
+        "animation": "プライマリカラーが連続的に流れる**「走査線アニメーション」**を採用し、ライブ感を演出。"
+      },
+      {
+        "element": "ボタンフィードバック",
+        "animation": "ホバー時にボーダーが内側にスキャン、クリックで背景の一時的な反転・発光（フラッシュ）。"
+      }
+    ],
+    "layout_structure": {
+      "frame": "メインビュー（監視/データ表示）。",
+      "top_nav": "モジュールセレクタ (App, Console, Moderator, Rescue, Setting) として固定。",
+      "bottom_fixed": "コマンドパネル（クリティカル操作ボタン）として固定。デスクトップ全画面表示を基本設計とする。"
+    }
+  },
+  "function_and_ux_logic_specification": {
+    "modules": [
+      {"name": "App", "logic": "GPG操作は一括入力/ウィザード形式（鍵ペア生成）。結果は即時表示パネルへ。"},
+      {"name": "Console", "logic": "再起動/緊急停止は**二重確定モーダル**を経由。メトリクスはリアルタイムグラフ表示。"},
+      {"name": "Moderator", "logic": "AMM緊急停止は**トグル＆ワーニングポップアップ**を経由。AMMブロック状況はリアルタイム表示。"},
+      {"name": "Rescue", "logic": "CRAD強制実行は**アラート名/ペイロード入力のウィザード形式**を経由。MTTR統計をグラフ表示。"},
+      {"name": "Setting", "logic": "システム鍵ID変更やConfig編集は認証とポリシー確認を必須とする。"}
+    ],
+    "script_roles": {
+      "DoorAnimationController": "扉開閉アニメーションと初期ロード制御。",
+      "ModalController": "二重確定ロジックを含む、全てのポップアップ表示・非表示制御。",
+      "APIClient": "WebSocket (ステータス) およびAPIリクエスト管理。クリティカル操作前のUIロック。"
+    }
+  },
+  "code_snippets": {
+    "html_structure_summary": "body内に#door-overlay、#main-console（#module-selector, #content-frame, #command-panel）、#confirmation-modalの4層構造を持つ。",
+    "css_highlights": [
+      "微細なノイズ/グレインのbody::before CSSフィルター。",
+      "border, box-shadowにvar(--color-primary) を使用した未来的な高コントラストデザイン。",
+      "クリティカルボタンへのclip-pathとbox-shadowによる視覚的強調。",
+      "扉アニメーション（.door-open / .door-closed クラス）のトランスフォーム制御。"
+    ],
+    "javascript_logic_summary": [
+      "setTimeoutによる扉アニメーションの起動。",
+      "moduleSelectorのクリックイベントで扉を閉じ→コンテンツ切替→扉を開くトランジションロジック。",
+      "commandPanelのクリックでモーダル表示、confirmInputの入力値チェックによるmodalConfirmBtnの有効化/無効化（二重確定ロジック）。",
+      "modalConfirmBtnクリック時のAPIコール（ロギング代替）とモーダル非表示。"
+    ]
+  },
+  "implementation_advice": [
+    "D3.js / Chart.jsを使用してグラフとゲージにプライマリカラーと走査線アニメーションを適用する。",
+    "クリティカルなAPIコールは、フロントエンドだけでなくバックエンド（APIラッパー）でも認証と詳細な監査ログを強制する。",
+    "扉アニメーションにclip-pathを追加し、幾何学的な複雑さを増す。"
+  ],
+  "security_note": {
+    "risks": "再起動、緊急停止、AMM停止、設定変更機能は誤操作/悪意ある利用のリスクが極めて高いため、厳格な認証・監査・二重確定ロジックが必須。",
+    "mitigation": "二重確定ロジックの徹底と、API側の厳密な権限チェック。"
+  }
+}

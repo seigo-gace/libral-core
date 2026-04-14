@@ -1,0 +1,51 @@
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+Subscribing to system.events
+[stamp-creator] Initializing スタンプ作成システム v1.0.0
+[aegis-pgp] Initializing Aegis-PGP暗号化システム v1.0.0
+[REGISTRY] Registered module: stamp-creator (スタンプ作成システム)
+[REGISTRY] Registered module: aegis-pgp (Aegis-PGP暗号化システム)
+[TRANSPORT] Initializing transport system...
+Failed to load routing config from /home/runner/workspace/config/routing.yaml, using defaults: Error: ENOENT: no such file or directory, open '/home/runner/workspace/config/routing.yaml'
+    at Object.readFileSync (node:fs:449:20)
+    at loadRoutingConfig (/home/runner/workspace/server/core/transport/policy.ts:30:24)
+    at initTransport (/home/runner/workspace/server/core/transport/bootstrap.ts:33:20)
+    at <anonymous> (/home/runner/workspace/server/index.ts:42:3)
+    at <anonymous> (/home/runner/workspace/server/index.ts:97:1)
+    at ModuleJob.run (node:internal/modules/esm/module_job:263:25)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:540:24)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/runner/workspace/config/routing.yaml'
+}
+[TRANSPORT] Router initialized with adapters: [ 'telegram', 'email', 'webhook' ]
+Subscribing to user.events
+Subscribing to payment.events
+Subscribing to api.events
+[aegis-pgp] Aegis-PGP Core API not available, using mock mode
+[kb-system] Initializing KB System v2.1.0
+[LIBRAL-CORE] AI modules initialization failed: TypeError: eventService.subscribe is not a function
+    at KBSystem.initialize (/home/runner/workspace/server/modules/kb-system.ts:69:24)
+    at async <anonymous> (/home/runner/workspace/server/index.ts:53:5)
+[LIBRAL-CORE] Continuing without AI modules...
+Redis connected (mock)
+Subscribing to system.events
+Subscribing to metrics.update
+Subscribing to module.status
+7:35:47 PM [express] serving on port 5000
+7:35:51 PM [express] GET /api/system/metrics 200 in 3ms :: {"cpuUsage":"23","memoryUsage":"68","acti…
+7:35:56 PM [express] GET /api/system/metrics 304 in 1ms :: {"cpuUsage":"23","memoryUsage":"68","acti…
+7:36:01 PM [express] GET /api/system/metrics 304 in 1ms :: {"cpuUsage":"23","memoryUsage":"68","acti…
+7:36:06 PM [express] GET /api/system/metrics 304 in 0ms :: {"cpuUsage":"23","memoryUsage":"68","acti…
+7:36:12 PM [express] GET /api/system/metrics 304 in 1ms :: {"cpuUsage":"23","memoryUsage":"68","acti…
+7:36:17 PM [express] GET /api/system/metrics 304 in 1ms :: {"cpuUsage":"23","memoryUsage":"68","acti…
+7:36:22 PM [express] GET /api/system/metrics 200 in 1ms :: {"cpuUsage":"25","memoryUsage":"66","acti…
+7:36:27 PM [express] GET /api/system/metrics 304 in 1ms :: {"cpuUsage":"25","memoryUsage":"66","acti…
+7:36:32 PM [express] GET /api/system/metrics 304 in 1ms :: {"cpuUsage":"25","memoryUsage":"66","acti…
+7:36:37 PM [express] GET /api/system/metrics 304 in 1ms :: {"cpuUsage":"25","memoryUsage":"66","acti…
+7:36:42 PM [express] GET /api/system/metrics 304 in 1ms :: {"cpuUsage":"25","memoryUsage":"66","acti…
+7:36:47 PM [express] GET /api/system/metrics 200 in 0ms :: {"cpuUsage":"26","memoryUsage":"62","acti…
+^C

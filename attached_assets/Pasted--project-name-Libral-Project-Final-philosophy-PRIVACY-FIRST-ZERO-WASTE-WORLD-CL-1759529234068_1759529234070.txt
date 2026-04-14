@@ -1,0 +1,68 @@
+{
+  "project_name": "Libral_Project_Final",
+  "philosophy": "PRIVACY_FIRST | ZERO_WASTE | WORLD_CLASS_UX",
+  "target_platform": "HYBRID_MICROKERNEL (Python/FastAPI + Node.js/Express + Wasm)",
+  
+  "development_phases": [
+    {
+      "phase_id": "P1_SETUP",
+      "title": "初期環境構築と依存関係の定義",
+      "description": "開発環境（Docker, Redis, Postgres）を定義し、すべての依存関係をPoetryに統合する。",
+      "tasks": [
+        {
+          "task_id": "P1-T1_DEPENDENCY_FILE",
+          "action": "CREATE_FILE",
+          "file_name": "pyproject.toml",
+          "details": "Libralコア全体に必要なすべてのライブラリを記述する。",
+          "content": "[tool.poetry]\nname = \"libral-core\"\nversion = \"0.1.0\"\nauthors = [\"Libral Developer Agent\"]\n\n[tool.poetry.dependencies]\npython = \"^3.11\"\nfastapi = \"^0.104.1\"\nuvicorn = {extras = [\"standard\"], version = \"^0.23.2\"}\nhttpx = \"^0.25.1\"\nredis = \"^5.0.1\"\npydantic-settings = \"^2.1.0\"\npython-gnupg = \"^0.5.5\"\nstructlog = \"^23.2.0\"\nasyncpg = \"^0.28.0\"\nsqlalchemy = \"^2.0.23\"\npsycopg2-binary = \"^2.9.9\"\ncryptography = \"^41.0.5\"\nopenai = \"^1.3.7\"\ngemini-python = \"^0.1.1\"\nragas = \"^0.1.6\"\ntelemetry = \"^0.4.0\" # OpenTelemetry統合\n"
+        },
+        {
+          "task_id": "P1-T2_DOCKER_SETUP",
+          "action": "CREATE_FILE",
+          "file_name": "docker-compose.yml",
+          "details": "PostgreSQL, Redis, Libral Coreの3サービスを定義する。PostgreSQLとRedisはAppモジュール開発のために必須の依存サービス。",
+          "content": "version: '3.8'\nservices:\n  libral-core:\n    build: .\n    ports:\n      - \"8000:8000\"\n    volumes:\n      - .:/app\n    depends_on:\n      - postgres\n      - redis\n    env_file:\n      - .env\n\n  postgres:\n    image: postgres:15-alpine\n    container_name: libral-postgres\n    environment:\n      POSTGRES_DB: libral_db\n      POSTGRES_USER: libral\n      POSTGRES_PASSWORD: libral_password\n    volumes:\n      - postgres_data:/var/lib/postgresql/data\n\n  redis:\n    image: redis:7-alpine\n    container_name: libral-redis\n    ports:\n      - \"6379:6379\"\n\nvolumes:\n  postgres_data:\n"
+        }
+      ]
+    },
+    {
+      "phase_id": "P2_LIC_CORE_INTEGRATION",
+      "title": "AIとセキュリティコアの統合（Python/FastAPI）",
+      "description": "Libral Identity Core (LIC)とAIのロジックを、Context-Lockとコスト最適化のルールに基づいて実装する。",
+      "tasks": [
+        {
+          "task_id": "P2-T1_MAIN_APP_CODE",
+          "action": "CREATE_FILE",
+          "file_name": "main.py",
+          "details": "AIモジュールの主要なエンドポイント（/ask, /eval）とContext-Lockの検証ロジックを実装する。",
+          "content": "from fastapi import FastAPI, Depends, HTTPException, Header, status\nfrom pydantic_settings import BaseSettings\nimport os, hashlib, asyncio, json\nfrom datetime import datetime, timedelta\nimport redis.asyncio as redis\n\n# --- 1. Settings (Load from .env) ---\nclass Settings(BaseSettings):\n    OPENAI_API_KEY: str = \"\"\n    GEMINI_API_KEY: str = \"\"\n    REDIS_URL: str = \"redis://redis:6379\"\n    class Config:\n        env_file = \".env\"\n\nsettings = Settings()\napp = FastAPI()\nredis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)\n\n# --- 2. Security (Context-Lock/LIC) ---\n# Context-Lock署名検証（仮）：認証モジュールでこのロジックを使用\nasync def verify_context_lock(x_context_lock: str = Header(...)):\n    # 署名検証ロジックを実装 (タイムスタンプ, Nonce, 署名の検証)\n    if not x_context_lock:\n        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=\"Context-Lock header missing\")\n    return True\n\n# --- 3. Cost Optimization (External AI Judge) ---\nusage_count_key = \"external_ai_usage_count\"\n\nasync def check_external_ai_quota():\n    usage_count = int(await redis_client.get(usage_count_key) or 0)\n    if usage_count >= 2:\n        return False # 1日2回の利用制限\n    return True\n\n# --- 4. Endpoints ---\n\n# 内部AI（自社AI）のエンドポイント\n@app.post(\"/api/ai/ask\", dependencies=[Depends(verify_context_lock)])\nasync def ask_internal_ai(query: dict):\n    # 自社AIが応答するロジックを実装 (Wasm統合の準備)\n    return {\"response\": f\"自社AIが応答します: {query.get('text')}\"}\n\n# 外部AI（判定役）のエンドポイント\n@app.post(\"/api/ai/eval\", dependencies=[Depends(verify_context_lock)])\nasync def evaluate_external_ai(data: dict):\n    if not await check_external_ai_quota():\n        raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=\"External AI usage quota exceeded.\")\n    \n    await redis_client.incr(usage_count_key)\n    return {\"evaluation\": \"外部AIが判定します。\", \"usage_count\": await redis_client.get(usage_count_key)}\n"
+        }
+      ]
+    },
+    {
+      "phase_id": "P3_TEST_AND_RUN",
+      "title": "統合テストとサービス起動",
+      "description": "開発したコードをDockerでビルドし、サービスの起動と最小限の機能テストを行う。",
+      "tasks": [
+        {
+          "task_id": "P3-T1_INSTALL_DEPENDENCIES",
+          "action": "RUN_COMMAND",
+          "details": "Poetryで依存関係をインストールする。",
+          "command": "pip install poetry && poetry install"
+        },
+        {
+          "task_id": "P3-T2_BUILD_AND_START",
+          "action": "RUN_COMMAND",
+          "details": "Dockerコンテナをビルドし、Postgres/Redis/AIモジュールを起動する。",
+          "command": "docker-compose up --build -d"
+        },
+        {
+          "task_id": "P3-T3_VERIFY_HEALTH",
+          "action": "RUN_COMMAND",
+          "details": "外部AIのクォータ制限が機能するか検証する。",
+          "command": "curl -X POST http://localhost:8000/api/ai/eval -H 'Content-Type: application/json' -H 'x-context-lock: dummy_lock' -d '{\"data\": \"test\"}'"
+        }
+      ]
+    }
+  ]
+}

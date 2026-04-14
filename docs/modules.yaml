@@ -1,0 +1,307 @@
+# Libral Core - Module Manifest (最小単位モジュール一覧)
+# 機械可読。CI・交換・バージョン管理・依存チェックに利用。
+# 更新時: 追加・削除・バージョンアップのたびにこのファイルを更新する。
+
+version: "1.0"
+policy:
+  failure_handling: "swap"   # debug より 交換 を優先
+  evolution: "update"        # 開発の進行に合わせてモジュールを進化・アップデート
+
+# 運用フロー: トラブル検知 → モジュール特定 → 変更（交換/設定/バージョンアップ）
+flow:
+  - step: trouble_detection
+    description: トラブル検知
+    sources:
+      - logs
+      - metrics
+      - health_checks
+      - alerts
+    auto_debug: "Python側 CRAD (libral-core/src/governance/context_aware_debugger.py) がアラートに基づき自動リカバリ。Node側は /api/health, モジュールステータス, イベントログで検知し、必要なら CRAD や手動でモジュール特定へ。"
+
+  - step: module_identification
+    description: モジュール特定
+    ref: "docs/modules.yaml および MODULE_REGISTRY.md の一覧・依存関係から該当モジュール ID を特定"
+
+  - step: change
+    description: 変更
+    actions:
+      - swap   # 互換実装に差し替え（推奨）
+      - config # 設定変更のみ
+      - update # バージョンアップ・修正後デプロイ
+
+layers:
+  # --- 基盤（他から依存される。交換時は依存側の互換性を確認） ---
+  - id: layer-foundation
+    name: Foundation
+    modules:
+      - id: storage
+        path: server/storage.ts
+        interface: IStorage
+        description: ユーザー/イベント/モジュール/メトリクス/スタンプ/アセットの永続化
+        dependencies: [shared/schema]
+        replaceable: true
+        version: "1.0.0"
+        notes: "MemStorage 実装。本番では IStorage を実装した DB 実装に交換可能。"
+
+      - id: shared-schema
+        path: shared/schema.ts
+        interface: null
+        description: Drizzle スキーマ・Zod バリデーション・型定義
+        dependencies: []
+        replaceable: false
+        version: "1.0.0"
+        notes: "スキーマ変更はマイグレーションで行い、他モジュールと整合を取る。"
+
+      - id: utils-async-handler
+        path: server/utils/asyncHandler.ts
+        interface: AsyncRequestHandler
+        description: 非同期ルートのエラーハンドリングラッパー
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: data-fixtures
+        path: server/data/fixtures.ts
+        interface: null
+        description: モックデータ（開発・デモ用）。本番では別データソースに交換。
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+  # --- 通信トランスポート（送信経路。アダプタ単位で交換） ---
+  - id: layer-transport
+    name: Transport
+    modules:
+      - id: transport-router
+        path: server/core/transport/router.ts
+        interface: null
+        description: 送信ルーティング・フェイルオーバー
+        dependencies: [transport-adapter, transport-policy, transport-bootstrap]
+        replaceable: true
+        version: "1.0.0"
+
+      - id: transport-adapter
+        path: server/core/transport/adapter.ts
+        interface: TransportAdapter
+        description: 送信アダプタのインターフェース定義
+        dependencies: []
+        replaceable: false
+        version: "1.0.0"
+
+      - id: transport-bootstrap
+        path: server/core/transport/bootstrap.ts
+        interface: null
+        description: トランスポート初期化・ルーター取得
+        dependencies: [transport-router, adapter-telegram, adapter-email, adapter-webhook]
+        replaceable: true
+        version: "1.0.0"
+
+      - id: transport-policy
+        path: server/core/transport/policy.ts
+        interface: null
+        description: 送信ポリシー（usecase ごとの経路）
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: adapter-telegram
+        path: server/adapters/telegram.ts
+        interface: TransportAdapter
+        description: Telegram 経由送信
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: adapter-email
+        path: server/adapters/email.ts
+        interface: TransportAdapter
+        description: メール経由送信
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: adapter-webhook
+        path: server/adapters/webhook.ts
+        interface: TransportAdapter
+        description: Webhook 経由送信
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+  # --- サービス（Redis / WebSocket / イベント / Telegram Bot） ---
+  - id: layer-services
+    name: Services
+    modules:
+      - id: service-redis
+        path: server/services/redis.ts
+        interface: null
+        description: Redis 接続・pub/sub・キャッシュ
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+        notes: "接続失敗時は別インスタンスやモックに交換可能。"
+
+      - id: service-events
+        path: server/services/events.ts
+        interface: null
+        description: イベント発行・購読・ストレージ連携
+        dependencies: [storage, service-redis]
+        replaceable: true
+        version: "1.0.0"
+
+      - id: service-websocket
+        path: server/services/websocket.ts
+        interface: null
+        description: WebSocket ブロードキャスト（メトリクス・モジュール状態）
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: service-telegram
+        path: server/services/telegram.ts
+        interface: null
+        description: Telegram Bot Webhook 処理
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+  # --- コア機能（AI / KB / 暗号） ---
+  - id: layer-core
+    name: Core
+    modules:
+      - id: ai-bridge
+        path: server/core/ai-bridge/index.ts
+        interface: null
+        description: AI 非同期キュー・リトライ・フォールバック
+        dependencies: [server/core/ai-bridge/queue.ts]
+        replaceable: true
+        version: "2.0.0"
+
+      - id: ai-bridge-queue
+        path: server/core/ai-bridge/queue.ts
+        interface: null
+        description: AI リクエストキュー
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: ai-router
+        path: server/core/ai-router.ts
+        interface: null
+        description: AI ルーティング（Gemini / GPT / OSS 振り分け）
+        dependencies: []
+        replaceable: true
+        version: "2.0.0"
+
+      - id: crypto-aegis-client
+        path: server/crypto/aegisClient.ts
+        interface: null
+        description: Aegis-PGP クライアント（encrypt/decrypt/sign/verify）
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+  # --- 登録可能モジュール（StampModule 契約） ---
+  - id: layer-registered-modules
+    name: Registered Modules
+    modules:
+      - id: module-registry
+        path: server/modules/registry.ts
+        interface: ModuleRegistry
+        description: モジュール登録・取得・ステータス一覧
+        dependencies: [module-stamp-creator, module-aegis-pgp]
+        replaceable: true
+        version: "1.0.0"
+        notes: "registerModule で追加。交換時は別実装を register する。"
+
+      - id: module-stamp-creator
+        path: server/modules/stamp-creator.ts
+        interface: StampModule
+        description: スタンプ作成（エンドポイント・能力定義）
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: module-aegis-pgp
+        path: server/modules/aegis-pgp.ts
+        interface: StampModule
+        description: Aegis-PGP 暗号モジュール（ポリシー・トランスポート）
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: module-kb-system
+        path: server/modules/kb-system.ts
+        interface: null
+        description: 独立 KB システム（CRUD・検索・埋め込み）
+        dependencies: [service-events, service-redis]
+        replaceable: true
+        version: "2.1.0"
+
+      - id: module-evaluator
+        path: server/modules/evaluator.ts
+        interface: null
+        description: AI 出力品質スコアリング
+        dependencies: []
+        replaceable: true
+        version: "2.0.0"
+
+      - id: module-oss-manager
+        path: server/modules/oss-manager.ts
+        interface: null
+        description: OSS モデル管理（ロード・推論）
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+      - id: module-embedding
+        path: server/modules/embedding.ts
+        interface: null
+        description: ベクトル埋め込み・類似検索
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+  # --- ルート・API（ドメイン別に分割可能） ---
+  - id: layer-routes
+    name: Routes
+    modules:
+      - id: routes-main
+        path: server/routes.ts
+        interface: registerRoutes
+        description: 全 API ルート登録・HTTP サーバー・WebSocket 初期化
+        dependencies: [storage, services, modules, routes-aegis, data-fixtures]
+        replaceable: true
+        version: "1.0.0"
+        notes: "ドメイン別ファイルに分割した場合は、各ファイルをモジュールとして登録。"
+
+      - id: routes-aegis
+        path: server/routes/aegis.ts
+        interface: registerAegisRoutes
+        description: Aegis-PGP API（encrypt/decrypt/sign/verify/send/wkd/inspect）
+        dependencies: [crypto-aegis-client, storage, transport-router]
+        replaceable: true
+        version: "1.0.0"
+
+  # --- エントリ・Vite ---
+  - id: layer-runtime
+    name: Runtime
+    modules:
+      - id: server-index
+        path: server/index.ts
+        interface: null
+        description: Express 起動・ルート登録・Vite 配信
+        dependencies: [routes-main, vite]
+        replaceable: false
+        version: "1.0.0"
+
+      - id: vite
+        path: server/vite.ts
+        interface: null
+        description: 開発時 Vite ミドルウェア・本番静的配信
+        dependencies: []
+        replaceable: true
+        version: "1.0.0"
+
+# クライアントは機能単位でモジュール化されている場合、別 manifest またはここに追記可能
+# client_modules: []
